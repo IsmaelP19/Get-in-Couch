@@ -9,17 +9,31 @@ export default async function usersRouter (req, res) {
     if (req.method === 'POST') {
       const body = req.body
 
-      if (body.password.length < 3) {
+      if (!body.password) {
+        return res.status(400).json({ error: 'password is required' })
+      } else if (body.password.length < 3) {
         return res.status(400).json({ error: 'password is too short' })
+      }
+
+      // now we have to validate if the email is well formed
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      if (!body.email) {
+        return res.status(400).json({ error: 'User validation failed: email: Path `email` is required.' })
+      } else if (!emailRegex.test(body.email)) {
+        return res.status(400).json({ error: 'User validation failed: email: ' + body.email + ' is not a valid email' })
       }
 
       const saltRounds = 10
       const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
       const user = new User({
+        email: body.email,
+        passwordHash,
         username: body.username,
         name: body.name,
-        passwordHash
+        surname: body.surname,
+        phoneNumber: body.phoneNumber,
+        isOwner: body.isOwner
       })
 
       const savedUser = await user.save()
