@@ -22,7 +22,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'newemail@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'test',
       name: 'test',
       surname: 'test',
@@ -48,7 +48,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'anotheremail@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'test',
       name: 'test',
       surname: 'test',
@@ -80,7 +80,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'anotheremail@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'ro',
       name: 'Superuser',
       surname: 'test',
@@ -112,7 +112,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'eme@domain.com',
-      password: 'test',
+      password: 'testtest',
       name: 'Superuser',
       surname: 'test',
       phoneNumber: '123123124',
@@ -143,8 +143,8 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'anotheremail@domain.com',
-      password: 'te',
-      username: 'ro',
+      password: 'test',
+      username: 'root',
       name: 'Superuser',
       surname: 'test',
       phoneNumber: '123123124',
@@ -175,7 +175,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'anotheremail@domain.com',
-      username: 'ro',
+      username: 'root',
       name: 'Superuser',
       surname: 'test',
       phoneNumber: '123123124',
@@ -219,8 +219,8 @@ describe('POST: When there are no users in db and one is added', () => {
     ]
 
     const newUser = {
-      password: 'test',
-      username: 'ro',
+      password: 'testtest',
+      username: 'root',
       name: 'Superuser',
       surname: 'test',
       phoneNumber: '123123124',
@@ -255,7 +255,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'newemail@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'Superuser',
       surname: 'test',
@@ -286,7 +286,7 @@ describe('POST: When there are no users in db and one is added', () => {
     const usersAtStart = await usersInDb()
 
     const newUser = {
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'Superuser',
       surname: 'test',
@@ -318,7 +318,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       surname: 'test',
       phoneNumber: '123123124',
@@ -349,7 +349,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'Su',
       surname: 'test',
@@ -381,7 +381,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'test',
       phoneNumber: '123123124',
@@ -412,7 +412,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'Superuser',
       surname: 'Te',
@@ -444,7 +444,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'passwd',
+      password: 'testtest',
       username: 'root',
       name: 'test',
       surname: 'test',
@@ -475,7 +475,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'Superuser',
       name: 'test',
       surname: 'test',
@@ -507,7 +507,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'Root',
       name: 'test',
       surname: 'test',
@@ -538,7 +538,7 @@ describe('POST: When there are no users in db and one is added', () => {
 
     const newUser = {
       email: 'email@domain.com',
-      password: 'test',
+      password: 'testtest',
       username: 'Root',
       name: 'test',
       surname: 'test',
@@ -625,7 +625,7 @@ describe('GET by id endpoint', () => {
       method: 'POST',
       body: {
         email: 'newemail@domain.com',
-        password: 'test',
+        password: 'testtest',
         username: 'test',
         name: 'test',
         surname: 'test',
@@ -710,7 +710,7 @@ describe('DELETE by id endpoint', () => {
       method: 'POST',
       body: {
         email: 'newemail@domain.com',
-        password: 'test',
+        password: 'testtest',
         username: 'test',
         name: 'test',
         surname: 'test',
@@ -794,5 +794,6 @@ describe('DELETE by id endpoint', () => {
 })
 
 afterAll(async () => {
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

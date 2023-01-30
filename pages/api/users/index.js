@@ -11,7 +11,7 @@ export default async function usersRouter (req, res) {
 
       if (!body.password) {
         return res.status(400).json({ error: 'password is required' })
-      } else if (body.password.length < 3) {
+      } else if (body.password.length < 8) {
         return res.status(400).json({ error: 'password is too short' })
       }
 

@@ -28,7 +28,7 @@ export default function Footer () {
       <hr className='border-solid border-x border-gray-600 w-10/12 m-auto mb-7' />
       <div className='flex md:flex-row flex-col gap-4 items-center justify-between md:px-16 px-5 pb-4 '>
         <span className='text-gray-300 font-semibold'>
-          © 2023 Get in Couch, Inc.
+          © {new Date().getFullYear()} Get in Couch, Inc.
           Todos los derechos reservados.
         </span>
         <span className='text-gray-300 font-semibold'>
