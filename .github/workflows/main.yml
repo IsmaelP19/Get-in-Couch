@@ -1,13 +1,6 @@
 name: Get in Couch Build
 
-on:
-  push:
-    branches:
-      - main
-      - 'feature/**'
-  pull_request:
-    branches: 
-      - main
+on: [push, pull_request]
 
 jobs:
   build:
