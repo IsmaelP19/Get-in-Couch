@@ -1,5 +1,5 @@
 import User from '../../../models/user'
-import { errorHandler, createConnection } from '../../../utils/middleware'
+import { errorHandler, createConnection } from '../../../utils/utils'
 
 export default async function usersIdRouter (req, res) {
   try {

@@ -1,5 +1,5 @@
 import User from '../../../models/user'
-import { errorHandler, createConnection } from '../../../utils/middleware'
+import { errorHandler, createConnection } from '../../../utils/utils'
 import bcrypt from 'bcrypt'
 
 export default async function usersRouter (req, res) {

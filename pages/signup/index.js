@@ -7,31 +7,24 @@ import SignUpForm from '../../components/SignUpForm'
 import { useState } from 'react'
 import userService from '../../services/users'
 import Notification from '../../components/Notification'
+import { showMessage } from '../../utils/utils'
 
 export default function SignUp () {
   const [message, setMessage] = useState([])
   const createUser = (userObject) => {
     userService.create(userObject)
       .then(response => {
-        setMessage(['Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success'])
-        window.scrollTo(0, 0)
-        setTimeout(() => {
-          setMessage('')
-        }, 9000)
+        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 9000)
       })
       .catch(error => {
         if (error.response.data.error.includes('`email` to be unique')) {
-          setMessage(['El email introducido ya está registrado. ¿Por qué no inicias sesión?', 'error'])
+          showMessage('El email introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
         } else if (error.response.data.error.includes('`username` to be unique')) {
-          setMessage(['El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión?', 'error'])
+          showMessage('El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
         } else if (error.response.data.error.includes('`phoneNumber` to be unique')) {
-          setMessage(['El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'error'])
+          showMessage('El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
         } else {
-          setMessage(['Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error'])
-          window.scrollTo(0, 0)
-          setTimeout(() => {
-            setMessage('')
-          }, 9000)
+          showMessage('Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000)
         }
       })
   }

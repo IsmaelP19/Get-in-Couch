@@ -38,7 +38,7 @@ const validate = values => {
   if (!values.phoneNumber) {
     errors.phoneNumber = 'No puede dejar vacío este campo'
   } else if (values.phoneNumber.length < 9) {
-    errors.phoneNumber = 'El número de teléfono debe tener al menos 9 caracteres'
+    errors.phoneNumber = 'El teléfono debe tener al menos 9 números'
   }
   // else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber)) {
   //   errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34666666666)'
@@ -64,7 +64,7 @@ export default function SignUpForm ({ createUser }) {
     validate
 
   })
-
+  // TODO: Add a country code selector next to the phone number input
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
       <h1 className='font-bold text-center text-2xl'>Registro</h1>
