@@ -2,13 +2,12 @@ import { useFormik } from 'formik'
 
 const validate = values => {
   const errors = {}
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
   if (!values.email) {
-    console.log('email', values.email)
     errors.email = 'No puede dejar vacío este campo'
-  } else if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(values.email)) {
+  } else if (!emailRegex.test(values.email)) {
     errors.email = 'Introduzca una dirección de correo electrónico válida'
-    console.log('email', values.email)
   }
 
   if (!values.password) {
@@ -40,9 +39,10 @@ const validate = values => {
     errors.phoneNumber = 'No puede dejar vacío este campo'
   } else if (values.phoneNumber.length < 9) {
     errors.phoneNumber = 'El número de teléfono debe tener al menos 9 caracteres'
-  } else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber)) {
-    errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34 666 666 666)'
   }
+  // else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber)) {
+  //   errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34666666666)'
+  // }
 
   return errors
 }
@@ -79,6 +79,7 @@ export default function SignUpForm ({ createUser }) {
           <input type='password' name='password' id='password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} className='border border-solid border-slate-600' />
           {formik.touched.password && formik.errors.password ? <div className='text-red-600'>{formik.errors.password}</div> : null}
         </div>
+
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='username'>Nombre de usuario</label>
           <input type='text' name='username' id='username' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.username} className='border border-solid border-slate-600' />

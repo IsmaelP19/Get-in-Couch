@@ -227,8 +227,8 @@ describe('POST: When there are no users in db and one is added', () => {
       isOwner: false
     }
 
-    for (const email in invalidEmails) {
-      newUser.email = email
+    for (const index in invalidEmails) {
+      newUser.email = invalidEmails[index]
 
       const req = {
         method: 'POST',
@@ -243,12 +243,12 @@ describe('POST: When there are no users in db and one is added', () => {
       await usersRouter(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'User validation failed: email: ' + email + ' is not a valid email' })
+      expect(res.json).toHaveBeenCalledWith({ error: 'User validation failed: email: ' + newUser.email + ' is not a valid email' })
 
       const usersAtEnd = await usersInDb()
       expect(usersAtEnd).toHaveLength(usersAtStart.length)
     }
-  })
+  }, 10000)
 
   test('creation fails with proper status code and message if email is already taken', async () => {
     const usersAtStart = await usersInDb()

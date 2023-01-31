@@ -15,8 +15,7 @@ export default async function usersRouter (req, res) {
         return res.status(400).json({ error: 'password is too short' })
       }
 
-      // now we have to validate if the email is well formed
-      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       if (!body.email) {
         return res.status(400).json({ error: 'User validation failed: email: Path `email` is required.' })
       } else if (!emailRegex.test(body.email)) {
