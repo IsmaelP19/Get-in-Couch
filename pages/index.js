@@ -3,8 +3,18 @@ import Feature from '../components/Feature'
 import Footer from '../components/Footer'
 import InfoCard from '../components/InfoCard'
 import Navbar from '../components/Navbar'
+import userService from '../services/users'
+import { useState, useEffect } from 'react'
 
 export default function Home () {
+  const [registeredUsers, setRegisteredUsers] = useState(0)
+
+  useEffect(() => {
+    userService.getAll()
+      .then(response => {
+        setRegisteredUsers(response.length)
+      })
+  }, [])
   return (
     <>
       <Head>
@@ -23,7 +33,7 @@ export default function Home () {
           </div>
           <div className='my-10'>
             <h1 className='text-2xl md:text-3xl font-bold text-center'>Lo que nos hace diferentes</h1>
-            <Feature title='Actualmente contamos con XXX ofertas de inmuebles y YYY usuarios registrados' description='¡Tienes más que suficiente para encontrar el sitio ideal para compartir!' color='#047857' />
+            <Feature title={`Actualmente contamos con XXX ofertas de inmuebles y ${registeredUsers} usuarios registrados`} description='¡Tienes más que suficiente para encontrar el sitio ideal para compartir!' color='#047857' />
             <Feature title='Registro rápido' description='En tan solo unos minutos podrás utilizar Get in Couch al completo.' color='#0e7490' />
             <Feature title='Estadísticas' description='Podrás visualizar las estadísticas de cada usuario para determinar si es tu compañero ideal o no. Además, pasado un mes de estancia con tus compañeros, podrás votarlos sobre diferentes aspectos. Pero relax, que esto no es Gran Hermano 😉' color='#4338ca' />
             <Feature title='Mensajería' description='Podrás chatear con cualquier persona de forma instantánea. ¡Es la oportunidad perfecta para un primer encuentro!' color='#7e22ce' />

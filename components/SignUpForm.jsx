@@ -37,12 +37,11 @@ const validate = values => {
 
   if (!values.phoneNumber) {
     errors.phoneNumber = 'No puede dejar vacío este campo'
-  } else if (values.phoneNumber.length < 9) {
+  } else if (values.phoneNumber.replaceAll(' ', '').length < 9) {
     errors.phoneNumber = 'El teléfono debe tener al menos 9 números'
+  } else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber.replaceAll(' ', ''))) {
+    errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34 666 66 66 66)'
   }
-  // else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber)) {
-  //   errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34666666666)'
-  // }
 
   return errors
 }
@@ -59,11 +58,13 @@ export default function SignUpForm ({ createUser }) {
       isOwner: false
     },
     onSubmit: values => {
+      values.phoneNumber = values.phoneNumber.replaceAll(' ', '')
       createUser(values)
     },
     validate
 
   })
+
   // TODO: Add a country code selector next to the phone number input
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
