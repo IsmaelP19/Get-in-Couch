@@ -1,4 +1,4 @@
-import Button from './Button'
+import LinkButton from './LinkButton'
 
 export default function InfoCard ({ title, description, buttonName, buttonLink, buttonStyle }) {
   return (
@@ -10,7 +10,7 @@ export default function InfoCard ({ title, description, buttonName, buttonLink, 
       <p className='text-gray-200 text-xl p-3 text-center'>
         {description}
       </p>
-      <Button name={buttonName} link={buttonLink} style={buttonStyle} />
+      <LinkButton name={buttonName} link={buttonLink} style={buttonStyle} />
     </div>
   )
 }

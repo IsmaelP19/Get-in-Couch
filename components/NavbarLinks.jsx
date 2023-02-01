@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Button from './Button'
+import LinkButton from './LinkButton'
 
 export default function NavbarLinks ({ isOpen }) {
   const links = [
@@ -15,8 +15,8 @@ export default function NavbarLinks ({ isOpen }) {
           <Link href={link.link} className='text-gray-400 hover:text-gray-100 duration-500'>{link.name}</Link>
         </li>
       ))}
-      <Button name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
-      <Button name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
+      <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
+      <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
     </ul>
   )
 }
