@@ -1,6 +1,9 @@
 import { useFormik } from 'formik'
+import 'react-phone-number-input/style.css'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+import { useState } from 'react'
 
-const validate = values => {
+const validate = (values, phoneNumber) => {
   const errors = {}
   const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -35,18 +38,17 @@ const validate = values => {
     errors.surname = 'Los apellidos deben contener al menos 3 caracteres'
   }
 
-  if (!values.phoneNumber) {
+  if (!phoneNumber) {
     errors.phoneNumber = 'No puede dejar vacío este campo'
-  } else if (values.phoneNumber.replaceAll(' ', '').length < 9) {
-    errors.phoneNumber = 'El teléfono debe tener al menos 9 números'
-  } else if (!/^[+]?[(]?\d{3}[)]?[-\s.]?\d{3}[-\s.]?\d{4,6}$/.test(values.phoneNumber.replaceAll(' ', ''))) {
-    errors.phoneNumber = 'Introduzca un número de teléfono válido (incluya código de país, por ejemplo: +34 666 66 66 66)'
+  } else if (!isValidPhoneNumber(phoneNumber)) {
+    errors.phoneNumber = 'El número introducido no es válido'
   }
 
   return errors
 }
 
 export default function SignUpForm ({ createUser }) {
+  const [phoneNumber, setPhoneNumber] = useState()
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -58,10 +60,12 @@ export default function SignUpForm ({ createUser }) {
       isOwner: false
     },
     onSubmit: values => {
-      values.phoneNumber = values.phoneNumber.replaceAll(' ', '')
+      values.phoneNumber = phoneNumber
       createUser(values)
     },
-    validate
+    validate (values) {
+      return validate(values, phoneNumber)
+    }
 
   })
 
@@ -98,7 +102,16 @@ export default function SignUpForm ({ createUser }) {
         </div>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='phoneNumber'>Número de teléfono</label>
-          <input type='text' name='phoneNumber' id='phoneNumber' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phoneNumber} className='border border-solid border-slate-600' />
+          <PhoneInput
+            value={phoneNumber}
+            onChange={setPhoneNumber}
+            name='phoneNumber'
+            id='phoneNumber'
+            addInternationalOption={false}
+            defaultCountry='ES'
+            onBlur={formik.handleBlur}
+            className='border border-solid border-slate-600'
+          />
           {formik.touched.phoneNumber && formik.errors.phoneNumber ? <div className='text-red-600'>{formik.errors.phoneNumber}</div> : null}
         </div>
         <div className='flex flex-row items-center gap-x-4'>
