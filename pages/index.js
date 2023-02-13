@@ -3,18 +3,8 @@ import Feature from '../components/Feature'
 import Footer from '../components/Footer'
 import InfoCard from '../components/InfoCard'
 import Navbar from '../components/Navbar'
-import userService from '../services/users'
-import { useState, useEffect } from 'react'
 
-export default function Home () {
-  const [registeredUsers, setRegisteredUsers] = useState(0)
-
-  useEffect(() => {
-    userService.getAll()
-      .then(response => {
-        setRegisteredUsers(response.length)
-      })
-  }, [])
+export default function Home ({ registeredUsers }) {
   return (
     <>
       <Head>
@@ -44,4 +34,18 @@ export default function Home () {
 
     </>
   )
+}
+
+export async function getServerSideProps (context) {
+  context.res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  )
+
+  const registeredUsers = await fetch(`${process.env.API_URL}/users`)
+  const registeredUsersJson = await registeredUsers.json()
+
+  return {
+    props: { registeredUsers: registeredUsersJson.length }
+  }
 }
