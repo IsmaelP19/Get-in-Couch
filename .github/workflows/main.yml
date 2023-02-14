@@ -32,5 +32,4 @@ jobs:
       
     - name: Run tests
       run: |
-        MONGODB_URI_TEST=${{ secrets.MONGODB_URI_TEST }}
-        SECRET=${{ secrets.SECRET }} pnpm test
+         MONGODB_URI_TEST=${{ secrets.MONGODB_URI_TEST }} SECRET=${{ secrets.SECRET }} pnpm test
