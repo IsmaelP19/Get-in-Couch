@@ -1,8 +1,6 @@
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
 
-import utils from '../utils/utils'
-
 export default function Home ({ registeredUsers }) {
   return (
     <>
