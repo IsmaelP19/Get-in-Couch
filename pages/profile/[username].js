@@ -92,10 +92,12 @@ export default function Profile ({ username, user }) {
   )
 }
 
-Profile.getInitialProps = async (context) => {
+export async function getServerSideProps (context) {
   const { username } = context.query
-  const res = await fetch(`${process.env.API_URL}/api/users/${username}`)
+  const res = await fetch(`${process.env.API_URL}/users/${username}`)
   const user = await res.json()
 
-  return { title: `${username}`, username, user }
+  return {
+    props: { title: `${username}`, username, user }
+  }
 }
