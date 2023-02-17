@@ -33,7 +33,7 @@ export async function getServerSideProps (context) {
     'Cache-Control',
     'public, s-maxage=10, stale-while-revalidate=59'
   )
-  utils.createConnection()
+
   // for faster response time, we create the connection to db before the user requests the page
 
   const registeredUsers = await fetch(`${process.env.API_URL}/users`)

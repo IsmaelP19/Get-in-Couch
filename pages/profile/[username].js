@@ -94,7 +94,7 @@ export default function Profile ({ username, user }) {
 
 Profile.getInitialProps = async (context) => {
   const { username } = context.query
-  const res = await fetch(`http://localhost:3000/api/users/${username}`)
+  const res = await fetch(`${process.env.API_URL}/api/users/${username}`)
   const user = await res.json()
 
   return { title: `${username}`, username, user }
