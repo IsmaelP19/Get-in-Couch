@@ -1,21 +1,13 @@
-import Head from 'next/head'
 import Feature from '../components/Feature'
-import Footer from '../components/Footer'
 import InfoCard from '../components/InfoCard'
-import Navbar from '../components/Navbar'
+
+import utils from '../utils/utils'
 
 export default function Home ({ registeredUsers }) {
   return (
     <>
-      <Head>
-        <title>Get in Couch</title>
-        <meta name='description' content='Get in Couch, a social network to find your flat mates' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-
       <div className='min-h-screen flex flex-col'>
-        <Navbar />
+
         <main className='flex-1'>
           <div className='md:h-[25.3rem] bg-index-img bg-center bg-cover flex flex-col md:flex-row justify-around items-center py-10 gap-4 shadow-lg shadow-gray-400'>
             <InfoCard title='Publica tu inmueble' description='Ideal si tienes una vivienda que deseas alquilar a terceros.' buttonName='Accede ya' buttonLink='/login' buttonStyle='bg-gray-200 hover:bg-slate-600 text-black hover:text-white' />
@@ -29,7 +21,7 @@ export default function Home ({ registeredUsers }) {
             <Feature title='Mensajería' description='Podrás chatear con cualquier persona de forma instantánea. ¡Es la oportunidad perfecta para un primer encuentro!' color='#7e22ce' />
           </div>
         </main>
-        <Footer className='mt-auto' />
+
       </div>
 
     </>
@@ -41,6 +33,8 @@ export async function getServerSideProps (context) {
     'Cache-Control',
     'public, s-maxage=10, stale-while-revalidate=59'
   )
+  utils.createConnection()
+  // for faster response time, we create the connection to db before the user requests the page
 
   const registeredUsers = await fetch(`${process.env.API_URL}/users`)
   const registeredUsersJson = await registeredUsers.json()

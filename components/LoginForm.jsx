@@ -15,7 +15,7 @@ const validate = (values) => {
   return errors
 }
 
-export default function SignUpForm ({ user, setUser, setMessage, loginUser }) {
+export default function LoginForm ({ user, setUser, setMessage, loginUser }) {
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -30,7 +30,7 @@ export default function SignUpForm ({ user, setUser, setMessage, loginUser }) {
 
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
-      <h1 className='font-bold text-center text-2xl'>Iniciar sesión</h1>
+      <h1 className='font-bold text-center text-2xl mb-2'>Iniciar sesión</h1>
       <form onSubmit={formik.handleSubmit} className='flex flex-col gap-4'>
 
         <div className='flex flex-col gap-y-1'>

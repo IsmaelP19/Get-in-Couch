@@ -11,13 +11,13 @@ const create = async (newObject) => {
   return response.data
 }
 
-const getUser = async (id) => {
-  const response = await axios.get(`${baseUrl}/${id}`)
+const getUser = async (username) => {
+  const response = await axios.get(`${baseUrl}/${username}`)
   return response.data
 }
 
-const removeUser = async (id) => {
-  const response = await axios.delete(`${baseUrl}/${id}`)
+const removeUser = async (username) => {
+  const response = await axios.delete(`${baseUrl}/${username}`)
   return response.data
 }
 

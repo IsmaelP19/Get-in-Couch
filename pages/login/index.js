@@ -1,15 +1,10 @@
-import Head from 'next/head'
-// import Feature from '../components/Feature'
-import Footer from '../../components/Footer'
-// import InfoCard from '../components/InfoCard'
-import Navbar from '../../components/Navbar'
 import LoginForm from '../../components/LoginForm'
 import { useState } from 'react'
 import userService from '../../services/users'
 import Notification from '../../components/Notification'
 import { showMessage } from '../../utils/utils'
 
-export default function SignUp () {
+export default function SignIn () {
   const [message, setMessage] = useState([])
   const [user, setUser] = useState(null)
   const loginUser = async (credentials) => {
@@ -17,8 +12,8 @@ export default function SignUp () {
       const user = await userService.login(credentials)
       showMessage('Ha iniciado sesión correctamente', 'success', setMessage, 9000)
       setUser(user)
-      window.localStorage.setItem('loggedUser', JSON.stringify(user))
-      console.log('user', user)
+      localStorage.setItem('loggedUser', JSON.stringify(user))
+      location.replace('/')
     } catch (error) {
       if (error.response.data.error.includes('invalid username or password')) {
         showMessage('Usuario o contraseña incorrectos', 'error', setMessage, 9000)
@@ -30,24 +25,17 @@ export default function SignUp () {
 
   return (
     <>
-      <Head>
-        <title>Get in Couch</title>
-        <meta name='description' content='Get in Couch, a social network to find your flat mates' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
 
-      <div className='min-h-screen flex flex-col'>
-        <Navbar />
-        <main className='flex-1'>
-          <Notification message={message[0]} type={message[1]} />
-          <LoginForm user={user} setUser={setUser} setMessage={setMessage} loginUser={loginUser} />
+      <main className='flex-1'>
+        <Notification message={message[0]} type={message[1]} />
+        <LoginForm user={user} setUser={setUser} setMessage={setMessage} loginUser={loginUser} />
 
-        </main>
-
-        <Footer className='mt-auto' />
-      </div>
+      </main>
 
     </>
   )
+}
+
+SignIn.getInitialProps = async (context) => {
+  return { title: 'Iniciar sesión' }
 }

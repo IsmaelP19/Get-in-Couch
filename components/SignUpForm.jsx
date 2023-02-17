@@ -72,7 +72,7 @@ export default function SignUpForm ({ createUser }) {
   // TODO: Add a country code selector next to the phone number input
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
-      <h1 className='font-bold text-center text-2xl'>Registro</h1>
+      <h1 className='font-bold text-center text-2xl mb-2'>Registro</h1>
       <form onSubmit={formik.handleSubmit} className='flex flex-col gap-4'>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='email'>Email</label>

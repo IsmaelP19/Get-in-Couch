@@ -1,11 +1,29 @@
 import Link from 'next/link'
 import LinkButton from './LinkButton'
 
-export default function NavbarLinks ({ isOpen }) {
+export default function NavbarLinks ({ isOpen, user }) {
   const links = [
     { id: 1, name: 'Inmuebles', link: '/places' },
-    { id: 2, name: 'Mapa', link: '/mapa' }
+    { id: 2, name: 'Mapa', link: '/map' }
   ]
+
+  const roundLinks = () => {
+    if (user) {
+      return (
+        <>
+          <LinkButton name='Mi perfil' link='/profile' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
+        </>
+
+      )
+    } else {
+      return (
+        <>
+          <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
+          <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
+        </>
+      )
+    }
+  }
 
   return (
 
@@ -15,8 +33,9 @@ export default function NavbarLinks ({ isOpen }) {
           <Link href={link.link} className='text-gray-400 hover:text-gray-100 duration-500'>{link.name}</Link>
         </li>
       ))}
-      <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
-      <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
+
+      {roundLinks()}
+
     </ul>
   )
 }
