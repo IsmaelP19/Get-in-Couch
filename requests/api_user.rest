@@ -28,3 +28,11 @@ Content-Type: application/json
   "username": "anotherUser",
   "password": "123123123Ism&"
 }
+
+### ismperort is about to follow IsmaelPerez_19
+PUT http://localhost:3000/api/users/IsmaelPerez_19
+Content-Type: application/json
+
+{
+  "username": "pepitogrillo17"
+}

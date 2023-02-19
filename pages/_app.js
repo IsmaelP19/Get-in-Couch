@@ -22,7 +22,7 @@ export default function App ({ Component, pageProps }) {
       <NextSeo title={pageProps.title} />
       <div className='min-h-screen flex flex-col'>
         <Navbar />
-        <main className='flex-1 flex justify-center'>
+        <main className='flex-1 flex'>
           <Component {...pageProps} />
         </main>
         <Footer />
