@@ -6,6 +6,7 @@ export default function Profile ({ username, user }) {
   let { profilePicture } = user
   const [condition, setCondition] = useState(false)
   const [done, setDone] = useState(false)
+
   async function getUser () {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
@@ -19,13 +20,18 @@ export default function Profile ({ username, user }) {
     getUser()
   }, [])
 
+  const handleLogout = () => {
+    localStorage.removeItem('loggedUser')
+    window.location.href = '/'
+  }
+
   const buttons = condition
     ? (
       <>
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-full'>
+        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-full border-2 border-black'>
           Editar perfil
         </button>
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-full'>
+        <button className='bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-full border-2 border-black' onClick={handleLogout}>
           Cerrar sesión
         </button>
       </>
@@ -50,17 +56,15 @@ export default function Profile ({ username, user }) {
   }
 
   profilePicture || (profilePicture = '/static/images/default_avatar.png')
+
+  // TODO: add a loading spinner
+
   return (
     <>
-      <main>
+      <main className='w-full'>
         <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-10 my-5 md:mx-20 md:my-14 '>
           <div className='flex flex-col md:w-1/3 gap-5 '>
-            <div className='flex flex-col items-center justify-center gap-3'>
-              <ProfilePhoto src={profilePicture} alt='' />
-              <span className='font-bold'>
-                @{username}
-              </span>
-            </div>
+            <ProfilePhoto src={profilePicture} alt='' username={username} />
 
             <div className='flex items-center justify-center gap-2'>
               {done && buttons}
@@ -96,6 +100,11 @@ export async function getServerSideProps (context) {
   const { username } = context.query
   const res = await fetch(`${process.env.API_URL}/users/${username}`)
   const user = await res.json()
+
+  if (user.error === 'user not found') {
+    context.res.writeHead(302, { Location: '/404' })
+    context.res.end()
+  }
 
   return {
     props: { title: `${username}`, username, user }

@@ -29,17 +29,10 @@ export default function SignUp () {
 
   return (
     <>
-
-      <div className='min-h-screen flex flex-col'>
-
-        <main className='flex-1'>
-          <Notification message={message[0]} type={message[1]} />
-          <SignUpForm createUser={createUser} />
-
-        </main>
-
+      <div className='flex flex-col justify-center'>
+        <Notification message={message[0]} type={message[1]} />
+        <SignUpForm createUser={createUser} />
       </div>
-
     </>
   )
 }

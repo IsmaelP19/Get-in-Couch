@@ -1,5 +1,5 @@
 import Link from 'next/link'
-export default function Column ({ header, links }) {
+export default function Column ({ header, links, handleClick }) {
   return (
     <div className='flex flex-col justify-center md:items-start items-center md:my-0 my-5'>
       <span className='text-lg font-bold uppercase'>

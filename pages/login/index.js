@@ -25,13 +25,10 @@ export default function SignIn () {
 
   return (
     <>
-
-      <main className='flex-1'>
+      <div className='flex flex-col justify-center w-full'>
         <Notification message={message[0]} type={message[1]} />
         <LoginForm user={user} setUser={setUser} setMessage={setMessage} loginUser={loginUser} />
-
-      </main>
-
+      </div>
     </>
   )
 }

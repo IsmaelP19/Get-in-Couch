@@ -7,8 +7,8 @@ import userService from '../services/users'
 export default function Navbar () {
   const [isOpen, setOpenDrawer] = useState(false)
   const [done, setDone] = useState(false)
-
   const [user, setUser] = useState(null)
+
   async function getUser () {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
@@ -35,7 +35,7 @@ export default function Navbar () {
           </Link>
         </div>
         <Hamburger isOpen={isOpen} setOpenDrawer={setOpenDrawer} />
-        {done && <NavbarLinks isOpen={isOpen} user={user} />}
+        {done && <NavbarLinks isOpen={isOpen} setOpenDrawer={setOpenDrawer} user={user} />}
       </div>
     </nav>
 

@@ -19,10 +19,10 @@ export default function App ({ Component, pageProps }) {
     <>
 
       <DefaultSeo {...DEFAULT_SEO} />
-      <NextSeo title={pageProps.title || 'Inicio'} />
+      <NextSeo title={pageProps.title} />
       <div className='min-h-screen flex flex-col'>
         <Navbar />
-        <main className='flex-1'>
+        <main className='flex-1 flex justify-center'>
           <Component {...pageProps} />
         </main>
         <Footer />
