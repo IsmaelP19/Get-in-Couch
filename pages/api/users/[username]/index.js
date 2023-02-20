@@ -35,6 +35,8 @@ export default async function usersUsernameRouter (req, res) {
       // we have to add the follower
       if (user) {
         const newFollowerUsername = req.body.username
+        if (newFollowerUsername === username) return res.status(400).json({ error: 'you cannot follow yourself' })
+
         // we find now the User that is going to be added as a follower
         let newFollower = await User.findOne({ username: newFollowerUsername })
         if (process.env.NODE_ENV === 'test' && newFollower) {
@@ -50,9 +52,11 @@ export default async function usersUsernameRouter (req, res) {
             await User.updateOne({ _id: user._id }, { $pull: { followers: newFollower._id } })
             await User.updateOne({ _id: newFollower._id }, { $pull: { followed: user._id } })
           } else {
-            await User.updateOne({ _id: user._id }, { $push: { followed: newFollower._id } })
-            await User.updateOne({ _id: newFollower._id }, { $push: { followers: user._id } })
+            await User.updateOne({ _id: user._id }, { $push: { followers: newFollower._id } })
+            await User.updateOne({ _id: newFollower._id }, { $push: { followed: user._id } })
           }
+        } else {
+          return res.status(404).json({ error: 'user who is performing the action not found' })
         }
 
         res.status(200).json({ message: 'user succesfully updated' })

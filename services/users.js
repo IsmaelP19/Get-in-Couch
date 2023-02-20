@@ -26,4 +26,10 @@ const login = async (credentials) => {
   return response.data
 }
 
-export default { getAll, create, getUser, removeUser, login }
+const follow = async (username, newFollower) => {
+  const response = await axios.put(`${baseUrl}/${username}`, { username: newFollower })
+
+  return response.data
+}
+
+export default { getAll, create, getUser, removeUser, login, follow }

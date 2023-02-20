@@ -78,7 +78,90 @@ describe('UPDATE by username endpoint', () => {
     expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: 'user succesfully updated' })
   })
+
+  test('When the user to follow does not exist the operation fails', async () => {
+    const usersAtStart = await usersInDb()
+    const username = usersAtStart[0].username
+
+    const req = {
+      method: 'PUT',
+      query: {
+        username: 'notexisting'
+      },
+      body: {
+        username
+      }
+
+    }
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+
+    }
+
+    await usersUsernameRouter(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(404)
+    expect(res.json).toHaveBeenCalledWith({ error: 'user not found' })
+  })
+
+  test('When the user who wants to follow does not exist the operation fails', async () => {
+    const usersAtStart = await usersInDb()
+    const username = usersAtStart[0].username
+
+    const req = {
+      method: 'PUT',
+      query: {
+        username
+      },
+      body: {
+        username: 'notexisting'
+      }
+
+    }
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+
+    }
+
+    await usersUsernameRouter(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(404)
+    expect(res.json).toHaveBeenCalledWith({ error: 'user who is performing the action not found' })
+  })
+
+  test('When I try to follow myself the operation fails', async () => {
+    const usersAtStart = await usersInDb()
+    const username1 = usersAtStart[0].username
+
+    const req = {
+      method: 'PUT',
+      query: {
+        username: username1
+      },
+      body: {
+        username: username1
+      }
+
+    }
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+
+    }
+
+    await usersUsernameRouter(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.json).toHaveBeenCalledWith({ error: 'you cannot follow yourself' })
+  })
 })
+
+// TODO: check if the user actually follows the other user, not just by the response
 
 afterAll(async () => {
   await User.deleteMany({})

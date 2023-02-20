@@ -1,47 +1,80 @@
 import { useState, useEffect } from 'react'
 import ProfilePhoto from '../../components/ProfilePhoto'
+import userService from '../../services/users'
 
 export default function Profile ({ username, user }) {
+  // username is the username of the profile
+  // user is the user object of the profile
   const { name, surname, description, memberSince, followers, followed } = user
   let { profilePicture } = user
   const [condition, setCondition] = useState(false)
   const [done, setDone] = useState(false)
+  const [follow, setFollow] = useState(false)
+  const [loggedUsername, setLoggedUsername] = useState(null)
+  const [isLogged, setIsLogged] = useState(false)
+  const [followersState, setFollowers] = useState(followers.length)
 
   async function getUser () {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
       const loggedUsername = JSON.parse(loggedUser).username
+      setLoggedUsername(loggedUsername)
+      setIsLogged(true)
       setCondition(username === loggedUsername)
+      const loggedUserObject = await userService.getUser(loggedUsername)
+      if (loggedUserObject.followed.includes(user.id)) {
+        setFollow(true)
+      }
     }
-    setDone(true) // i have to know when the user is set, even if it is null
+    setDone(true)
   }
 
   useEffect(() => {
     getUser()
-  }, [])
+  }, [username])
 
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
     window.location.href = '/'
   }
 
+  const handleFollow = async () => {
+    await userService.follow(username, loggedUsername)
+    setFollow(!follow)
+    follow ? setFollowers(followersState - 1) : setFollowers(followersState + 1)
+  }
+
+  let followBtn
+  if (loggedUsername && follow) {
+    followBtn = (
+      <button className='bg-red-400 hover:bg-red-900 font-bold text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleFollow}>
+        Dejar de seguir
+      </button>
+    )
+  } else {
+    followBtn = (
+      <button className='bg-green-400 hover:bg-green-700 font-bold text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleFollow}>
+        Seguir
+      </button>
+    )
+  }
+
   const buttons = condition
     ? (
       <>
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-full border-2 border-black'>
+        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black'>
           Editar perfil
         </button>
-        <button className='bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-full border-2 border-black' onClick={handleLogout}>
+        <button className='bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleLogout}>
           Cerrar sesión
         </button>
       </>
       )
     : (
       <>
-        <button className='bg-green-400 hover:bg-green-700 font-bold text-black hover:text-white py-2 px-4 rounded-2xl'>
-          Seguir
-        </button>
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-full'>
+        {followBtn}
+
+        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black'>
           Contactar
         </button>
       </>
@@ -67,7 +100,7 @@ export default function Profile ({ username, user }) {
             <ProfilePhoto src={profilePicture} alt='' username={username} />
 
             <div className='flex items-center justify-center gap-2'>
-              {done && buttons}
+              {done && isLogged && buttons}
             </div>
           </div>
           <div className='flex flex-col gap-2  md:w-2/3 items-center md:items-start justify-center '>
@@ -82,10 +115,10 @@ export default function Profile ({ username, user }) {
             </span>
             <div className='flex gap-3'>
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
-                {followers} seguidores
+                {followersState} seguidores
               </span>
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
-                {followed} seguidos
+                {followed.length} seguidos
               </span>
             </div>
           </div>

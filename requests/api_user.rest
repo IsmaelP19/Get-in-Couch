@@ -29,8 +29,16 @@ Content-Type: application/json
   "password": "123123123Ism&"
 }
 
-### ismperort is about to follow IsmaelPerez_19
-PUT http://localhost:3000/api/users/IsmaelPerez_19
+### IsmaelPerez_19 is about to follow pepitogrillo17
+PUT http://localhost:3000/api/users/pepitogrillo17
+Content-Type: application/json
+
+{
+  "username": "IsmaelPerez_19"
+}
+
+###
+PUT http://localhost:3000/api/users/pepitogrillo17
 Content-Type: application/json
 
 {
