@@ -11,14 +11,25 @@ const create = async (newObject) => {
   return response.data
 }
 
-const getUser = async (id) => {
-  const response = await axios.get(`${baseUrl}/${id}`)
+const getUser = async (username) => {
+  const response = await axios.get(`${baseUrl}/${username}`)
   return response.data
 }
 
-const removeUser = async (id) => {
-  const response = await axios.delete(`${baseUrl}/${id}`)
+const removeUser = async (username) => {
+  const response = await axios.delete(`${baseUrl}/${username}`)
   return response.data
 }
 
-export default { getAll, create, getUser, removeUser }
+const login = async (credentials) => {
+  const response = await axios.post('api/login', credentials)
+  return response.data
+}
+
+const follow = async (username, newFollower) => {
+  const response = await axios.put(`${baseUrl}/${username}`, { username: newFollower })
+
+  return response.data
+}
+
+export default { getAll, create, getUser, removeUser, login, follow }

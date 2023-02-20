@@ -25,6 +25,10 @@ const validate = (values, phoneNumber) => {
     errors.username = 'No puede dejar vacío este campo'
   } else if (values.username.length < 3) {
     errors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
+  } else if (!/^[a-zA-Z0-9]+$/.test(values.username)) {
+    errors.username = 'El nombre de usuario solo puede contener letras y números (sin espacios ni caracteres especiales)'
+  } else if (values.username.length > 20) {
+    errors.username = 'El nombre de usuario no puede tener más de 20 caracteres'
   }
 
   if (!values.name) {
@@ -69,10 +73,9 @@ export default function SignUpForm ({ createUser }) {
 
   })
 
-  // TODO: Add a country code selector next to the phone number input
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
-      <h1 className='font-bold text-center text-2xl'>Registro</h1>
+      <h1 className='font-bold text-center text-2xl mb-2'>Registro</h1>
       <form onSubmit={formik.handleSubmit} className='flex flex-col gap-4'>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='email'>Email</label>

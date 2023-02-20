@@ -10,3 +10,37 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/api/users/
+
+###
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "username": "ismperort",
+  "password": "Ism&19032001"
+}
+
+###
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "username": "anotherUser",
+  "password": "123123123Ism&"
+}
+
+### IsmaelPerez_19 is about to follow pepitogrillo17
+PUT http://localhost:3000/api/users/pepitogrillo17
+Content-Type: application/json
+
+{
+  "username": "IsmaelPerez_19"
+}
+
+###
+PUT http://localhost:3000/api/users/pepitogrillo17
+Content-Type: application/json
+
+{
+  "username": "pepitogrillo17"
+}

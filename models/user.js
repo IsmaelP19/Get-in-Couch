@@ -36,7 +36,29 @@ const userSchema = new mongoose.Schema({
   isOwner: {
     type: Boolean,
     required: true
-  }
+  },
+  memberSince: {
+    type: Date,
+    default: Date.now
+  },
+  description: {
+    type: String
+  },
+  profilePicture: {
+    type: Buffer
+  },
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
+  followed: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ]
 
 })
 
@@ -50,7 +72,6 @@ userSchema.set('toJSON', {
     // the passwordHash should not be revealed
     delete returnedObject.passwordHash
     delete returnedObject.phoneNumber
-    delete returnedObject.birthDate
     delete returnedObject.email
   }
 })
