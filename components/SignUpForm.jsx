@@ -25,7 +25,7 @@ const validate = (values, phoneNumber) => {
     errors.username = 'No puede dejar vacío este campo'
   } else if (values.username.length < 3) {
     errors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
-  } else if (!/^[a-zA-Z0-9]+$/.test(values.username)) {
+  } else if (!/^[a-zA-Z0-9_&.]+$/.test(values.username)) {
     errors.username = 'El nombre de usuario solo puede contener letras y números (sin espacios ni caracteres especiales)'
   } else if (values.username.length > 20) {
     errors.username = 'El nombre de usuario no puede tener más de 20 caracteres'

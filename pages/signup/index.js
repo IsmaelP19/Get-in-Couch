@@ -12,7 +12,10 @@ export default function SignUp () {
   const createUser = (userObject) => {
     userService.create(userObject)
       .then(response => {
-        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 9000)
+        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 4000)
+        setTimeout(() => {
+          location.replace('/')
+        }, 4000)
       })
       .catch(error => {
         if (error.response.data.error.includes('`email` to be unique')) {
