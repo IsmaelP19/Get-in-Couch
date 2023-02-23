@@ -4,12 +4,12 @@ import NavbarLinks from './NavbarLinks'
 import Hamburger from './Hamburger'
 import userService from '../services/users'
 
-export default function Navbar() {
+export default function Navbar () {
   const [isOpen, setOpenDrawer] = useState(false)
   const [done, setDone] = useState(false)
   const [user, setUser] = useState(null)
 
-  async function getUser() {
+  async function getUser () {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
       const username = JSON.parse(loggedUser).username

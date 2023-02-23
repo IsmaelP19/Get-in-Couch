@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import LinkButton from './LinkButton'
 
-export default function NavbarLinks({ isOpen, user, setOpenDrawer }) {
+export default function NavbarLinks ({ isOpen, user, setOpenDrawer }) {
   const links = [
     { id: 1, name: 'Inmuebles', link: '/places' },
     { id: 2, name: 'Mapa', link: '/map' }

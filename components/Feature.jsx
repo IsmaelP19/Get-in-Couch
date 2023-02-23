@@ -1,4 +1,4 @@
-export default function Feature({ title, description, color }) {
+export default function Feature ({ title, description, color }) {
   return (
     <div className='flex items-center justify-center'>
       <div className='flex flex-col md:flex-row bg-gray-200 rounded-2xl my-5 w-8/12 items-center p-5'>
