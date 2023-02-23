@@ -10,10 +10,12 @@ export default function SignIn () {
   const loginUser = async (credentials) => {
     try {
       const user = await userService.login(credentials)
-      showMessage('Ha iniciado sesión correctamente', 'success', setMessage, 9000)
+      showMessage('Ha iniciado sesión correctamente 🙌', 'success', setMessage, 9000)
       setUser(user)
       localStorage.setItem('loggedUser', JSON.stringify(user))
-      location.replace('/')
+      setTimeout(() => {
+        location.replace('/')
+      }, 2000)
     } catch (error) {
       if (error.response.data.error.includes('invalid username or password')) {
         showMessage('Usuario o contraseña incorrectos', 'error', setMessage, 9000)

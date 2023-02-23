@@ -1,0 +1,38 @@
+POST http://localhost:3000/api/properties
+Content-Type: application/json
+
+{
+  "title": "Piso en alquiler en el centro de Madrid",
+  "description": "Piso en alquiler en el centro de Madrid, muy bien comunicado con el metro y autobuses",
+  "price": 1000,
+
+  "street": "Calle de la Princesa",
+  "city": "Madrid",
+  "country": "España",
+  "zipCode": "28008",
+  "coordinates": [40.423, -3.703],
+  
+  "propertyType": "Apartamento",
+  "propertySize": 40,
+  "numberOfBathrooms": 1,
+  "numberOfBedrooms": 3,
+  "floor": 2,
+  "furniture": "Amueblado",
+  "terrace": true,
+  "balcony": false,
+  "parking": "Sin parking",
+  "elevator": true,
+  "airConditioning": false,
+  "heating": false,
+  "petsAllowed": false,
+  "smokingAllowed": true,
+  
+
+  "owner": "63f1975aff912523d6589228"
+}
+
+
+###
+GET http://localhost:3000/api/properties/
+
+###
