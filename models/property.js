@@ -15,6 +15,8 @@ const propertySchema = new mongoose.Schema({
   },
   price: {
     type: Number,
+    // must be positive
+    min: 0,
     required: true
   },
   location: {
@@ -36,8 +38,20 @@ const propertySchema = new mongoose.Schema({
     },
     coordinates: { // [longitude, latitude], for the map section
       type: [Number],
-      unique: true
-      // non required for now, maybe we can add it with the geolocation API from Google Maps or even the browser
+      unique: true,
+      validate: {
+        validator: function (value) {
+          if (value.length !== 2) return false
+          const [lat, lon] = value
+          if (typeof lat !== 'number' || typeof lon !== 'number') return false
+          if (lat < -90 || lat > 90) return false // latitud fuera de rango
+          if (lon < -180 || lon > 180) return false // longitud fuera de rango
+          return true
+        },
+        message: props => 'must be a valid coordinates array [longitude, latitude]'
+      }
+
+      // maybe we can add it with the geolocation API from Google Maps or even the browser by default
     }
 
   },
@@ -51,14 +65,17 @@ const propertySchema = new mongoose.Schema({
     },
     propertySize: { // in square meters
       type: Number,
+      min: 1,
       required: true
     },
     numberOfBathrooms: {
       type: Number,
+      min: 1,
       required: true
     },
     numberOfBedrooms: {
       type: Number,
+      min: 1, // even a studio has at least one bedroom (the living room and all the rest)
       required: true
     },
     // isAvailable: {
@@ -110,9 +127,10 @@ const propertySchema = new mongoose.Schema({
 
   },
 
-  owner: {
+  owner: { // we cannot create a property without an owner
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   images: [
     {
@@ -153,7 +171,7 @@ const propertySchema = new mongoose.Schema({
 
 })
 
-propertySchema.index({ 'location.coordinates': '2dsphere' })
+propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
 
 propertySchema.index({ 'location.street': 1, 'location.city': 1, 'location.country': 1, 'location.zipCode': 1, 'location.coordinates': 1 }, { unique: true }) // not sure if this is the correct way to do it
 

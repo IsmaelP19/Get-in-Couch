@@ -2,7 +2,7 @@ import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
 import utils from '../utils/utils'
 
-export default function Home ({ registeredUsers, posts }) {
+export default function Home ({ registeredUsers, properties }) {
   return (
     <>
       <div className='flex flex-col w-full'>
@@ -12,7 +12,7 @@ export default function Home ({ registeredUsers, posts }) {
         </div>
         <div className='my-10'>
           <h1 className='text-2xl md:text-3xl font-bold text-center'>Lo que nos hace diferentes</h1>
-          <Feature title={`Actualmente contamos con ${posts} ofertas de inmuebles y ${registeredUsers} usuarios registrados`} description='¡Tienes más que suficiente para encontrar el sitio ideal para compartir!' color='#047857' />
+          <Feature title={`Actualmente contamos con ${properties} ofertas de inmuebles y ${registeredUsers} usuarios registrados`} description='¡Tienes más que suficiente para encontrar el sitio ideal para compartir!' color='#047857' />
           <Feature title='Registro rápido' description='En tan solo unos minutos podrás utilizar Get in Couch al completo.' color='#0e7490' />
           <Feature title='Estadísticas' description='Podrás visualizar las estadísticas de cada usuario para determinar si es tu compañero ideal o no. Además, pasado un mes de estancia con tus compañeros, podrás votarlos sobre diferentes aspectos. Pero relax, que esto no es Gran Hermano 😉' color='#4338ca' />
           <Feature title='Mensajería' description='Podrás chatear con cualquier persona de forma instantánea. ¡Es la oportunidad perfecta para un primer encuentro!' color='#7e22ce' />
@@ -34,10 +34,10 @@ export async function getServerSideProps (context) {
   const registeredUsers = await fetch(`${process.env.API_URL}/users`)
   const registeredUsersJson = await registeredUsers.json()
 
-  // const posts = await fetch(`${process.env.API_URL}/posts`)
-  // const postsJson = await posts.json()
+  const properties = await fetch(`${process.env.API_URL}/properties`)
+  const propertiesJSON = await properties.json()
 
   return {
-    props: { registeredUsers: registeredUsersJson.length, posts: 10, title: 'Inicio' }
+    props: { registeredUsers: registeredUsersJson.length, properties: propertiesJSON.length, title: 'Inicio' }
   }
 }

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import User from '../../models/user'
-import usersRouter from '../../pages/api/users/index'
-import usersUsernameRouter from '../../pages/api/users/[username]'
+import User from '../../../models/user'
+import usersRouter from '../../../pages/api/users/index'
+import usersUsernameRouter from '../../../pages/api/users/[username]'
 
 const usersInDb = async () => {
   const users = await User.find({})

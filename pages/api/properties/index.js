@@ -43,8 +43,8 @@ export default async function propertiesRouter (req, res) {
           images: body.images
         })
 
-        const savedProperty = await property.save()
-        res.status(201).json(savedProperty)
+        await property.save()
+        res.status(201).json({ message: 'property succesfully created' })
       } catch (error) {
         errorHandler(error, req, res)
       }

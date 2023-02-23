@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import User from '../../models/user'
-import usersRouter from '../../pages/api/users/index'
-import loginRouter from '../../pages/api/login/index'
+import User from '../../../models/user'
+import usersRouter from '../../../pages/api/users/index'
+import loginRouter from '../../../pages/api/login/index'
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
