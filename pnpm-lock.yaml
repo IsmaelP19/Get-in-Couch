@@ -5,30 +5,30 @@ specifiers:
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/react': 13.4.0
   autoprefixer: 10.4.13
-  axios: ^1.3.3
+  axios: ^1.3.4
   bcrypt: 5.1.0
   cross-env: 7.0.3
   dotenv: 16.0.3
   eslint: 8.31.0
   eslint-config-next: 13.1.1
-  formik: ^2.2.9
+  formik: 2.2.9
   jest: 29.4.0
   jest-environment-jsdom: 29.4.0
-  jsonwebtoken: ^9.0.0
+  jsonwebtoken: 9.0.0
   mongoose: 6.8.4
   mongoose-unique-validator: 3.1.0
   next: 13.1.1
-  next-seo: ^5.15.0
+  next-seo: 5.15.0
   postcss: 8.4.21
   react: 18.2.0
   react-dom: 18.2.0
-  react-phone-number-input: ^3.2.19
+  react-phone-number-input: 3.2.19
   standard: 17.0.0
   tailwindcss: 3.2.4
 
 dependencies:
   '@next/font': 13.1.1
-  axios: 1.3.3
+  axios: 1.3.4
   bcrypt: 5.1.0
   dotenv: 16.0.3
   eslint: 8.31.0
@@ -2180,8 +2180,8 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /axios/1.3.3:
-    resolution: {integrity: sha512-eYq77dYIFS77AQlhzEL937yUBSepBfPIe8FcgEDN35vMNZKMrs81pgnyrQpwfy4NF4b4XWX1Zgx7yX+25w8QJA==}
+  /axios/1.3.4:
+    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -2315,7 +2315,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001457
-      electron-to-chromium: 1.4.305
+      electron-to-chromium: 1.4.307
       node-releases: 2.0.10
       update-browserslist-db: 1.0.10_browserslist@4.21.5
     dev: true
@@ -2734,8 +2734,8 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
-  /electron-to-chromium/1.4.305:
-    resolution: {integrity: sha512-WETy6tG0CT5gm1O+xCbyapWNsCcmIvrn4NHViIGYo2AT8FV2qUCXdaB+WqYxSv/vS5mFqhBYnfZAAkVArjBmUg==}
+  /electron-to-chromium/1.4.307:
+    resolution: {integrity: sha512-n54V0t4LyHM2oQiAOmD3qC2peB+orUktXORSnWxqtv3uEMSoUcsq+hoMpU08VEJCNbfgBtzy169P0TcrLuq53A==}
     dev: true
 
   /emittery/0.13.1:
