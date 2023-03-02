@@ -1,6 +1,3 @@
-
-// import Feature from '../components/Feature'
-// import InfoCard from '../components/InfoCard'
 import SignUpForm from '../../components/SignUpForm'
 import { useState } from 'react'
 import userService from '../../services/users'

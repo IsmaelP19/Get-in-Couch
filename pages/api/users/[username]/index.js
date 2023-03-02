@@ -18,10 +18,10 @@ export default async function usersUsernameRouter (req, res) {
     } else if (req.method === 'GET') {
       let user = await User.findOne({ username })
 
-      if (process.env.NODE_ENV === 'test') {
+      if (user && process.env.NODE_ENV === 'test') {
         // passwordHash is removed with the transform function of the model
         // but it is still returned in the response of the mock on tests
-        if (user) user = user.toJSON()
+        user = user.toJSON()
       }
 
       user ? res.json(user) : res.status(404).json({ error: 'user not found' })
@@ -32,6 +32,8 @@ export default async function usersUsernameRouter (req, res) {
         // but it is still returned in the response of the mock on tests
         user = user.toJSON()
       }
+      // TODO: add account info update with auth (only the owner of the account can update it)
+
       // we have to add the follower
       if (user) {
         const newFollowerUsername = req.body.username
