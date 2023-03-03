@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function PropertyCard ({ property }) {
+export default function PropertyCard ({ property, style }) {
   const { id, title, price, location, features, images, tenants } = property
 
   let img
@@ -14,12 +14,14 @@ export default function PropertyCard ({ property }) {
   const status = freeRooms > 0 ? 'Disponible' : 'Ocupado'
 
   const cardTitle = location.street.split(',')[0]
+  const cardSubtitle = location.town ? location.town + ', ' + location.city : location.city
 
   return (
-    <div key={id} className='flex flex-col border-2 w-[300px] items-center gap-4 pb-5 border-black rounded-3xl '>
+    <div key={id} className={`flex flex-col border-2 w-[300px] items-center gap-4 pb-5 border-black rounded-3xl ${style}`}>
       <Image src={img} alt={title} width={300} height={200} className='object-cover rounded-t-3xl ' />
 
       <h2 className='font-bold text-center '>{cardTitle}</h2>
+      <h3 className='italic'> {cardSubtitle} </h3>
       <span>{freeRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
       <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
       <div className='flex w-full items-center justify-around'>

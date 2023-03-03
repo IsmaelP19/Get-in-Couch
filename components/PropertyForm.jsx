@@ -11,6 +11,7 @@ export default function PropertyForm ({ createProperty }) {
       description: '',
       price: '',
       street: '',
+      town: '',
       city: '',
       country: '',
       zipCode: '',

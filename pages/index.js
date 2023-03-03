@@ -38,6 +38,6 @@ export async function getServerSideProps (context) {
   const propertiesJSON = await properties.json()
 
   return {
-    props: { registeredUsers: registeredUsersJson.length, properties: propertiesJSON.length, title: 'Inicio' }
+    props: { registeredUsers: registeredUsersJson.length || 0, properties: propertiesJSON.length || 0, title: 'Inicio' }
   }
 }

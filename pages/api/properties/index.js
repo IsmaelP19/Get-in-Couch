@@ -22,6 +22,7 @@ export default async function propertiesRouter (req, res) {
         let { street } = body
         let { city } = body
         let { country } = body
+        let { town } = body || null
 
         const requiredFields = ['street', 'city', 'country', 'zipCode']
         const missingFields = requiredFields.reduce((acc, field) => {
@@ -40,7 +41,12 @@ export default async function propertiesRouter (req, res) {
         let coordinates = { latitude: 0, longitude: 0 }
 
         if (process.env.NODE_ENV !== 'test') {
-          coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
+          if (town !== null) {
+            town = town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${town}, ${city}, ${country}`)
+          } else {
+            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
+          }
         }
 
         const property = new Property({
@@ -49,6 +55,7 @@ export default async function propertiesRouter (req, res) {
           price: body.price,
           location: {
             street,
+            town,
             city,
             country,
             zipCode: body.zipCode,
@@ -104,7 +111,7 @@ export default async function propertiesRouter (req, res) {
         return res.status(404).json({ message: 'no properties found' })
       }
 
-      return res.status(200).json(propertiesToReturn)
+      return res.status(200).json({ properties: propertiesToReturn, message: 'properties succesfully retrieved' })
     }
   } catch (error) {
     errorHandler(error, req, res)
