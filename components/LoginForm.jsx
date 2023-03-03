@@ -24,7 +24,8 @@ export default function LoginForm ({ user, setUser, setMessage, loginUser }) {
     onSubmit: values => {
       loginUser(values)
     },
-    validate
+    validate,
+    validateOnBlur: true
 
   })
 

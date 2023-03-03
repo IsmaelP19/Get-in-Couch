@@ -36,22 +36,22 @@ const propertySchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    coordinates: { // [longitude, latitude], for the map section
-      type: [Number],
-      unique: true,
-      validate: {
-        validator: function (value) {
-          if (value.length !== 2) return false
-          const [lat, lon] = value
-          if (typeof lat !== 'number' || typeof lon !== 'number') return false
-          if (lat < -90 || lat > 90) return false // latitud fuera de rango
-          if (lon < -180 || lon > 180) return false // longitud fuera de rango
-          return true
-        },
-        message: props => 'must be a valid coordinates array [longitude, latitude]'
-      }
+    coordinates: { // [latitude, longitude], for the map section
+      type: [Number]
+      // sparse: true,
+      // validate: {
+      //   validator: function (value) {
+      //     if (!value) return true // we don't want to validate if the coordinates are not provided
+      //     if (value.length !== 2) return false
+      //     const [lat, lon] = value
+      //     if (typeof lat !== 'number' || typeof lon !== 'number') return false
+      //     if (lat < -90 || lat > 90) return false // latitud fuera de rango
+      //     if (lon < -180 || lon > 180) return false // longitud fuera de rango
+      //     return true
+      //   },
+      //   message: props => 'must be a valid coordinates array [latitude, longitude]'
+      // }
 
-      // maybe we can add it with the geolocation API from Google Maps or even the browser by default
     }
 
   },
@@ -78,10 +78,7 @@ const propertySchema = new mongoose.Schema({
       min: 1, // even a studio has at least one bedroom (the living room and all the rest)
       required: true
     },
-    // isAvailable: {
-    //   type: Boolean,
-    //   required: true
-    // },
+
     floor: {
       type: Number
     },
@@ -163,17 +160,13 @@ const propertySchema = new mongoose.Schema({
       ref: 'User'
     }
   ]
-  // isFullyRented: { // maybe this is not necessary, we can check if the tenants array is empty or not
-  //   // we can use this to show if the property is at full capacity or not
-  //   type: Boolean,
-  //   default: false
-  // }
 
 })
 
-propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
+// propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
+propertySchema.index({ 'location.street': 1, 'location.city': 1, 'location.country': 1, 'location.zipCode': 1 }, { unique: true }) // not sure if this is the correct way to do it
 
-propertySchema.index({ 'location.street': 1, 'location.city': 1, 'location.country': 1, 'location.zipCode': 1, 'location.coordinates': 1 }, { unique: true }) // not sure if this is the correct way to do it
+// the coordinates are ESTIMATE, so they are not unique, we cannot check if the complete address is unique because of data privacy (we don't want to store the exact address of the property)
 
 propertySchema.plugin(uniqueValidator)
 
@@ -182,7 +175,6 @@ propertySchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-    delete returnedObject.location.coordinates
   }
 })
 

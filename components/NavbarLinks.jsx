@@ -3,7 +3,7 @@ import LinkButton from './LinkButton'
 
 export default function NavbarLinks ({ isOpen, user, setOpenDrawer }) {
   const links = [
-    { id: 1, name: 'Inmuebles', link: '/places' },
+    { id: 1, name: 'Inmuebles', link: '/properties' },
     { id: 2, name: 'Mapa', link: '/map' }
   ]
   const handleClick = () => {

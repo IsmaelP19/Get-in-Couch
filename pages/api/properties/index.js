@@ -1,6 +1,16 @@
 import Property from '../../../models/property'
 import { errorHandler, createConnection } from '../../../utils/utils'
 
+async function getCoordinatesFromAddress (address) {
+  const API_KEY = process.env.POSITIONSTACK_API_KEY
+  const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
+  const response = await fetch(url)
+  const data = await response.json()
+  const latitude = data.data[0].latitude
+  const longitude = data.data[0].longitude
+  return { latitude, longitude }
+}
+
 export default async function propertiesRouter (req, res) {
   try {
     process.env.NODE_ENV !== 'test' && await createConnection()
@@ -9,16 +19,40 @@ export default async function propertiesRouter (req, res) {
       const body = req.body
 
       try {
+        let { street } = body
+        let { city } = body
+        let { country } = body
+
+        const requiredFields = ['street', 'city', 'country', 'zipCode']
+        const missingFields = requiredFields.reduce((acc, field) => {
+          if (!body[field]) acc.push(field)
+          return acc
+        }, [])
+        if (missingFields.length > 0) {
+          const message = `${missingFields.join(', ')} ` + `${missingFields.length > 1 ? 'are' : 'is'} required`
+          return res.status(400).json({ error: message })
+        } else {
+          street = street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          city = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          country = country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        }
+
+        let coordinates = { latitude: 0, longitude: 0 }
+
+        if (process.env.NODE_ENV !== 'test') {
+          coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
+        }
+
         const property = new Property({
           title: body.title,
           description: body.description,
           price: body.price,
           location: {
-            street: body.street,
-            city: body.city,
-            country: body.country,
+            street,
+            city,
+            country,
             zipCode: body.zipCode,
-            coordinates: body.coordinates
+            coordinates: [coordinates.latitude, coordinates.longitude]
           },
           features: {
             propertyType: body.propertyType,
@@ -44,20 +78,33 @@ export default async function propertiesRouter (req, res) {
         })
 
         await property.save()
-        res.status(201).json({ message: 'property succesfully created' })
+        const jsonContent = { message: 'property succesfully created', id: property._id }
+        if (process.env.NODE_ENV === 'test') {
+          delete jsonContent.id
+        }
+        return res.status(201).json({ ...jsonContent })
       } catch (error) {
-        errorHandler(error, req, res)
+        return res.status(400).json({ error: error.message })
       }
     } else if (req.method === 'GET') {
-      let properties
+      let properties = await Property.find({})
       if (process.env.NODE_ENV === 'test') {
         // passwordHash is removed with the transform function of the model
         // but it is still returned in the response of the mock on tests
-        properties = await (await Property.find({})).map(property => property.toJSON())
-      } else {
-        properties = await Property.find({})
+        properties = properties.map(property => property.toJSON())
       }
-      res.status(200).json(properties)
+
+      const page = req.query.page ? parseInt(req.query.page) : 1
+      const startIndex = (page - 1) * 10
+      const endIndex = startIndex + 10
+      const propertiesToReturn = properties.slice(startIndex, endIndex)
+
+      // if there are no properties to return, redirect to 404
+      if (propertiesToReturn.length === 0) {
+        return res.status(404).json({ message: 'no properties found' })
+      }
+
+      return res.status(200).json(propertiesToReturn)
     }
   } catch (error) {
     errorHandler(error, req, res)

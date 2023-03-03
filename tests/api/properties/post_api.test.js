@@ -23,7 +23,6 @@ const newProperty = {
   city: 'Test city',
   country: 'Test country',
   zipCode: '41510',
-  coordinates: [0, 0],
 
   propertyType: 'Apartamento',
   propertySize: 100,
@@ -58,7 +57,7 @@ beforeAll(async () => {
     name: 'test',
     surname: 'test',
     phoneNumber: '123123124',
-    isOwner: false
+    isOwner: true
   }
   const req = {
     method: 'POST',
@@ -167,7 +166,7 @@ describe('POST: When there is some attribute missing', () => {
     await propertiesRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.street: Path `location.street` is required.' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'street is required' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -183,7 +182,7 @@ describe('POST: When there is some attribute missing', () => {
     await propertiesRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.city: Path `location.city` is required.' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'city is required' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -199,7 +198,7 @@ describe('POST: When there is some attribute missing', () => {
     await propertiesRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.country: Path `location.country` is required.' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'country is required' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -215,7 +214,7 @@ describe('POST: When there is some attribute missing', () => {
     await propertiesRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.zipCode: Path `location.zipCode` is required.' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'zipCode is required' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -438,42 +437,11 @@ describe('POST: When there is some invalid values', () => {
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
   })
 
-  test('Creation fails with invalid coordinates', async () => {
-    const propertiesAtStart = await propertiesInDb()
-    expect(propertiesAtStart).toHaveLength(0)
-
-    newProperty.price = 100
-    newProperty.coordinates = 'Invalid coordinates' // Must be an array of 2 numbers
-
-    await propertiesRouter(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.coordinates.0: Cast to [Number] failed for value "[ \'Invalid coordinates\' ]" (type string) at path "location.coordinates.0" because of "CastError"' })
-
-    const propertiesAtEnd = await propertiesInDb()
-    expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
-  })
-
-  test('Creation fails with invalid coordinates (not real coordinates)', async () => {
-    const propertiesAtStart = await propertiesInDb()
-    expect(propertiesAtStart).toHaveLength(0)
-
-    newProperty.coordinates = [100, 100] // Must be real coordinates
-
-    await propertiesRouter(req, res)
-
-    expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: location.coordinates: must be a valid coordinates array [longitude, latitude]' })
-
-    const propertiesAtEnd = await propertiesInDb()
-    expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
-  })
-
   test('Creation fails with invalid propertyType', async () => {
     const propertiesAtStart = await propertiesInDb()
     expect(propertiesAtStart).toHaveLength(0)
 
-    newProperty.coordinates = [40.416775, -3.703790]
+    newProperty.price = 800
     newProperty.propertyType = 'Piso' // Must be a valid property type (Apartamento, Casa, Villa o Estudio)
 
     await propertiesRouter(req, res)
