@@ -33,8 +33,20 @@ const Street = ({ formik }) => {
   return (
     <div className='flex flex-col gap-y-1'>
       <label htmlFor='street'>Dirección</label>
-      <input type='text' name='street' id='street' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.street} className='border border-solid border-slate-600' placeholder='Avda. Reina Mercedes, 19(A) Es:A Pl:06 Pt:03' />
+      <input type='text' name='street' id='street' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.street} className='border border-solid border-slate-600' placeholder='Plaza Antonio Mairena, 19(A) Es:A Pl:06 Pt:03' />
       {formik.touched.street && formik.errors.street ? <div className='text-red-600'>{formik.errors.street}</div> : null}
+    </div>
+  )
+}
+const Town = ({ formik }) => {
+  return (
+    <div className='flex flex-col gap-y-1'>
+
+      <label htmlFor='town'>Población</label>
+      <span className=' text-blue-800'>En caso de que el inmueble se encuentre en una ciudad, deja vacío este campo</span>
+
+      <input type='text' name='town' id='town' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.town} className='border border-solid border-slate-600' placeholder='Mairena del Alcor' />
+      {formik.touched.town && formik.errors.town ? <div className='text-red-600'>{formik.errors.town}</div> : null}
     </div>
   )
 }
@@ -42,7 +54,7 @@ const Street = ({ formik }) => {
 const City = ({ formik }) => {
   return (
     <div className='flex flex-col gap-y-1'>
-      <label htmlFor='city'>Población / Ciudad</label>
+      <label htmlFor='city'>Ciudad</label>
       <input type='text' name='city' id='city' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.city} className='border border-solid border-slate-600' placeholder='Sevilla' />
       {formik.touched.city && formik.errors.city ? <div className='text-red-600'>{formik.errors.city}</div> : null}
     </div>
@@ -63,7 +75,7 @@ const ZipCode = ({ formik }) => {
   return (
     <div className='flex flex-col gap-y-1 '>
       <label htmlFor='zipCode'>Código postal</label>
-      <input type='text' name='zipCode' id='zipCode' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.zipCode} className='border border-solid border-slate-600 w-52' placeholder='41012' />
+      <input type='text' name='zipCode' id='zipCode' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.zipCode} className='border border-solid border-slate-600 w-52' placeholder='41510' />
       {formik.touched.zipCode && formik.errors.zipCode ? <div className='text-red-600'>{formik.errors.zipCode}</div> : null}
     </div>
   )
@@ -188,8 +200,9 @@ const Location = ({ formik }) => {
   return (
     <>
       <h1 className='font-bold text-center text-xl md:text-3xl mb-2'>Ubicación</h1>
-      <span className='text-center bg-green-100 font-bold px-4 py-2'>Importante: introduce también el número de domicilio. Esto no será visible en la oferta pero nos ayudará a detectar anuncios duplicados. Separa el número de la dirección con una ","</span>
+      <span className='text-center bg-green-100 font-bold px-4 py-2 border-2 border-green-600'>Importante: introduce también el número de domicilio. Esto no será visible en la oferta pero nos ayudará a detectar anuncios duplicados. Separa el número de la dirección con una ","</span>
       <Street formik={formik} />
+      <Town formik={formik} />
       <City formik={formik} />
       <Country formik={formik} />
       <ZipCode formik={formik} />

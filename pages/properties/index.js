@@ -19,7 +19,6 @@ export default function Catalogue ({ properties }) {
   useEffect(() => {
     getUser()
   }, [])
-
   return (
     <div className='w-full flex flex-col'>
       <h1 className='p-10 font-bold text-3xl text-center'>Inmuebles</h1>
@@ -35,11 +34,13 @@ export default function Catalogue ({ properties }) {
       )}
 
       <div className='flex items-center justify-center row gap-40 m-10 flex-wrap'>
-        {properties.map(property => (
-          <Link href={`/properties/${property.id}`} key={property.id}>
-            <PropertyCard key={property.id} property={property} />
-          </Link>
-        ))}
+        {properties.message === 'properties succesfully retrieved'
+          ? (properties.properties.map(property => (
+            <Link href={`/properties/${property.id}`} key={property.id}>
+              <PropertyCard key={property.id} property={property} />
+            </Link>
+            )))
+          : (<h1 className='text-2xl font-bold text-center'>No hay inmuebles disponibles</h1>)}
 
       </div>
 
@@ -53,12 +54,12 @@ export async function getServerSideProps (context) {
   const url = `${process.env.API_URL}/properties/?page=${page}`
   const response = await fetch(url)
 
-  // if the response status is 404, redirect to 404 page
-  if (response.status === 404) {
-    return {
-      notFound: true
-    }
-  }
+  // // if the response status is 404, redirect to 404 page
+  // if (response.status === 404) {
+  //   return {
+  //     notFound: true
+  //   }
+  // }
 
   const properties = await response.json()
 

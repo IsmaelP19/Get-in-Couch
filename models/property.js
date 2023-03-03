@@ -6,7 +6,8 @@ const propertySchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    minLength: 3
+    minLength: 3,
+    maxLength: 50
   },
   description: { // the description the owner enters when creating the property
     type: String,
@@ -23,6 +24,9 @@ const propertySchema = new mongoose.Schema({
     street: {
       type: String,
       required: true
+    },
+    town: {
+      type: String
     },
     city: {
       type: String,
