@@ -1,6 +1,7 @@
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
 import utils from '../utils/utils'
+// import axios from 'axios'
 
 export default function Home ({ registeredUsers, properties }) {
   return (
@@ -38,6 +39,6 @@ export async function getServerSideProps (context) {
   const propertiesJSON = await properties.json()
 
   return {
-    props: { registeredUsers: registeredUsersJson.length || 0, properties: propertiesJSON.length || 0, title: 'Inicio' }
+    props: { registeredUsers: registeredUsersJson.length || 0, properties: propertiesJSON.total, title: 'Inicio' }
   }
 }

@@ -101,17 +101,16 @@ export default async function propertiesRouter (req, res) {
         properties = properties.map(property => property.toJSON())
       }
 
-      const page = req.query.page ? parseInt(req.query.page) : 1
+      const page = req.query.page ? parseInt(req.query.page) : 1 // default page is 1
       const startIndex = (page - 1) * 10
       const endIndex = startIndex + 10
       const propertiesToReturn = properties.slice(startIndex, endIndex)
 
       // if there are no properties to return, redirect to 404
       if (propertiesToReturn.length === 0) {
-        return res.status(404).json({ message: 'no properties found' })
+        return res.status(404).json({ message: 'no properties found', total: properties.length })
       }
-
-      return res.status(200).json({ properties: propertiesToReturn, message: 'properties succesfully retrieved' })
+      return res.status(200).json({ properties: propertiesToReturn, message: 'properties succesfully retrieved', total: properties.length })
     }
   } catch (error) {
     errorHandler(error, req, res)
