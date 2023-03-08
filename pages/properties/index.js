@@ -51,15 +51,8 @@ export default function Catalogue ({ properties }) {
 // maybe getting the properties from serverside props it's better than using useEffect
 export async function getServerSideProps (context) {
   const page = context.query.page || 1
-  const url = `${process.env.API_URL}/properties/?page=${page}`
+  const url = `${process.env.API_URL}/properties?page=${page}`
   const response = await fetch(url)
-
-  // // if the response status is 404, redirect to 404 page
-  // if (response.status === 404) {
-  //   return {
-  //     notFound: true
-  //   }
-  // }
 
   const properties = await response.json()
 
