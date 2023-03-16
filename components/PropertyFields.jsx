@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 /* eslint-disable no-extra-boolean-cast */
 
 const Title = ({ formik }) => {
@@ -211,7 +213,6 @@ const Location = ({ formik }) => {
 }
 
 const Features = ({ formik }) => {
-  // FIXME: not spreading errores from the formik object to the fields
   return (
     <>
       <h1 className='font-bold text-center text-xl mb-2'>Características</h1>
@@ -223,6 +224,138 @@ const Features = ({ formik }) => {
       <Parking formik={formik} />
       <AirConditioning formik={formik} />
       <Heating formik={formik} />
+    </>
+  )
+}
+
+const ImageUploader = ({ formik }) => {
+  const [images, setImages] = useState([])
+  const [showDelete, setShowDelete] = useState(null)
+  const [deleteIndex, setDeleteIndex] = useState(null)
+
+  const handleDelete = (index) => {
+    setDeleteIndex(index)
+  }
+
+  const handleConfirmDelete = () => {
+    const images = formik.values.images
+    images.splice(deleteIndex, 1)
+    formik.setFieldValue('images', images)
+    setImages(images) // this is not updating the content of the input type file
+
+    setShowDelete(null)
+    setDeleteIndex(null)
+  }
+
+  function handleChange (event) {
+    const files = event.target.files
+
+    Promise.all(
+      [...files].map((file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader()
+          reader.onload = function (e) {
+            const img = new Image()
+            img.onload = function () { // compressing the image
+              const canvas = document.createElement('canvas')
+              const MAX_WIDTH = 800
+              const MAX_HEIGHT = 600
+              let width = img.width
+              let height = img.height
+
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width
+                width = MAX_WIDTH
+              }
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height
+                height = MAX_HEIGHT
+              }
+
+              canvas.width = width
+              canvas.height = height
+              const ctx = canvas.getContext('2d')
+              ctx.drawImage(img, 0, 0, width, height)
+
+              const base64Image = canvas.toDataURL('image/jpeg', 0.8)
+
+              resolve(base64Image)
+            }
+            img.src = e.target.result
+          }
+          reader.readAsDataURL(file)
+        })
+      })
+    ).then((base64Images) => {
+      formik.setFieldValue('images', [...formik.values.images, ...base64Images])
+      setImages([...images, ...base64Images])
+    })
+  }
+
+  return (
+    <div className='flex flex-col gap-y-2'>
+      <div className='flex justify-center md:justify-start'>
+        <label htmlFor='images' className='bg-slate-200 text-center px-2 py-1 border-gray-600 border-2 font-bold active:bg-blue-400'>Selecciona una o más imagénes</label>
+        <input type='file' name='images' id='images' onChange={handleChange} className='hidden' multiple accept='image/*' title=' ' />
+      </div>
+
+      {images.length > 0 && (
+
+        <div>
+          <div>
+            <p className='italic font-bold m-2'>Si desea eliminar alguna imagen, pulse sobre alguna de ellas y le aparecerá el símbolo "X".</p>
+          </div>
+          <div className='flex flex-wrap gap-2'>
+            {images.map((image, index) => (
+              <div
+                key={index}
+                className='relative'
+                onMouseEnter={() => {
+                  if (deleteIndex === null) {
+                    setShowDelete(index)
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (deleteIndex === null) {
+                    setShowDelete(null)
+                  }
+                }}
+              >
+                <img src={image} alt={`imagen ${index}`} className='w-32 h-32 object-cover' />
+
+                {deleteIndex === null && showDelete === index && (
+                  <button
+                    className='absolute top-0 right-0 bg-red-500 rounded-full text-white font-bold text-xs w-6 h-6 flex items-center justify-center'
+                    onClick={() => handleDelete(index)}
+                  >
+                    X
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {deleteIndex !== null && (
+        <div className='flex flex-col mt-4'>
+          <p className='font-bold'>¿Está seguro?</p>
+          <div className='flex justify-around'>
+            <button className='bg-red-400 border-2 border-black hover:bg-red-600 hover:text-white hover:border-red-400 p-3 rounded-full' onClick={handleConfirmDelete}>Eliminar</button>
+            <button className='bg-green-300 border-2 border-black hover:bg-green-600 hover:text-white hover:border-green-300 p-3 rounded-full' onClick={() => setDeleteIndex(null)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+}
+
+const Images = ({ formik }) => {
+  return (
+    <>
+      <h1 className='font-bold text-center text-xl mb-2'>Añade ahora las imágenes</h1>
+      <ImageUploader formik={formik} />
     </>
   )
 }
@@ -368,7 +501,7 @@ const Navigation = ({ step, setStep, fieldGroups, formik }) => {
       {
         step === fieldGroups.length - 1 &&
           <div className='flex items-center justify-center'>
-            <button type='submit' className='bg-slate-700 hover:bg-green-300 hover:border-black text-white hover:text-black py-2 px-6 rounded-full duration-200 border-2 border-gray-200 font-bold w-60 '>Publicar anuncio</button>
+            <button type='submit' className='bg-slate-700 hover:bg-green-300 hover:border-black text-white hover:text-black py-2 px-6 rounded-full duration-200 border-2 border-gray-200 font-bold w-50 md:w-60 '>Publicar anuncio</button>
           </div>
       }
     </div>
@@ -380,6 +513,7 @@ module.exports = {
   BasicInfo,
   Location,
   Features,
+  Images,
   Navigation,
   validate
 }

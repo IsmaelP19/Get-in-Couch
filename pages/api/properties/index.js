@@ -23,6 +23,7 @@ export default async function propertiesRouter (req, res) {
         let { city } = body
         let { country } = body
         let { town } = body || null
+        const { images } = body || null
 
         const requiredFields = ['street', 'city', 'country', 'zipCode']
         const missingFields = requiredFields.reduce((acc, field) => {
@@ -48,6 +49,8 @@ export default async function propertiesRouter (req, res) {
             coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
           }
         }
+
+        // convert images to base64 format so we can store them in the database
 
         const property = new Property({
           title: body.title,
@@ -81,7 +84,7 @@ export default async function propertiesRouter (req, res) {
             smokingAllowed: body.smokingAllowed || null
           },
           owner: body.owner,
-          images: body.images
+          images
         })
 
         await property.save()

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import userService from '../../services/users'
 
-export default function Catalogue ({ properties }) {
+export default function Catalogue ({ properties, title }) {
   const [user, setUser] = useState(null)
 
   // if the logged user is an owner, a button to create a property will be shown
@@ -25,7 +25,7 @@ export default function Catalogue ({ properties }) {
 
       {user && user.isOwner && (
         <div className='w-full flex items-center justify-center'>
-          <Link href='/properties/create'>
+          <Link href='/properties/new'>
             <button className='bg-green-400  hover:bg-green-800 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg'>
               Crear nuevo anuncio
             </button>
@@ -37,7 +37,7 @@ export default function Catalogue ({ properties }) {
         {properties.message === 'properties succesfully retrieved'
           ? (properties.properties.map(property => (
             <Link href={`/properties/${property.id}`} key={property.id}>
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} title={title} />
             </Link>
             )))
           : (<h1 className='text-2xl font-bold text-center'>No hay inmuebles disponibles</h1>)}

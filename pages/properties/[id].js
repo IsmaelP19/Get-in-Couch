@@ -1,4 +1,5 @@
 import PropertyCard from '../../components/PropertyCard'
+import Tag from '../../components/Tag'
 
 export default function PropertyDetails ({ property }) {
   return (
@@ -12,23 +13,25 @@ export default function PropertyDetails ({ property }) {
           <p className='text-xl'>{property.description}</p>
 
           <span className='text-xl font-bold w-full pt-4'>Características:</span>
-          <div className='flex flex-wrap divide-y gap-y-4 w-full'>
-            <span className='text-xl w-1/2 self-start'>{property.features.propertyType}</span>
-            <span className='text-xl w-1/2 self-start'>{property.features.propertySize} m<super>2</super></span>
-            <span className='text-xl w-1/2 self-start'>{property.features.numberOfBedrooms} habitaciones</span>
-            <span className='text-xl w-1/2 self-start'>{property.features.numberOfBathrooms} baños</span>
-            <span className='text-xl w-1/2 self-start'>{property.features.parking}</span>
-            {property.features.floor && <span className='text-xl w-1/2'>Planta {property.features.floor}</span>}
-            {property.features.elevator && <span className='text-xl w-1/2'>Ascensor</span>}
-            <span className='text-xl w-1/2'>Aire acondicionado</span>
-            <span className='text-xl w-1/2'>Calefacción</span>
-            <span className='text-xl w-1/2'>{property.features.furniture}</span>
-            {property.features.terrace && <span className='text-xl w-1/2'>Terraza</span>}
-            {property.features.balcony && <span className='text-xl w-1/2'>Balcón</span>}
-            {property.features.swimmingPool && <span className='text-xl w-1/2'>Piscina</span>}
-            {property.features.garden && <span className='text-xl w-1/2'>Jardín</span>}
-            {property.features.petsAllowed && <span className='text-xl w-1/2'>Se admiten mascotas</span>}
-            {property.features.smokingAllowed && <span className='text-xl w-1/2'>Se permite fumar</span>}
+          <div className='flex flex-row flex-wrap  gap-6 '>
+            <Tag text={property.features.propertyType} />
+            <Tag text={property.features.propertySize + ' m2'} />
+            <Tag text={property.features.numberOfBedrooms + ' habitaciones'} />
+            <Tag text={property.features.numberOfBathrooms + ' baños'} />
+            <Tag text={property.features.parking} />
+
+            {property.features.floor && <Tag text={'Planta ' + property.features.floor} />}
+            {property.features.elevator && <Tag text='Ascensor' />}
+            <Tag text='Aire acondicionado' />
+            <Tag text='Calefacción' />
+            <Tag text={property.features.furniture} />
+
+            {property.features.terrace && <Tag text='Terraza' />}
+            {property.features.balcony && <Tag text='Balcón' />}
+            {property.features.swimmingPool && <Tag text='Piscina' />}
+            {property.features.garden && <Tag text='Jardín' />}
+            {property.features.petsAllowed && <Tag text='Se admiten mascotas' />}
+            {property.features.smokingAllowed && <Tag text='Se permite fumar' />}
 
           </div>
         </div>

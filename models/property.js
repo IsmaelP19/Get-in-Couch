@@ -135,7 +135,7 @@ const propertySchema = new mongoose.Schema({
   },
   images: [
     {
-      type: Buffer
+      type: String
     }
   ],
   publishDate: {
