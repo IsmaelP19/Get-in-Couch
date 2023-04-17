@@ -1,19 +1,23 @@
 import Gallery from '../../components/Gallery'
 import PropertyCard from '../../components/PropertyCard'
 import Tag from '../../components/Tag'
+import { useState } from 'react'
 
 export default function PropertyDetails ({ property }) {
+  const [showText, setShowText] = useState('Ver más imágenes')
   const handleShowGallery = () => {
     const gallery = document.querySelector('#gallery')
     // the gallery is not visible, so we change the display of it to flex
     if (gallery.classList.contains('hidden')) {
       gallery.classList.remove('hidden')
       gallery.classList.add('flex')
+      setShowText('Ocultar imágenes')
       // we scroll to the gallery
       gallery.scrollIntoView({ behavior: 'smooth' })
     } else {
       gallery.classList.remove('flex')
       gallery.classList.add('hidden')
+      setShowText('Ver más imágenes')
     }
   }
 
@@ -23,9 +27,8 @@ export default function PropertyDetails ({ property }) {
       <div className='w-5/6 flex flex-col md:flex-row items-center justify-around gap-10'>
         <div className='flex flex-col gap-5'>
           <PropertyCard property={property} />
-          {/* <Button name='Ver más imágenes' style='flex justify-center w-full  ' /> */}
           <button className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black rounded-full p-1 duration-200 border-2 border-gray-200 font-bold' onClick={handleShowGallery}>
-            Ver más imágenes
+            {showText}
           </button>
         </div>
 
