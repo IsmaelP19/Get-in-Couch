@@ -258,8 +258,8 @@ const ImageUploader = ({ formik }) => {
             const img = new Image()
             img.onload = function () { // compressing the image
               const canvas = document.createElement('canvas')
-              const MAX_WIDTH = 800
-              const MAX_HEIGHT = 600
+              const MAX_WIDTH = 1920
+              const MAX_HEIGHT = 1080
               let width = img.width
               let height = img.height
 
@@ -305,7 +305,7 @@ const ImageUploader = ({ formik }) => {
           <div>
             <p className='italic font-bold m-2'>Si desea eliminar alguna imagen, pulse sobre alguna de ellas y le aparecerá el símbolo "X".</p>
           </div>
-          <div className='flex flex-wrap gap-2'>
+          <div className='flex flex-wrap gap-2 justify-center'>
             {images.map((image, index) => (
               <div
                 key={index}
@@ -341,8 +341,8 @@ const ImageUploader = ({ formik }) => {
         <div className='flex flex-col mt-4'>
           <p className='font-bold'>¿Está seguro?</p>
           <div className='flex justify-around'>
-            <button className='bg-red-400 border-2 border-black hover:bg-red-600 hover:text-white hover:border-red-400 p-3 rounded-full' onClick={handleConfirmDelete}>Eliminar</button>
             <button className='bg-green-300 border-2 border-black hover:bg-green-600 hover:text-white hover:border-green-300 p-3 rounded-full' onClick={() => setDeleteIndex(null)}>Cancelar</button>
+            <button className='bg-red-400 border-2 border-black hover:bg-red-600 hover:text-white hover:border-red-400 p-3 rounded-full' onClick={handleConfirmDelete}>Eliminar</button>
           </div>
         </div>
       )}
