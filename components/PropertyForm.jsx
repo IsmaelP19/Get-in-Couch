@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 import { useState } from 'react'
-import { Navigation, BasicInfo, Location, Features, validate } from './PropertyFields'
+import { Navigation, BasicInfo, Location, Features, Images, validate } from './PropertyFields'
 
 export default function PropertyForm ({ createProperty }) {
   const [step, setStep] = useState(0)
@@ -41,7 +41,9 @@ export default function PropertyForm ({ createProperty }) {
     // eslint-disable-next-line react/jsx-key
     <Location formik={formik} />,
     // eslint-disable-next-line react/jsx-key
-    <Features formik={formik} />
+    <Features formik={formik} />,
+    // eslint-disable-next-line react/jsx-key
+    <Images formik={formik} />
 
   ]
 
