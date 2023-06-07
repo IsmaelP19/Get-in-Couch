@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { DefaultSeo, NextSeo } from 'next-seo'
+import { AppWrapper } from '../context/state'
 
 const DEFAULT_SEO = {
   titleTemplate: '%s | Get in Couch 🏠',
@@ -17,16 +18,17 @@ const DEFAULT_SEO = {
 export default function App ({ Component, pageProps }) {
   return (
     <>
-
-      <DefaultSeo {...DEFAULT_SEO} />
-      <NextSeo title={pageProps.title} />
-      <div className='min-h-screen flex flex-col'>
-        <Navbar />
-        <main className='flex-1 flex'>
-          <Component {...pageProps} />
-        </main>
-        <Footer />
-      </div>
+      <AppWrapper>
+        <DefaultSeo {...DEFAULT_SEO} />
+        <NextSeo title={pageProps.title} />
+        <div className='min-h-screen flex flex-col'>
+          <Navbar />
+          <main className='flex-1 flex'>
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+        </div>
+      </AppWrapper>
     </>
   )
 }

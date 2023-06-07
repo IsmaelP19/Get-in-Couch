@@ -1,6 +1,13 @@
 import LinkButton from './LinkButton'
-
+import { useAppContext } from '../context/state'
 export default function InfoCard ({ title, description, buttonName, buttonLink, buttonStyle }) {
+  const { user } = useAppContext()
+  let link
+  if (user) {
+    link = '/properties'
+  } else {
+    link = buttonLink
+  }
   return (
     <div className='flex flex-col bg-slate-800 w-10/12 md:w-5/12 lg:w-[420px] items-center justify-center rounded-3xl bg-opacity-90 border-solid border-x-2 border-y-2 border-black px-0 md:px-10 py-5'>
       <h1 className='text-white md:text-3xl text-2xl font-bold text-center'>
@@ -10,7 +17,7 @@ export default function InfoCard ({ title, description, buttonName, buttonLink, 
       <p className='text-gray-200 text-xl p-3 text-center'>
         {description}
       </p>
-      <LinkButton name={buttonName} link={buttonLink} style={buttonStyle} />
+      <LinkButton name={buttonName} link={link} style={buttonStyle} />
     </div>
   )
 }

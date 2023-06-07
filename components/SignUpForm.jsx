@@ -2,6 +2,10 @@ import { useFormik } from 'formik'
 import 'react-phone-number-input/style.css'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import { useState } from 'react'
+import { useAppContext } from '../context/state'
+import { useRouter } from 'next/router'
+import { showMessage } from '../utils/utils'
+import userService from '../services/users'
 
 const validate = (values, phoneNumber) => {
   const errors = {}
@@ -51,8 +55,32 @@ const validate = (values, phoneNumber) => {
   return errors
 }
 
-export default function SignUpForm ({ createUser }) {
+export default function SignUpForm () {
+  const { setMessage } = useAppContext()
+  const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState()
+
+  const createUser = (userObject) => {
+    userService.create(userObject)
+      .then(returnedUser => {
+        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 4000)
+        setTimeout(() => {
+          router.push('/login')
+        }, 4000)
+      })
+      .catch(error => {
+        if (error.response.data.error.includes('`email` to be unique')) {
+          showMessage('El email introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+        } else if (error.response.data.error.includes('`username` to be unique')) {
+          showMessage('El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+        } else if (error.response.data.error.includes('`phoneNumber` to be unique')) {
+          showMessage('El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+        } else {
+          showMessage('Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000)
+        }
+      })
+  }
+
   const formik = useFormik({
     initialValues: {
       email: '',

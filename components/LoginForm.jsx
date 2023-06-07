@@ -1,5 +1,9 @@
 import { useFormik } from 'formik'
 import 'react-phone-number-input/style.css'
+import { showMessage } from '../utils/utils'
+import userService from '../services/users'
+import { useAppContext } from '../context/state'
+import { useRouter } from 'next/router'
 
 const validate = (values) => {
   const errors = {}
@@ -15,7 +19,29 @@ const validate = (values) => {
   return errors
 }
 
-export default function LoginForm ({ user, setUser, setMessage, loginUser }) {
+export default function LoginForm () {
+  const { setUser, setMessage } = useAppContext()
+  const router = useRouter()
+  const loginUser = async (credentials) => {
+    try {
+      const loggedUser = await userService.login(credentials)
+      showMessage('Ha iniciado sesión correctamente 🙌', 'success', setMessage, 9000)
+      // setUser(user)
+      const user = await userService.getUser(loggedUser.username)
+      setUser(user)
+      localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
+      setTimeout(() => {
+        router.push('/')
+      }, 2000)
+    } catch (error) {
+      if (error.response.data.error.includes('invalid username or password')) {
+        showMessage('Usuario o contraseña incorrectos', 'error', setMessage, 9000)
+      } else {
+        showMessage('Ha ocurrido un error al iniciar sesión 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000)
+      }
+    }
+  }
+
   const formik = useFormik({
     initialValues: {
       username: '',

@@ -1,6 +1,7 @@
-export default function Hamburger ({ isOpen, setOpenDrawer }) {
+import { useAppContext } from '../context/state'
+export default function Hamburger () {
   // TODO: change the hamburger menu to an animated one
-
+  const { isOpen, setOpenDrawer } = useAppContext()
   return (
     <button type='button' onClick={() => { setOpenDrawer(!isOpen) }} className='text-3xl absolute top-[18px] right-6 cursor-pointer md:hidden ' title='signup-btn'>
       <div className='transition-opacity w-6 h-6 text-gray-100'>

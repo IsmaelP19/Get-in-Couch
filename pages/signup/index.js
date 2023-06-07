@@ -1,31 +1,9 @@
 import SignUpForm from '../../components/SignUpForm'
-import { useState } from 'react'
-import userService from '../../services/users'
 import Notification from '../../components/Notification'
-import { showMessage } from '../../utils/utils'
+import { useAppContext } from '../../context/state'
 
 export default function SignUp () {
-  const [message, setMessage] = useState([])
-  const createUser = (userObject) => {
-    userService.create(userObject)
-      .then(response => {
-        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 4000)
-        setTimeout(() => {
-          location.replace('/')
-        }, 4000)
-      })
-      .catch(error => {
-        if (error.response.data.error.includes('`email` to be unique')) {
-          showMessage('El email introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
-        } else if (error.response.data.error.includes('`username` to be unique')) {
-          showMessage('El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
-        } else if (error.response.data.error.includes('`phoneNumber` to be unique')) {
-          showMessage('El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
-        } else {
-          showMessage('Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000)
-        }
-      })
-  }
+  const { message } = useAppContext()
 
   // FIXME: the notification message is not shown on the upper side of the page because of the justify center property (only in higher resolutions i.e. 4k)
 
@@ -33,7 +11,7 @@ export default function SignUp () {
     <>
       <div className='flex flex-col justify-center w-full'>
         <Notification message={message[0]} type={message[1]} />
-        <SignUpForm createUser={createUser} />
+        <SignUpForm />
       </div>
     </>
   )

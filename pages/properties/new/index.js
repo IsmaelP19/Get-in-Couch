@@ -1,26 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import PropertyForm from '../../../components/PropertyForm'
 import propertiesService from '../../../services/properties'
 import Notification from '../../../components/Notification'
 import { showMessage } from '../../../utils/utils'
-import userService from '../../../services/users'
+import { useRouter } from 'next/router'
+import { useAppContext } from '../../../context/state'
 
 export default function CreateProperty () {
   const [message, setMessage] = useState([])
-  const [user, setUser] = useState({})
+  // const [user, setUser] = useState({})
+  const { user } = useAppContext()
 
-  async function getUser () {
-    const loggedUser = localStorage.getItem('loggedUser')
-    if (loggedUser) {
-      const username = JSON.parse(loggedUser).username
-      const user = await userService.getUser(username)
-      setUser(user)
-    }
-  }
+  const router = useRouter()
 
-  useEffect(() => {
-    getUser()
-  }, [])
+  // async function getUser () {
+  //   const loggedUser = localStorage.getItem('loggedUser')
+  //   if (loggedUser) {
+  //     const username = JSON.parse(loggedUser).username
+  //     const user = await userService.getUser(username)
+  //     setUser(user)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getUser()
+  // }, [])
 
   const createProperty = (propertyObject) => {
     propertyObject.owner = user.id
@@ -29,7 +33,7 @@ export default function CreateProperty () {
       .then(response => {
         showMessage('Se ha creado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)
         setTimeout(() => {
-          location.replace(`/properties/${response.id}`)
+          router.push(`/properties/${response.id}`)
         }, 4000)
       })
       .catch(error => {

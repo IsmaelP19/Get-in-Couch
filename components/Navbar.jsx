@@ -1,28 +1,8 @@
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 import NavbarLinks from './NavbarLinks'
 import Hamburger from './Hamburger'
-import userService from '../services/users'
 
 export default function Navbar () {
-  const [isOpen, setOpenDrawer] = useState(false)
-  const [done, setDone] = useState(false)
-  const [user, setUser] = useState(null)
-
-  async function getUser () {
-    const loggedUser = localStorage.getItem('loggedUser')
-    if (loggedUser) {
-      const username = JSON.parse(loggedUser).username
-      const user = await userService.getUser(username)
-      setUser(user)
-    }
-    setDone(true) // whether user is logged or not, we want to render the navbar links
-  }
-
-  useEffect(() => {
-    getUser()
-  }, [])
-
   return (
     <nav className='shadow-2xl md:shadow-md w-full sticky top-0 left-0'>
       <div className='md:flex items-center justify-between bg-slate-900 py-4 md:px-10 px-7'>
@@ -34,8 +14,8 @@ export default function Navbar () {
             <span className='self-center text-xl font-semibold whitespace-nowrap text-white tracking-widest'>Get in Couch</span>
           </Link>
         </div>
-        <Hamburger isOpen={isOpen} setOpenDrawer={setOpenDrawer} />
-        {done && <NavbarLinks isOpen={isOpen} setOpenDrawer={setOpenDrawer} user={user} />}
+        <Hamburger />
+        <NavbarLinks />
       </div>
     </nav>
 

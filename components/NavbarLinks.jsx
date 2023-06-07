@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import LinkButton from './LinkButton'
+import { useAppContext } from '../context/state'
 
-export default function NavbarLinks ({ isOpen, user, setOpenDrawer }) {
+export default function NavbarLinks () {
+  const { user, done, isOpen, setOpenDrawer } = useAppContext()
+
   const links = [
     { id: 1, name: 'Inmuebles', link: '/properties' },
     { id: 2, name: 'Mapa', link: '/map' }
@@ -14,21 +17,21 @@ export default function NavbarLinks ({ isOpen, user, setOpenDrawer }) {
     if (user) {
       return (
         <>
-          <LinkButton name='Mi perfil' link={`/profile/${user.username}`} style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' setOpenDrawer={setOpenDrawer} isOpen={isOpen} />
+          <LinkButton name='Mi perfil' link={`/profile/${user.username}`} style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
         </>
 
       )
     } else {
       return (
         <>
-          <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' setOpenDrawer={setOpenDrawer} isOpen={isOpen} />
-          <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' setOpenDrawer={setOpenDrawer} isOpen={isOpen} />
+          <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
+          <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
         </>
       )
     }
   }
 
-  return (
+  return (done &&
 
     <ul className={`flex flex-col md:flex-row items-center md:pb-0  absolute md:static bg-slate-900 md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0  transition-all duration-500 ease-in md:opacity-100 border-b border-white md:border-0 ${isOpen ? 'top-[60px] opacity-100' : 'top-[-490px] opacity-0'} `}>
       {links.map((link) => (
