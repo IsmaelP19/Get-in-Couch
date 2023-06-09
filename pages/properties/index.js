@@ -7,6 +7,7 @@ export default function Catalogue ({ properties, title }) {
   const [user, setUser] = useState(null)
 
   // if the logged user is an owner, a button to create a property will be shown
+  // TODO: use context to get the user
   async function getUser () {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
@@ -23,7 +24,7 @@ export default function Catalogue ({ properties, title }) {
     <div className='w-full flex flex-col'>
       <h1 className='p-10 font-bold text-3xl text-center'>Inmuebles</h1>
 
-      {user && user.isOwner && (
+      {user?.isOwner && (
         <div className='w-full flex items-center justify-center'>
           <Link href='/properties/new'>
             <button className='bg-green-400  hover:bg-green-800 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg'>

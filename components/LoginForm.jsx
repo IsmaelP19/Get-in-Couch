@@ -25,14 +25,13 @@ export default function LoginForm () {
   const loginUser = async (credentials) => {
     try {
       const loggedUser = await userService.login(credentials)
-      showMessage('Ha iniciado sesión correctamente 🙌', 'success', setMessage, 9000)
-      // setUser(user)
+      showMessage('Ha iniciado sesión correctamente 🙌', 'success', setMessage, 4000)
       const user = await userService.getUser(loggedUser.username)
-      setUser(user)
       localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
       setTimeout(() => {
         router.push('/')
-      }, 2000)
+        setUser(user)
+      }, 4000)
     } catch (error) {
       if (error.response.data.error.includes('invalid username or password')) {
         showMessage('Usuario o contraseña incorrectos', 'error', setMessage, 9000)

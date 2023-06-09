@@ -12,6 +12,7 @@ export default function CreateProperty () {
   const { user } = useAppContext()
 
   const router = useRouter()
+  // TODO: check if this actually works now that we are using context
 
   // async function getUser () {
   //   const loggedUser = localStorage.getItem('loggedUser')

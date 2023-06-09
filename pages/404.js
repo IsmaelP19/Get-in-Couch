@@ -7,7 +7,7 @@ export default function Custom404 () {
   const router = useRouter()
   useEffect(() => {
     router.replace('/404')
-  }, [])
+  }, [router])
   return (
     <>
       <NextSeo title='Página no encontrada' />

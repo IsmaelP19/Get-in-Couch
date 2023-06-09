@@ -14,31 +14,33 @@ export default function Profile ({ username, user }) {
   const [isLogged, setIsLogged] = useState(false)
   const [followersState, setFollowers] = useState(followers.length)
 
-  async function getUser () {
-    const loggedUser = localStorage.getItem('loggedUser')
-    if (loggedUser) {
-      const loggedUsername = JSON.parse(loggedUser).username
-      setLoggedUsername(loggedUsername)
-      setIsLogged(true)
-      setCondition(username === loggedUsername)
-      const loggedUserObject = await userService.getUser(loggedUsername)
-      if (loggedUserObject.followed.includes(user.id)) {
-        setFollow(true)
-      }
-    }
-    setDone(true)
-  }
-
   useEffect(() => {
+    async function getUser () {
+      const loggedUser = localStorage.getItem('loggedUser')
+      if (loggedUser) {
+        const loggedUsername = JSON.parse(loggedUser).username
+        setLoggedUsername(loggedUsername)
+        setIsLogged(true)
+        setCondition(username === loggedUsername)
+        const loggedUserObject = await userService.getUser(loggedUsername)
+        if (loggedUserObject.followed.includes(user.id)) {
+          setFollow(true)
+        }
+      }
+      setDone(true)
+    }
+
     getUser()
-  }, [username])
+  }, [username, user.id])
 
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
+    // TODO: delete user of context
     window.location.href = '/'
   }
 
   const handleFollow = async () => {
+    // TODO: add it to the user of context
     await userService.follow(username, loggedUsername)
     setFollow(!follow)
     follow ? setFollowers(followersState - 1) : setFollowers(followersState + 1)
