@@ -82,6 +82,10 @@ export async function getServerSideProps (context) {
   const response = await fetch(url)
 
   const property = await response.json()
+  if (property.error) {
+    context.res.writeHead(302, { Location: '/404' })
+    context.res.end()
+  }
 
   return {
     props: {

@@ -6,8 +6,9 @@ import { useEffect } from 'react'
 export default function Custom404 () {
   const router = useRouter()
   useEffect(() => {
-    router.replace('/404')
-  }, [router])
+    router.push('/404')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // the dependency array must be empty, otherwise it will be executed every time the router changes
   return (
     <>
       <NextSeo title='Página no encontrada' />
