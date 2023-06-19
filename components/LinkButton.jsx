@@ -4,6 +4,7 @@ import { useAppContext } from '../context/state'
 export default function LinkButton ({ name, link, style }) {
   const { isOpen, setOpenDrawer } = useAppContext()
   const handleClick = () => {
+    isOpen &&
     setOpenDrawer(!isOpen)
   }
   return (

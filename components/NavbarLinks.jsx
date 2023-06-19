@@ -10,6 +10,7 @@ export default function NavbarLinks () {
     { id: 2, name: 'Mapa', link: '/map' }
   ]
   const handleClick = () => {
+    isOpen &&
     setOpenDrawer(!isOpen)
   }
 

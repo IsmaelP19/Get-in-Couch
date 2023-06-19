@@ -1,9 +1,34 @@
 import { useFormik } from 'formik'
 import { useState } from 'react'
 import { Navigation, BasicInfo, Location, Features, Images, validate } from './PropertyFields'
+import propertiesService from '../services/properties'
+import { showMessage } from '../utils/utils'
+import { useAppContext } from '../context/state'
+import { useRouter } from 'next/router'
 
-export default function PropertyForm ({ createProperty }) {
+export default function PropertyForm () {
   const [step, setStep] = useState(0)
+  const { user, setMessage } = useAppContext()
+  const router = useRouter()
+
+  const createProperty = (propertyObject) => {
+    propertyObject.owner = user.id
+
+    propertiesService.create(propertyObject)
+      .then(response => {
+        showMessage('Se ha creado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)
+        setTimeout(() => {
+          router.push(`/properties/${response.id}`)
+        }, 4000)
+      })
+      .catch(error => {
+        if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
+          showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
+        } else {
+          showMessage('Ha ocurrido un error al crear el anuncio. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
+        }
+      })
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -36,15 +61,10 @@ export default function PropertyForm ({ createProperty }) {
   })
 
   const fieldGroups = [
-    // eslint-disable-next-line react/jsx-key
-    <BasicInfo formik={formik} />,
-    // eslint-disable-next-line react/jsx-key
-    <Location formik={formik} />,
-    // eslint-disable-next-line react/jsx-key
-    <Features formik={formik} />,
-    // eslint-disable-next-line react/jsx-key
-    <Images formik={formik} />
-
+    <BasicInfo key='basic-info' formik={formik} />,
+    <Location key='location' formik={formik} />,
+    <Features key='features' formik={formik} />,
+    <Images key='images' formik={formik} />
   ]
 
   return (

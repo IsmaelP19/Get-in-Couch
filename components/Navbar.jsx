@@ -4,7 +4,7 @@ import Hamburger from './Hamburger'
 
 export default function Navbar () {
   return (
-    <nav className='shadow-2xl md:shadow-md w-full sticky top-0 left-0'>
+    <nav className='shadow-2xl md:shadow-md w-full sticky top-0 left-0' id='navbar'>
       <div className='md:flex items-center justify-between bg-slate-900 py-4 md:px-10 px-7'>
         <div className='font-bold text-2xl cursor-pointer flex items-center text-gray-800'>
           <Link href='/' className='flex items-center'>

@@ -5,15 +5,24 @@ import { useState } from 'react'
 
 export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
+
   const handleShowGallery = () => {
     const gallery = document.querySelector('#gallery')
-    // the gallery is not visible, so we change the display of it to flex
+    const navbarHeight = document.querySelector('#navbar').offsetHeight // Obtiene la altura de la navbar
+
     if (gallery.classList.contains('hidden')) {
       gallery.classList.remove('hidden')
       gallery.classList.add('flex')
       setShowText('Ocultar imágenes')
-      // we scroll to the gallery
-      gallery.scrollIntoView({ behavior: 'smooth' })
+
+      // Obtiene la posición actual del componente gallery
+      const galleryPosition = gallery.getBoundingClientRect().top + window.scrollY
+
+      // Calcula la posición a la que se debe desplazar el componente gallery
+      const newPosition = galleryPosition - navbarHeight - 10
+
+      // Desplaza la ventana hacia la nueva posición
+      window.scrollTo({ top: newPosition, behavior: 'smooth' })
     } else {
       gallery.classList.remove('flex')
       gallery.classList.add('hidden')

@@ -1,25 +1,9 @@
 import PropertyCard from '../../components/PropertyCard'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import userService from '../../services/users'
+import { useAppContext } from '../../context/state'
 
 export default function Catalogue ({ properties, title }) {
-  const [user, setUser] = useState(null)
-
-  // if the logged user is an owner, a button to create a property will be shown
-  // TODO: use context to get the user
-  async function getUser () {
-    const loggedUser = localStorage.getItem('loggedUser')
-    if (loggedUser) {
-      const loggedUsername = JSON.parse(loggedUser).username
-      const loggedUserObject = await userService.getUser(loggedUsername)
-      setUser(loggedUserObject)
-    }
-  }
-
-  useEffect(() => {
-    getUser()
-  }, [])
+  const { user } = useAppContext()
   return (
     <div className='w-full flex flex-col'>
       <h1 className='p-10 font-bold text-3xl text-center'>Inmuebles</h1>
@@ -49,7 +33,6 @@ export default function Catalogue ({ properties, title }) {
   )
 }
 
-// maybe getting the properties from serverside props it's better than using useEffect
 export async function getServerSideProps (context) {
   const page = context.query.page || 1
   const url = `${process.env.API_URL}/properties?page=${page}`

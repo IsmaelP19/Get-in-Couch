@@ -1,53 +1,50 @@
 import { useState, useEffect } from 'react'
 import ProfilePhoto from '../../components/ProfilePhoto'
 import userService from '../../services/users'
+import { useAppContext } from '../../context/state'
+// TODO: add saved properties to my profile page
 
-export default function Profile ({ username, user }) {
-  // username is the username of the profile
-  // user is the user object of the profile
-  const { name, surname, description, memberSince, followers, followed } = user
-  let { profilePicture } = user
-  const [condition, setCondition] = useState(false)
-  const [done, setDone] = useState(false)
+export default function Profile ({ userObject }) {
+  const { name, surname, description, memberSince, followers, followed } = userObject
+  let { profilePicture } = userObject
+  const [done, setDone] = useState(false) // this done is different from the one in context, this one will be used to know whether I follow the user or not
   const [follow, setFollow] = useState(false)
-  const [loggedUsername, setLoggedUsername] = useState(null)
-  const [isLogged, setIsLogged] = useState(false)
   const [followersState, setFollowers] = useState(followers.length)
+  const { user, setUser } = useAppContext()
 
   useEffect(() => {
-    async function getUser () {
-      const loggedUser = localStorage.getItem('loggedUser')
-      if (loggedUser) {
-        const loggedUsername = JSON.parse(loggedUser).username
-        setLoggedUsername(loggedUsername)
-        setIsLogged(true)
-        setCondition(username === loggedUsername)
-        const loggedUserObject = await userService.getUser(loggedUsername)
-        if (loggedUserObject.followed.includes(user.id)) {
-          setFollow(true)
-        }
+    async function checkFollow () {
+      if (user?.followed.includes(userObject.id)) {
+        setFollow(true)
       }
       setDone(true)
     }
-
-    getUser()
-  }, [username, user.id])
+    checkFollow()
+  }, [user, userObject.id])
 
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
-    // TODO: delete user of context
     window.location.href = '/'
   }
 
   const handleFollow = async () => {
     // TODO: add it to the user of context
-    await userService.follow(username, loggedUsername)
+    await userService.follow(userObject.username, user.username)
+
     setFollow(!follow)
-    follow ? setFollowers(followersState - 1) : setFollowers(followersState + 1)
+    if (follow) {
+      setFollowers(followersState - 1)
+      const updatedUser = { ...user, followed: user.followed.filter((followedUser) => followedUser !== userObject.id) }
+      setUser(updatedUser)
+    } else {
+      setFollowers(followersState + 1)
+      const updatedUser = { ...user, followed: [...user.followed, userObject.id] }
+      setUser(updatedUser)
+    }
   }
 
   let followBtn
-  if (loggedUsername && follow) {
+  if (user?.username && follow) {
     followBtn = (
       <button className='bg-red-400 hover:bg-red-900 font-bold text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleFollow}>
         Dejar de seguir
@@ -61,7 +58,7 @@ export default function Profile ({ username, user }) {
     )
   }
 
-  const buttons = condition
+  const buttons = user?.username === userObject.username
     ? (
       <>
         <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black'>
@@ -99,10 +96,10 @@ export default function Profile ({ username, user }) {
       <main className='w-full'>
         <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-10 my-5 md:mx-20 md:my-14 '>
           <div className='flex flex-col md:w-1/3 gap-5 '>
-            <ProfilePhoto src={profilePicture} alt='' username={username} />
+            <ProfilePhoto src={profilePicture} alt='' username={userObject.username} />
 
             <div className='flex items-center justify-center gap-2'>
-              {done && isLogged && buttons}
+              {done && user && buttons}
             </div>
           </div>
           <div className='flex flex-col gap-2  md:w-2/3 items-center md:items-start justify-center '>
@@ -142,6 +139,6 @@ export async function getServerSideProps (context) {
   }
 
   return {
-    props: { title: `${username}`, username, user }
+    props: { title: `${user.username}`, userObject: user }
   }
 }
