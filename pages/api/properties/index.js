@@ -1,15 +1,15 @@
 import Property from '../../../models/property'
-import { errorHandler, createConnection } from '../../../utils/utils'
+import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
 
-async function getCoordinatesFromAddress (address) {
-  const API_KEY = process.env.POSITIONSTACK_API_KEY
-  const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
-  const response = await fetch(url)
-  const data = await response.json()
-  const latitude = data.data[0].latitude
-  const longitude = data.data[0].longitude
-  return { latitude, longitude }
-}
+// async function getCoordinatesFromAddress (address) {
+//   const API_KEY = process.env.POSITIONSTACK_API_KEY
+//   const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
+//   const response = await fetch(url)
+//   const data = await response.json()
+//   const latitude = data.data[0].latitude
+//   const longitude = data.data[0].longitude
+//   return { latitude, longitude }
+// }
 
 export default async function propertiesRouter (req, res) {
   try {
@@ -50,8 +50,6 @@ export default async function propertiesRouter (req, res) {
           }
         }
 
-        // convert images to base64 format so we can store them in the database
-
         const property = new Property({
           title: body.title,
           description: body.description,
@@ -69,7 +67,7 @@ export default async function propertiesRouter (req, res) {
             propertySize: body.propertySize,
             numberOfBathrooms: body.numberOfBathrooms,
             numberOfBedrooms: body.numberOfBedrooms,
-            isAvailable: body.isAvailable,
+            // isAvailable: body.isAvailable, //FIXME: NOT ON THE SCHEMA --> will be calculated on the frontend
             floor: body.floor || null,
             furniture: body.furniture,
             terrace: body.terrace || null,
@@ -92,7 +90,7 @@ export default async function propertiesRouter (req, res) {
         if (process.env.NODE_ENV === 'test') {
           delete jsonContent.id
         }
-        return res.status(201).json({ ...jsonContent })
+        return res.status(200).json({ ...jsonContent })
       } catch (error) {
         return res.status(400).json({ error: error.message })
       }
