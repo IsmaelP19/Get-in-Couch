@@ -3,7 +3,12 @@ import { errorHandler, createConnection } from '../../../../utils/utils'
 
 export default async function usersUsernameRouter (req, res) {
   try {
-    process.env.NODE_ENV !== 'test' && await createConnection()
+    if (process.env.NODE_ENV !== 'test') {
+      await createConnection()
+      if (req.headers['x-origin'] !== 'getincouch.vercel.app') {
+        return res.status(403).json({ error: 'forbidden' })
+      }
+    }
 
     const username = req.query.username
 

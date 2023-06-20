@@ -3,7 +3,12 @@ import { errorHandler, createConnection, getCoordinatesFromAddress } from '../..
 
 export default async function propertiesIdRouter (req, res) {
   try {
-    process.env.NODE_ENV !== 'test' && await createConnection()
+    if (process.env.NODE_ENV !== 'test') {
+      await createConnection()
+      if (req.headers['x-origin'] !== 'getincouch.vercel.app') {
+        return res.status(403).json({ error: 'forbidden' })
+      }
+    }
 
     const id = req.query.id
 
