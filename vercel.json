@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/404"
+    }
+  ],
+  "env": {
+    "API_SECRET": "@api-secret"
+  }
+}

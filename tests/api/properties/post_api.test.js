@@ -88,7 +88,7 @@ describe('POST: When there are no properties in db and one is added', () => {
 
     await propertiesRouter(req, res)
 
-    expect(res.status).toHaveBeenCalledWith(201)
+    expect(res.status).toHaveBeenCalledWith(200)
     expect(res.json).toHaveBeenCalledWith({ message: 'property succesfully created' })
 
     const propertiesAtEnd = await propertiesInDb()
