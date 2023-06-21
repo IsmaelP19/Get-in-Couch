@@ -23,7 +23,7 @@ export default async function propertiesIdRouter (req, res) {
       const property = await Property.findById(id)
       if (property) {
         await Property.findByIdAndRemove(id)
-        res.status(200).json({ message: 'property succesfully deleted' })
+        res.status(204).json({ message: 'property succesfully deleted' })
       } else {
         res.status(404).json({ error: 'property not found' })
       }
@@ -82,11 +82,11 @@ export default async function propertiesIdRouter (req, res) {
           }
 
           await Property.findByIdAndUpdate(id, propertyToUpdate)
+
+          res.status(201).json({ message: 'property succesfully updated' })
         } catch (error) {
           return res.status(400).json({ error: error.message })
         }
-
-        res.status(201).json({ message: 'property succesfully updated' })
       } else {
         res.status(404).json({ error: 'property not found' })
       }

@@ -1,16 +1,6 @@
 import Property from '../../../models/property'
 import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
 
-// async function getCoordinatesFromAddress (address) {
-//   const API_KEY = process.env.POSITIONSTACK_API_KEY
-//   const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
-//   const response = await fetch(url)
-//   const data = await response.json()
-//   const latitude = data.data[0].latitude
-//   const longitude = data.data[0].longitude
-//   return { latitude, longitude }
-// }
-
 export default async function propertiesRouter (req, res) {
   try {
     if (process.env.NODE_ENV !== 'test') {
@@ -40,6 +30,7 @@ export default async function propertiesRouter (req, res) {
           return res.status(400).json({ error: message })
         } else {
           street = street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          town = town?.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
           city = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
           country = country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         }
@@ -48,7 +39,6 @@ export default async function propertiesRouter (req, res) {
 
         if (process.env.NODE_ENV !== 'test') {
           if (town !== null) {
-            town = town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
             coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${town}, ${city}, ${country}`)
           } else {
             coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)

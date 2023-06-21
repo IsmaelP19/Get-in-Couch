@@ -66,7 +66,7 @@ export default async function usersUsernameRouter (req, res) {
           return res.status(404).json({ error: 'user who is performing the action not found' })
         }
 
-        res.status(200).json({ message: 'user succesfully updated' })
+        res.status(201).json({ message: 'user succesfully updated' })
       } else {
         res.status(404).json({ error: 'user not found' })
       }
