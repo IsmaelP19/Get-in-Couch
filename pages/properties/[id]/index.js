@@ -50,13 +50,13 @@ export default function PropertyDetails ({ property }) {
         <div className='flex flex-col gap-5 items-center'>
           {user?.id === property.owner && (
             <div className='flex gap-3 w-full justify-between'>
-              <button className='bg-gray-200 hover:bg-yellow-500 px-5 self-center text-black hover:text-black rounded-full py-1 duration-200 border-2 border-slate-700 font-bold flex justify-center items-center gap-2' onClick={handleEdit}>
-                <AiOutlineEdit />
-                Editar
-              </button>
               <button className='bg-gray-200 hover:bg-red-700 px-5 self-center text-black hover:text-white rounded-full py-1 duration-200 border-2 border-slate-700 font-bold flex justify-center items-center gap-2 ' onClick={handleDelete}>
                 <MdDeleteOutline />
                 Eliminar
+              </button>
+              <button className='bg-gray-200 hover:bg-yellow-500 px-5 self-center text-black hover:text-black rounded-full py-1 duration-200 border-2 border-slate-700 font-bold flex justify-center items-center gap-2' onClick={handleEdit}>
+                <AiOutlineEdit />
+                Editar
               </button>
             </div>
           )}
