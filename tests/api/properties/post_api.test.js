@@ -1,17 +1,10 @@
 import mongoose from 'mongoose'
 import Property from '../../../models/property'
-import User from '../../../models/user'
 import propertiesRouter from '../../../pages/api/properties/index'
-import usersRouter from '../../../pages/api/users/index'
 
 const propertiesInDb = async () => {
   const properties = await Property.find({})
   return properties.map(property => property.toJSON())
-}
-
-const usersInDb = async () => {
-  const users = await User.find({})
-  return users.map(u => u.toJSON())
 }
 
 const newProperty = {
@@ -31,7 +24,8 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false
+  heating: false,
+  owner: mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -47,44 +41,16 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
-
-  await User.deleteMany({})
-
-  const newUser = {
-    email: 'email@domain.com',
-    password: 'testtest',
-    username: 'Root',
-    name: 'test',
-    surname: 'test',
-    phoneNumber: '123123124',
-    isOwner: true
-  }
-  const req = {
-    method: 'POST',
-    body: newUser
-  }
-
-  const res = {}
-
-  await usersRouter(req, res)
 })
 
 describe('POST: When there are no properties in db and one is added', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
-
-    const users = await usersInDb()
-    const userId = users[0].id
-
-    newProperty.owner = userId
   })
 
   test('Creation succeeds with just required data', async () => {
     const propertiesAtStart = await propertiesInDb()
     expect(propertiesAtStart).toHaveLength(0)
-
-    const users = await usersInDb()
-    const userId = users[0].id
 
     await propertiesRouter(req, res)
 
@@ -95,18 +61,13 @@ describe('POST: When there are no properties in db and one is added', () => {
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length + 1)
 
     const propertyAdded = propertiesAtEnd[0]
-    expect(propertyAdded.owner.toString()).toBe(userId)
+    expect(propertyAdded.owner.toString()).toBe(newProperty.owner.toString())
   })
 })
 
 describe('POST: When there is some attribute missing', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
-
-    const users = await usersInDb()
-    const userId = users[0].id
-
-    newProperty.owner = userId
   })
 
   test('Creation fails with missing title', async () => {
@@ -362,17 +323,14 @@ describe('POST: When there is some attribute missing', () => {
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
+
+    newProperty.owner = mongoose.Types.ObjectId()
   })
 })
 
 describe('POST: When there is some invalid values', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
-
-    const users = await usersInDb()
-    const userId = users[0].id
-
-    newProperty.owner = userId
   })
 
   test('Creation fails with invalid title', async () => {
