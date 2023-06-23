@@ -1,5 +1,6 @@
 import PropertyCard from '../../components/PropertyCard'
 import Link from 'next/link'
+import propertiesService from '../../services/properties'
 import { useAppContext } from '../../context/state'
 
 export default function Catalogue ({ properties, title }) {
@@ -35,10 +36,8 @@ export default function Catalogue ({ properties, title }) {
 
 export async function getServerSideProps (context) {
   const page = context.query.page || 1
-  const url = `${process.env.API_URL}/properties?page=${page}`
-  const response = await fetch(url)
 
-  const properties = await response.json()
+  const properties = await propertiesService.getAll(page)
 
   return {
     props: {

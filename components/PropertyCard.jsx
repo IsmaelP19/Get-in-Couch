@@ -1,6 +1,3 @@
-
-// FIXME: not showing the images on Vercel why????
-
 export default function PropertyCard ({ property, style }) {
   const { id, title, price, location, features, images, tenants } = property
 
@@ -21,8 +18,8 @@ export default function PropertyCard ({ property, style }) {
         <span>{freeRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
         <div className='flex w-full items-center justify-around'>
-          <span className='font-bold rounded-2xl bg-[#FFAA22]  px-3 py-2'>{price} €/mes </span>
-          <span className={`${status === 'Disponible' ? 'bg-green-500' : 'bg-red-500'} px-3 py-2 rounded-2xl font-bold `}>{status.toUpperCase()}</span>
+          <span className='font-bold rounded-2xl bg-[#FFAA22] px-3 py-2'>{price} €/mes </span>
+          <span className={`${status === 'Disponible' ? 'bg-green-500 ' : 'bg-red-500'} px-3 py-2 rounded-2xl font-bold`}>{status.toUpperCase()}</span>
         </div>
       </div>
 

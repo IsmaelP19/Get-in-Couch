@@ -25,3 +25,13 @@ Content-Type: application/json
 GET http://localhost:3000/api/properties/
 
 ###
+PUT http://localhost:3000/api/properties/6490834ccc028a2368b2e0e6
+Content-Type: application/json
+
+{
+  "street": "María Inmaculada, 13A",
+  "propertySize": 90,
+  "propertyType": "Casa",
+  "parking": "Sin parking",
+  "price": 1300
+}

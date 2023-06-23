@@ -1,28 +1,23 @@
 import Property from '../../../models/property'
-import { errorHandler, createConnection } from '../../../utils/utils'
-
-async function getCoordinatesFromAddress (address) {
-  const API_KEY = process.env.POSITIONSTACK_API_KEY
-  const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
-  const response = await fetch(url)
-  const data = await response.json()
-  const latitude = data.data[0].latitude
-  const longitude = data.data[0].longitude
-  return { latitude, longitude }
-}
+import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
 
 export default async function propertiesRouter (req, res) {
   try {
-    process.env.NODE_ENV !== 'test' && await createConnection()
+    if (process.env.NODE_ENV !== 'test') {
+      await createConnection()
+      if (req.headers['x-origin'] !== 'getincouch.vercel.app') {
+        return res.status(403).json({ error: 'forbidden' })
+      }
+    }
 
     if (req.method === 'POST') {
       const body = req.body
 
       try {
-        let { street } = body
-        let { city } = body
-        let { country } = body
-        let { town } = body || null
+        const { street } = body
+        const { city } = body
+        const { country } = body
+        const { town } = body || null
         const { images } = body || null
 
         const requiredFields = ['street', 'city', 'country', 'zipCode']
@@ -33,24 +28,16 @@ export default async function propertiesRouter (req, res) {
         if (missingFields.length > 0) {
           const message = `${missingFields.join(', ')} ` + `${missingFields.length > 1 ? 'are' : 'is'} required`
           return res.status(400).json({ error: message })
-        } else {
-          street = street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          city = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          country = country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         }
-
         let coordinates = { latitude: 0, longitude: 0 }
 
         if (process.env.NODE_ENV !== 'test') {
           if (town !== null) {
-            town = town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${town}, ${city}, ${country}`)
+            coordinates = await getCoordinatesFromAddress(`${street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${body.zipCode}, ${town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
           } else {
-            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
+            coordinates = await getCoordinatesFromAddress(`${street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${body.zipCode}, ${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
           }
         }
-
-        // convert images to base64 format so we can store them in the database
 
         const property = new Property({
           title: body.title,
@@ -69,7 +56,7 @@ export default async function propertiesRouter (req, res) {
             propertySize: body.propertySize,
             numberOfBathrooms: body.numberOfBathrooms,
             numberOfBedrooms: body.numberOfBedrooms,
-            isAvailable: body.isAvailable,
+            // isAvailable: body.isAvailable, //FIXME: NOT ON THE SCHEMA --> will be calculated on the frontend
             floor: body.floor || null,
             furniture: body.furniture,
             terrace: body.terrace || null,
@@ -92,7 +79,7 @@ export default async function propertiesRouter (req, res) {
         if (process.env.NODE_ENV === 'test') {
           delete jsonContent.id
         }
-        return res.status(201).json({ ...jsonContent })
+        return res.status(200).json({ ...jsonContent })
       } catch (error) {
         return res.status(400).json({ error: error.message })
       }

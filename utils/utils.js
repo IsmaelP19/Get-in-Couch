@@ -51,11 +51,22 @@ const showMessage = (message, type, setMessage, time) => {
   }, time)
 }
 
+async function getCoordinatesFromAddress (address) {
+  const API_KEY = process.env.POSITIONSTACK_API_KEY
+  const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
+  const response = await fetch(url)
+  const data = await response.json()
+  const latitude = data.data[0].latitude
+  const longitude = data.data[0].longitude
+  return { latitude, longitude }
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   createConnection,
   errorHandler,
   tokenExtractor,
-  showMessage
+  showMessage,
+  getCoordinatesFromAddress
 }

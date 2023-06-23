@@ -3,7 +3,12 @@ import { errorHandler, createConnection } from '../../../../utils/utils'
 
 export default async function usersUsernameRouter (req, res) {
   try {
-    process.env.NODE_ENV !== 'test' && await createConnection()
+    if (process.env.NODE_ENV !== 'test') {
+      await createConnection()
+      if (req.headers['x-origin'] !== 'getincouch.vercel.app') {
+        return res.status(403).json({ error: 'forbidden' })
+      }
+    }
 
     const username = req.query.username
 
@@ -61,7 +66,7 @@ export default async function usersUsernameRouter (req, res) {
           return res.status(404).json({ error: 'user who is performing the action not found' })
         }
 
-        res.status(200).json({ message: 'user succesfully updated' })
+        res.status(201).json({ message: 'user succesfully updated' })
       } else {
         res.status(404).json({ error: 'user not found' })
       }
