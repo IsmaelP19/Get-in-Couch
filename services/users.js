@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = '/api/users'
+const baseUrl = process.env.NEXT_PUBLIC_API_URL + '/users'
 const customHeader = { headers: { 'X-Origin': 'getincouch.vercel.app' } }
 
 const getAll = async () => {

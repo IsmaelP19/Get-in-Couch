@@ -1,10 +1,11 @@
 import axios from 'axios'
-const baseUrl = '/api/properties'
+const baseUrl = process.env.NEXT_PUBLIC_API_URL + '/properties'
 
 const customHeader = { headers: { 'X-Origin': 'getincouch.vercel.app' } }
 
-const getAll = async () => {
-  const response = await axios.get(baseUrl, customHeader)
+const getAll = async (page) => {
+  const url = page ? `${baseUrl}?page=${page}` : baseUrl
+  const response = await axios.get(url, customHeader)
   return response.data
 }
 
@@ -23,4 +24,9 @@ const removeProperty = async (id) => {
   return response.data
 }
 
-export default { getAll, create, getProperty, removeProperty }
+const update = async (id, newObject) => {
+  const response = await axios.put(`${baseUrl}/${id}`, newObject, customHeader)
+  return response.data
+}
+
+export default { getAll, create, getProperty, removeProperty, update }

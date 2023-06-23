@@ -627,6 +627,8 @@ describe('POST: When there is some invalid values', () => {
   })
 })
 
+// FIXME: add test to check the creation of a property with spanish characters in the address (á, é, í, ó, ú, ñ)
+
 // TODO: add more tests to check non-required attributes
 
 afterAll(async () => {

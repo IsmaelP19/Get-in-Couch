@@ -100,12 +100,12 @@ describe('UPDATE by id endpoint', () => {
     const propertiesAtEnd = await propertiesInDb()
 
     expect(res1.status).toHaveBeenCalledWith(201)
-    expect(res1.json).toHaveBeenCalledWith({ message: 'property succesfully updated' })
+    expect(res1.json).toHaveBeenCalledWith({ message: 'property succesfully updated', id: propertiesAtStart[0].id })
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
     expect(propertiesAtEnd[0].title).toBe('Other title')
   })
 
-  test('When a error occurs', async () => {
+  test('When an error occurs', async () => {
     const propertiesAtStart = await propertiesInDb()
 
     const req1 = {

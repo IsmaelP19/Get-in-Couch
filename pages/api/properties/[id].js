@@ -34,24 +34,24 @@ export default async function propertiesIdRouter (req, res) {
         try {
           let coordinates = property.location.coordinates
           const location = { // new location object (it contains the old location if none is provided)
-            street: body.street?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') || property.location.street,
-            town: body.town?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') || property.location.town || null,
-            city: body.city?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') || property.location.city,
-            country: body.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '') || property.location.country,
+            street: body?.street || property.location.street,
+            town: body?.town || property.location.town || null,
+            city: body?.city || property.location.city,
+            country: body?.country || property.location.country,
             zipCode: body.zipCode || property.location.zipCode,
             coordinates
           }
           if (process.env.NODE_ENV !== 'test') { // to prevent use the API on tests
-            if (property.location !== location) { // we only modify the coordinates if the location (street, city, country or zipCode) has changed
+            if (JSON.stringify(property.location) !== JSON.stringify(location)) { // we only modify the coordinates if the location (street, city, country or zipCode) has changed
               if (location.town !== null) {
-                coordinates = await getCoordinatesFromAddress(`${location.street}, ${location.zipCode}, ${location.town}, ${location.city}, ${location.country}`)
+                coordinates = await getCoordinatesFromAddress(`${location.street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${location.zipCode}, ${location.town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${location.city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${location.country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
               } else {
-                coordinates = await getCoordinatesFromAddress(`${location.street}, ${location.zipCode}, ${location.city}, ${location.country}`)
+                coordinates = await getCoordinatesFromAddress(`${location.street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${location.zipCode}, ${location.city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${location.country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
               }
               location.coordinates = [
                 coordinates.latitude,
                 coordinates.longitude
-              ] // update the location object with the new coordinates
+              ]
             }
           }
 
@@ -83,7 +83,7 @@ export default async function propertiesIdRouter (req, res) {
 
           await Property.findByIdAndUpdate(id, propertyToUpdate)
 
-          res.status(201).json({ message: 'property succesfully updated' })
+          res.status(201).json({ message: 'property succesfully updated', id: property.id })
         } catch (error) {
           return res.status(400).json({ error: error.message })
         }

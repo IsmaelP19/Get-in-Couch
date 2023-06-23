@@ -1,6 +1,8 @@
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
 import utils from '../utils/utils'
+import propertiesService from '../services/properties'
+import userService from '../services/users'
 export default function Home ({ registeredUsers, properties }) {
   return (
     <>
@@ -30,13 +32,11 @@ export async function getServerSideProps (context) {
   utils.createConnection()
   // for faster response time, we create the connection to db before the user requests the page
 
-  const registeredUsers = await fetch(`${process.env.API_URL}/users`)
-  const registeredUsersJson = await registeredUsers.json()
+  const registeredUsers = await userService.getAll()
 
-  const properties = await fetch(`${process.env.API_URL}/properties`)
-  const propertiesJSON = await properties.json()
+  const properties = await propertiesService.getAll()
 
   return {
-    props: { registeredUsers: registeredUsersJson.length || 0, properties: propertiesJSON.total, title: 'Inicio' }
+    props: { registeredUsers: registeredUsers.length || 0, properties: properties.total, title: 'Inicio' }
   }
 }

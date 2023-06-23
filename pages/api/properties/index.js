@@ -14,10 +14,10 @@ export default async function propertiesRouter (req, res) {
       const body = req.body
 
       try {
-        let { street } = body
-        let { city } = body
-        let { country } = body
-        let { town } = body || null
+        const { street } = body
+        const { city } = body
+        const { country } = body
+        const { town } = body || null
         const { images } = body || null
 
         const requiredFields = ['street', 'city', 'country', 'zipCode']
@@ -28,20 +28,14 @@ export default async function propertiesRouter (req, res) {
         if (missingFields.length > 0) {
           const message = `${missingFields.join(', ')} ` + `${missingFields.length > 1 ? 'are' : 'is'} required`
           return res.status(400).json({ error: message })
-        } else {
-          street = street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          town = town?.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          city = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          country = country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         }
-
         let coordinates = { latitude: 0, longitude: 0 }
 
         if (process.env.NODE_ENV !== 'test') {
           if (town !== null) {
-            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${town}, ${city}, ${country}`)
+            coordinates = await getCoordinatesFromAddress(`${street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${body.zipCode}, ${town.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
           } else {
-            coordinates = await getCoordinatesFromAddress(`${street}, ${body.zipCode}, ${city}, ${country}`)
+            coordinates = await getCoordinatesFromAddress(`${street.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${body.zipCode}, ${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}, ${country.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`)
           }
         }
 

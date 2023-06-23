@@ -130,8 +130,7 @@ export default function Profile ({ userObject }) {
 
 export async function getServerSideProps (context) {
   const { username } = context.query
-  const res = await fetch(`${process.env.API_URL}/users/${username}`)
-  const user = await res.json()
+  const user = await userService.getUser(username)
 
   if (user.error === 'user not found') {
     context.res.writeHead(302, { Location: '/404' })

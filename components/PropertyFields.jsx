@@ -165,7 +165,7 @@ const AirConditioning = ({ formik }) => {
       <label htmlFor='airConditioning'>Aire acondicionado</label>
       <select name='airConditioning' id='airConditioning' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.airConditioning} className='border border-solid border-slate-600'>
         <option value='' disabled>-- Selecciona una opción --</option>
-        <option value='true'>Si</option>
+        <option value='true'>Sí</option>
         <option value='false'>No</option>
       </select>
       {formik.touched.airConditioning && formik.errors.airConditioning ? <div className='text-red-600'>{formik.errors.airConditioning}</div> : null}
@@ -179,7 +179,7 @@ const Heating = ({ formik }) => {
       <label htmlFor='heating'>Calefacción</label>
       <select name='heating' id='heating' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.heating} className='border border-solid border-slate-600'>
         <option value='' disabled>-- Selecciona una opción --</option>
-        <option value='true'>Si</option>
+        <option value='true'>Sí</option>
         <option value='false'>No</option>
       </select>
       {formik.touched.heating && formik.errors.heating ? <div className='text-red-600'>{formik.errors.heating}</div> : null}
@@ -453,13 +453,14 @@ const validate = (step) => (values) => {
 
     if (!values.airConditioning) {
       errors.airConditioning = 'No puede dejar vacío este campo'
-    } else if (values.airConditioning !== 'true' && values.airConditioning !== 'false') {
+    } else if (values.airConditioning.toString() !== 'true' && values.airConditioning.toString() !== 'false') {
+      console.log(values.airConditioning)
       errors.airConditioning = 'Introduzca un valor válido'
     }
 
     if (!values.heating) {
       errors.heating = 'No puede dejar vacío este campo'
-    } else if (values.heating !== 'true' && values.heating !== 'false') {
+    } else if (values.heating.toString() !== 'true' && values.heating.toString() !== 'false') {
       errors.heating = 'Introduzca un valor válido'
     }
   }
