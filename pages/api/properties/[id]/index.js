@@ -1,6 +1,7 @@
-import Property from '../../../models/property'
-import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
+import Property from '../../../../models/property'
+import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../../utils/utils'
 
+export const config = { api: { bodyParser: { sizeLimit: '5mb' } } }
 export default async function propertiesIdRouter (req, res) {
   try {
     if (process.env.NODE_ENV !== 'test') {
@@ -14,6 +15,11 @@ export default async function propertiesIdRouter (req, res) {
 
     if (req.method === 'GET') {
       let property = await Property.findById(id)
+
+      if (property && process.env.NODE_ENV !== 'test') {
+        property = await property.populate('owner', 'username name surname')
+      }
+
       if (property && process.env.NODE_ENV === 'test') {
         property = property.toJSON()
       }
@@ -78,6 +84,7 @@ export default async function propertiesIdRouter (req, res) {
               petsAllowed: body.petsAllowed || property.features.petsAllowed || null,
               smokingAllowed: body.smokingAllowed || property.features.smokingAllowed || null
             },
+            lastEdited: Date.now(),
             images: body.images || property.images || null
           }
 

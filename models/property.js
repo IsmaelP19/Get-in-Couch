@@ -142,18 +142,22 @@ const propertySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  lastEdited: {
+    type: Date,
+    default: Date.now
+  },
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
   ],
-  // comments: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'Comment'
-  //   }
-  // ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment'
+    }
+  ],
   views: {
     type: Number,
     default: 0

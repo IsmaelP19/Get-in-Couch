@@ -1,0 +1,11 @@
+POST http://localhost:3000/api/comments
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "content": "This is a comment to test functionality",
+  "user": "63f1975aff912523d6589228",
+  "property": "6490834ccc028a2368b2e0e6"
+
+
+}

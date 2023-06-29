@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 /* eslint-disable no-extra-boolean-cast */
 
@@ -232,6 +232,12 @@ const ImageUploader = ({ formik }) => {
   const [images, setImages] = useState([])
   const [showDelete, setShowDelete] = useState(null)
   const [deleteIndex, setDeleteIndex] = useState(null)
+
+  useEffect(() => {
+    if (formik.values.images) {
+      setImages(formik.values.images)
+    }
+  }, [formik.values.images])
 
   const handleDelete = (index) => {
     setDeleteIndex(index)
