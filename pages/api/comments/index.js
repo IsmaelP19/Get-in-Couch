@@ -41,14 +41,20 @@ export default async function commentsRouter (req, res) {
       return res.status(201).json(savedComment)
     } else if (req.method === 'GET') {
       const page = req.query?.page || 1
+      if (page !== parseInt(page)) {
+        return res.status(400).json({ error: 'Page must be a valid number' })
+      }
       const limit = req.query?.limit || 10
+      if (limit !== parseInt(limit)) {
+        return res.status(400).json({ error: 'Limit must be a valid number' })
+      }
       const skip = (page - 1) * limit
 
       const comments = await Comment.find({})
         .skip(skip)
         .limit(limit)
 
-      return res.status(200).json(comments)
+      return res.status(200).json({ comments, page, limit, total: await Comment.countDocuments({}) })
     }
   } catch (error) {
     errorHandler(error, req, res)

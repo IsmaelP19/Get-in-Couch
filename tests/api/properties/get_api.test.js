@@ -92,7 +92,7 @@ describe('GET all endpoint', () => {
     await propertiesRouter(req1, res1)
 
     expect(res1.status).toHaveBeenCalledWith(404)
-    expect(res1.json).toHaveBeenCalledWith({ message: 'no properties found', total: propertiesAtStart.length })
+    expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 
   test('When there are properties in db but not enough to show another page', async () => {
@@ -114,7 +114,7 @@ describe('GET all endpoint', () => {
     await propertiesRouter(req1, res1)
 
     expect(res1.status).toHaveBeenCalledWith(404)
-    expect(res1.json).toHaveBeenCalledWith({ message: 'no properties found', total: propertiesAtStart.length })
+    expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 })
 

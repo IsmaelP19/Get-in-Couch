@@ -58,13 +58,101 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
+  await Comment.deleteMany({})
+  await Property.deleteMany({})
+  await propertiesRouter({ method: 'POST', body: newProperty }, res)
+
+  const propertiesAtStart = await propertiesInDb()
+  for (let i = 0; i < 20; i++) {
+    await commentsRouter({ method: 'POST', body: { ...newComment, property: propertiesAtStart[0].id } }, res)
+  }
+}, 90000)
+
+describe('GET all comments endpoint with pagination', () => {
+  test('Check there are 20 comments in total', async () => {
+    const commentsAtStart = await commentsInDb()
+    expect(commentsAtStart).toHaveLength(20)
+  })
+
+  test('Check there are 10 comments in the first page (limit not specified)', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 1 } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith(expect.objectContaining({ comments: expect.any(Array), total: expect.any(Number) }))
+    expect(res1.json.mock.calls[0][0].comments).toHaveLength(10)
+  })
+
+  test('Check there are n comments in the first page (limit = n)', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 1, limit: 5 } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith(expect.objectContaining({ comments: expect.any(Array), total: expect.any(Number) }))
+    expect(res1.json.mock.calls[0][0].comments).toHaveLength(5)
+  })
+
+  test('Check there are 10 comments in the second page (limit not specified)', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 2 } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith(expect.objectContaining({ comments: expect.any(Array), total: expect.any(Number) }))
+    expect(res1.json.mock.calls[0][0].comments).toHaveLength(10)
+  })
+
+  test('Check there are n comments in the second page (limit = n)', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 2, limit: 5 } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith(expect.objectContaining({ comments: expect.any(Array), total: expect.any(Number) }))
+    expect(res1.json.mock.calls[0][0].comments).toHaveLength(5)
+  })
+
+  test('Check there are 0 comments in another page', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 5 } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith(expect.objectContaining({ comments: expect.any(Array), total: expect.any(Number) }))
+    expect(res1.json.mock.calls[0][0].comments).toHaveLength(0)
+  })
+
+  test('Check error is handled when page is not a number', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { page: 'a' } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'Page must be a valid number' })
+  })
+
+  test('Check error is handled when limit is not a number', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsRouter({ ...req, query: { limit: 'a' } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'Limit must be a valid number' })
+  })
 })
 
 describe('GET all comments endpoint', () => {
   beforeEach(async () => {
     await Comment.deleteMany({})
-    await Property.deleteMany({})
-    await propertiesRouter({ method: 'POST', body: newProperty }, res)
   })
 
   test('When there are no comments in db', async () => {
@@ -77,7 +165,7 @@ describe('GET all comments endpoint', () => {
     }
     await commentsRouter(req, res1)
     expect(res1.status).toHaveBeenCalledWith(200)
-    expect(res1.json).toHaveBeenCalledWith([])
+    expect(res1.json).toHaveBeenCalledWith({ comments: [], page: 1, limit: 10, total: 0 })
 
     const commentsAtEnd = await commentsInDb()
     expect(commentsAtEnd).toHaveLength(0)
