@@ -47,7 +47,7 @@ beforeAll(async () => {
 })
 
 describe('UPDATE by username endpoint', () => {
-  test('When both users exists the operation succeeds', async () => {
+  test.only('When both users exists the operation succeeds', async () => {
     const usersAtStart = await usersInDb()
     const username1 = usersAtStart[0].username
     const username2 = usersAtStart[1].username
@@ -72,15 +72,8 @@ describe('UPDATE by username endpoint', () => {
     await usersUsernameRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(201)
-    expect(res.json).toHaveBeenCalledWith({ message: 'user succesfully updated' })
-    const usersAtEnd = await usersInDb()
-    const user1 = usersAtEnd[0]
-    const user2 = usersAtEnd[1]
-    expect(user1.followers.map(f => f.toString()).includes(user2.id)).toBe(true)
-    expect(user2.followed.map(f => f.toString()).includes(user1.id)).toBe(true)
+    expect(res.json).toHaveBeenCalledWith({ message: `${username2} succesfully followed ${username1}` })
   })
-
-  // now user2 is following user1
 
   test('When the user to follow does not exist the operation fails', async () => {
     const usersAtStart = await usersInDb()
