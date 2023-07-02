@@ -47,7 +47,7 @@ beforeAll(async () => {
 })
 
 describe('UPDATE by username endpoint', () => {
-  test.only('When both users exists the operation succeeds', async () => {
+  test('When both users exists the operation succeeds', async () => {
     const usersAtStart = await usersInDb()
     const username1 = usersAtStart[0].username
     const username2 = usersAtStart[1].username
