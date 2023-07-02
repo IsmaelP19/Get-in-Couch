@@ -31,6 +31,7 @@ export default async function usersUsernameRouter (req, res) {
 
       user ? res.json(user) : res.status(404).json({ error: 'user not found' })
     } else if (req.method === 'PUT') {
+      // newFollower wants to follow user
       let user = await User.findOne({ username })
       if (process.env.NODE_ENV === 'test' && user) {
         // passwordHash is removed with the transform function of the model
@@ -54,13 +55,13 @@ export default async function usersUsernameRouter (req, res) {
 
         if (newFollower) {
           // first we check if the user is already following the new follower
-          if (user.followers.includes(newFollower._id)) {
-          // if the user is already following the new follower, we remove it from the followers array
-            await User.updateOne({ _id: user._id }, { $pull: { followers: newFollower._id } })
-            await User.updateOne({ _id: newFollower._id }, { $pull: { followed: user._id } })
-          } else {
-            await User.updateOne({ _id: user._id }, { $push: { followers: newFollower._id } })
-            await User.updateOne({ _id: newFollower._id }, { $push: { followed: user._id } })
+          if (user.followers.includes(newFollower.id)) {
+            // if the user is already following the new follower, we remove it from the followers array
+            await User.findByIdAndUpdate(user.id, { ...user, followers: user.followers.filter(follower => follower !== newFollower.id) })
+            await User.findByIdAndUpdate(newFollower.id, { ...newFollower, followed: newFollower.followed.filter(followed => followed !== user.id) })
+          } else { // FIXME: NOT WORKING
+            await User.findByIdAndUpdate(user.id, { ...user, followers: [...user.followers, newFollower.id] })
+            await User.findByIdAndUpdate(newFollower.id, { ...newFollower, followed: [...newFollower.followed, user.id] })
           }
         } else {
           return res.status(404).json({ error: 'user who is performing the action not found' })

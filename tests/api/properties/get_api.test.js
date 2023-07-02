@@ -42,8 +42,6 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
-
-  await Property.deleteMany({})
 })
 
 describe('GET all endpoint', () => {

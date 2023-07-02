@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import Comment from '../../../models/comment'
 import Property from '../../../models/property'
 import commentsRouter from '../../../pages/api/comments/index'
+import commentsIdRouter from '../../../pages/api/comments/[id]'
 import propertiesRouter from '../../../pages/api/properties'
 
 const commentsInDb = async (propertyId) => {
@@ -147,6 +148,53 @@ describe('GET all comments endpoint with pagination', () => {
     await commentsRouter({ ...req, query: { limit: 'a' } }, res1)
     expect(res1.status).toHaveBeenCalledWith(400)
     expect(res1.json).toHaveBeenCalledWith({ error: 'Limit must be a valid number' })
+  })
+})
+
+describe('GET comments by id', () => {
+  test('Check error is handled when id is not valid', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsIdRouter({ ...req, query: { id: 'a' } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'malformatted id' })
+  })
+
+  test('Check error is handled when id is not found', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsIdRouter({ ...req, query: { id: mongoose.Types.ObjectId() } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(404)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'comment not found' })
+  })
+
+  test('Check error is handled when not providing id', async () => {
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+    await commentsIdRouter(req, res1)
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'id is required' })
+  })
+
+  test('Check comment is returned when id is valid and found', async () => {
+    const commentsAtStart = await commentsInDb()
+    const comment = commentsAtStart[0]
+
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+
+    await commentsIdRouter({ ...req, query: { id: comment.id } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    const response = res1.json.mock.calls[0][0]
+    expect(response).toEqual(expect.objectContaining({ content: comment.content, property: comment.property, user: comment.user, rating: comment.rating }))
   })
 })
 
