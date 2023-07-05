@@ -19,10 +19,11 @@ export default async function propertiesIdCommentsRouter (req, res) {
       } else if (property.comments.length === 0) {
         return res.status(200).json([])
       } else if (property.comments.length > 0) {
-        const comments = await Comment.find({ property: propertyId })
-        if (process.env.NODE_ENV !== 'test') {
-          await comments.populate('user', { username: 1, name: 1, surname: 1, profilePicture: 1 }).execPopulate()
+        let comments = await Comment.find({ property: propertyId })
+        if (comments && process.env.NODE_ENV !== 'test') {
+          comments = await Promise.all(comments.map(async comment => await comment.populate('user', 'username name surname profilePicture')))
         }
+
         return res.status(200).json(comments)
       }
     }

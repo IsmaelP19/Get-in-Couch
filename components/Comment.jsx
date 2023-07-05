@@ -35,7 +35,7 @@ export default function Comment ({ comment, isTenant }) {
   }
 
   return (
-    <div className='flex flex-col gap-3 bg-slate-300 w-full p-4 mt-4 rounded-xl border-2 border-slate-900 '>
+    <div className='flex flex-col gap-3 bg-blue-100 w-full p-4 mt-4 rounded-xl border-2 border-slate-900 '>
       <div className='flex flex-row flex-wrap justify-center items-center gap-4'>
         <Link href={`/profile/${comment.user.username}`} passHref>
           <ProfilePhoto isComment src={profilePhoto} alt={comment.user.username} username={comment.user.username} width={50} height={50} />
@@ -46,7 +46,7 @@ export default function Comment ({ comment, isTenant }) {
       <div className='flex flex-row gap-3 justify-between flex-wrap'>
         <span className='text-base italic text-black flex flex-row gap-2 items-center'>
           <AiOutlineEdit className='inline-block mr-1' />
-          Publicado el {date}
+          {date}
         </span>
         <span className='flex flex-row items-center '>
           {likes.length}
