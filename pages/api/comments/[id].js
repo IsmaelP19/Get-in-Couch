@@ -10,13 +10,10 @@ export default async function commentsIdRouter (req, res) {
         return res.status(403).json({ error: 'forbidden' })
       }
     }
+    const commentId = req.query?.id
+    if (!commentId) return res.status(400).json({ error: 'id is required' })
 
     if (req.method === 'GET') {
-      const commentId = req.query?.id
-
-      if (!commentId) {
-        return res.status(400).json({ error: 'id is required' })
-      }
       let comment = await Comment.findById(commentId)
 
       if (comment && process.env.NODE_ENV !== 'test') {
@@ -25,11 +22,6 @@ export default async function commentsIdRouter (req, res) {
 
       return comment ? res.status(200).json(comment) : res.status(404).json({ error: 'comment not found' })
     } else if (req.method === 'DELETE') {
-      const commentId = req.query?.id
-
-      if (!commentId) {
-        return res.status(400).json({ error: 'id is required' })
-      }
       const comment = await Comment.findById(commentId)
 
       if (!comment) {
@@ -44,6 +36,21 @@ export default async function commentsIdRouter (req, res) {
 
         return res.status(204).end()
       }
+    } else if (req.method === 'PUT') {
+      const comment = await Comment.findById(commentId)
+
+      if (!comment) {
+        return res.status(404).json({ error: 'comment not found' })
+      }
+
+      const body = req.body // only will change the likes array
+
+      if (!body.likes) {
+        return res.status(400).json({ error: 'likes array is required' })
+      }
+
+      await Comment.findByIdAndUpdate(commentId, { likes: body.likes }, { new: true })
+      return res.status(200).end()
     }
   } catch (error) {
     errorHandler(error, req, res)

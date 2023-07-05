@@ -8,10 +8,8 @@ export default function PropertyInfo ({ property }) {
     ? new Date(property.lastEdited).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })
     : property?.publishDate
 
-  console.log(date)
-
   return (
-    <div className='w-full md:w-3/6 xl:w-3/4 flex flex-col gap-4 p-10 bg-blue-100 rounded-3xl border-2 border-black'>
+    <div className='w-full md:w-3/6 xl:w-3/4 flex flex-col gap-4 p-7 bg-blue-100 rounded-3xl border-2 border-black'>
       <h2 className='font-bold text-2xl text-center w-full break-words whitespace-pre-wrap '>{property.title}</h2>
       <p className='text-xl'>{property.description}</p>
 
@@ -43,7 +41,7 @@ export default function PropertyInfo ({ property }) {
       <div className='flex flex-col'>
         <span className='text-xl font-bold w-full pt-4 justify-center'>
           <TfiAnnouncement className='inline-block mr-2 mb-1' />
-          Anuncio publicado por <Link href={'/profile/' + property.owner?.username} className='hover:underline hover:text-blue-600'>{property.owner?.name}{property.owner?.surname}</Link>
+          Anuncio publicado por <Link href={'/profile/' + property.owner?.username} className='hover:underline hover:text-blue-600'>{property.owner?.name} {property.owner?.surname}</Link>
         </span>
         <span className='text-xl font-bold w-full pt-2'>
           <AiOutlineEdit className='inline-block mr-2 mb-1' />

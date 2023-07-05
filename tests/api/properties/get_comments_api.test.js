@@ -38,7 +38,7 @@ const newProperty = {
 }
 
 const newComment = {
-  content: 'Test comment',
+  content: 'This is a new comment. At least, there should be 50 characters.',
   user: mongoose.Types.ObjectId(),
   rating: 3
 }

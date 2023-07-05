@@ -1,4 +1,5 @@
 import Gallery from '../../../components/Gallery'
+import Comment from '../../../components/Comment'
 import PropertyCard from '../../../components/PropertyCard'
 import PropertyInfo from '../../../components/PropertyInfo'
 import propertiesService from '../../../services/properties'
@@ -8,7 +9,13 @@ import { MdDeleteOutline } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { useAppContext } from '../../../context/state'
 
-export default function PropertyDetails ({ property }) {
+/*
+  We have the property object on the PropertyDetails page.
+  We will pass it to the comment object.
+  First, we have to load the comments from the property.
+  The comments should be populated on the property object.
+*/
+export default function PropertyDetails ({ property, comments }) {
   const [showText, setShowText] = useState('Ver más imágenes')
   const { user } = useAppContext()
   const router = useRouter()
@@ -46,7 +53,7 @@ export default function PropertyDetails ({ property }) {
   return (
     <div className='w-full flex flex-col items-center pb-10'>
       <h1 className='p-10 font-bold text-3xl text-center'>Detalles del inmueble</h1>
-      <div className='w-5/6 flex flex-col md:flex-row items-center justify-around gap-10'>
+      <div className='w-[90%] flex flex-col md:flex-row items-center justify-around gap-10'>
         <div className='flex flex-col gap-5 items-center'>
           {user?.id === property.owner?.id && (
             <div className='flex gap-3 w-full justify-between'>
@@ -73,6 +80,23 @@ export default function PropertyDetails ({ property }) {
 
       <Gallery property={property} />
 
+      <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-4'>
+        <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
+        {comments.length > 0
+          ? (
+
+            <div className='w-full flex flex-col md:flex-row items-center justify-around gap-10'>
+              {comments.map(comment => (
+                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} />
+              ))}
+            </div>
+
+            )
+          : (
+            <span className='text-center mt-4 text-xl'>Aún no hay comentarios disponibles... ¿Por qué no creas uno?</span>
+            )}
+      </div>
+
     </div>
   )
 }
@@ -85,10 +109,14 @@ export async function getServerSideProps (context) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }
+  const fetchedComments = await propertiesService.getCommentsByProperty(id)
+  // Theoretically, we shouldn't have any errors on the comments. The only possible error is that the property doesn't exist.
+  // This error is handled on the previous if statement.
 
   return {
     props: {
       property: fetchedProperty,
+      comments: fetchedComments,
       title: 'Detalles del inmueble'
     }
   }

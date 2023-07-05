@@ -43,7 +43,8 @@
       "args": [
         "--config jest.config.js",
         "--runInBand",
-        "${fileBasenameNoExtension}"
+        "${fileBasenameNoExtension}",
+        "--testTimeout=1000000"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

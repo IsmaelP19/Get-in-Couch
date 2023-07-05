@@ -6,7 +6,8 @@ const commentSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
-    minLength: 3
+    minLength: 50,
+    maxLength: 1024
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -24,11 +25,6 @@ const commentSchema = new mongoose.Schema({
     max: 5,
     default: 0
   },
-  images: [
-    {
-      type: String
-    }
-  ],
   publishDate: {
     type: Date,
     default: Date.now

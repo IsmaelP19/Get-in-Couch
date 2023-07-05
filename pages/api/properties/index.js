@@ -85,9 +85,10 @@ export default async function propertiesRouter (req, res) {
       }
     } else if (req.method === 'GET') {
       const page = req.query?.page || 1 // default page is 1
-      if (page !== parseInt(page)) return res.status(400).json({ error: 'Page must be a valid number' })
+
+      if (typeof parseInt(page) !== 'number') return res.status(400).json({ error: `Page must be a valid number (page is ${parseInt(1)})` })
       const limit = req.query?.limit || 10
-      if (limit !== parseInt(limit)) return res.status(400).json({ error: 'Limit must be a valid number' })
+      if (typeof parseInt(limit) !== 'number') return res.status(400).json({ error: 'Limit must be a valid number' })
       const skip = (page - 1) * 10
 
       let properties = await Property.find({})

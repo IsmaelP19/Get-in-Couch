@@ -4,6 +4,7 @@ import { errorHandler, createConnection } from '../../../utils/utils'
 
 export default async function commentsRouter (req, res) {
   try {
+    await createConnection()
     if (process.env.NODE_ENV !== 'test') {
       await createConnection()
       if (req.headers['x-origin'] !== 'getincouch.vercel.app') {

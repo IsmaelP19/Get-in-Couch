@@ -15,7 +15,7 @@ const propertiesInDb = async () => {
 }
 
 const newComment = {
-  content: 'This is a new comment',
+  content: 'This is a new comment. At least, there should be 50 characters.',
   user: mongoose.Types.ObjectId(),
   rating: 4
 }
@@ -89,7 +89,6 @@ describe('POST: When there are no comments in db and one is added', () => {
     expect(response.id).toBeDefined()
     expect(response.publishDate).toBeDefined()
     expect(response.likes).toStrictEqual([])
-    expect(response.images).toStrictEqual([])
 
     const commentsAtEnd = await commentsInDb(propertiesAtStart[0].id)
     expect(commentsAtEnd).toHaveLength(1)
@@ -205,7 +204,6 @@ describe('POST: When there are no comments in db and one is added', () => {
     expect(response.id).toBeDefined()
     expect(response.publishDate).toBeDefined()
     expect(response.likes).toStrictEqual([])
-    expect(response.images).toStrictEqual([])
 
     const commentsAtEnd = await commentsInDb(propertiesAtStart[0].id)
     expect(commentsAtEnd).toHaveLength(1)
@@ -248,6 +246,8 @@ describe('POST: When there are no comments in db and one is added', () => {
     expect(commentsAtEnd).toHaveLength(0)
   })
 })
+
+// FIXME: add tests to check min and max length of content
 
 afterAll(async () => {
   await Comment.deleteMany({})

@@ -8,8 +8,8 @@ const create = async (newObject) => {
   return response.data
 }
 
-const getComments = async (propertyId) => {
-  const response = await axios.get(`${baseUrl}/${propertyId}`, customHeader)
+const getAllComments = async () => {
+  const response = await axios.get(`${baseUrl}`, customHeader)
   return response.data
 }
 
@@ -23,4 +23,4 @@ const update = async (id, newObject) => {
   return response.data
 }
 
-export default { create, getComments, remove, update }
+export default { create, getAllComments, remove, update }
