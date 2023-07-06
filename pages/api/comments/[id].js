@@ -49,7 +49,9 @@ export default async function commentsIdRouter (req, res) {
         return res.status(400).json({ error: 'likes array is required' })
       }
 
-      await Comment.findByIdAndUpdate(commentId, { likes: body.likes }, { new: true })
+      const likes = [...new Set(body.likes)] // to prevent duplicates. For some reason, there are some times that the same user likes the same comment twice
+
+      await Comment.findByIdAndUpdate(commentId, { likes }, { new: true })
       return res.status(200).end()
     }
   } catch (error) {

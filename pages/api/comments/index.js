@@ -33,7 +33,6 @@ export default async function commentsRouter (req, res) {
         user: body.user,
         property: body.property,
         rating: body.rating,
-        images: body.images || [],
         likes: []
       })
 

@@ -8,6 +8,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { MdDeleteOutline } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { useAppContext } from '../../../context/state'
+import CommentForm from '../../../components/CommentForm'
 
 /*
   We have the property object on the PropertyDetails page.
@@ -15,8 +16,9 @@ import { useAppContext } from '../../../context/state'
   First, we have to load the comments from the property.
   The comments should be populated on the property object.
 */
-export default function PropertyDetails ({ property, comments }) {
+export default function PropertyDetails ({ property, commentsArray }) {
   const [showText, setShowText] = useState('Ver más imágenes')
+  const [comments, setComments] = useState(commentsArray)
   const { user } = useAppContext()
   const router = useRouter()
 
@@ -80,14 +82,15 @@ export default function PropertyDetails ({ property, comments }) {
 
       <Gallery property={property} />
 
-      <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-4'>
+      <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-10 gap-5'>
         <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
+        <CommentForm property={property} setComments={setComments} />
         {comments.length > 0
           ? (
 
-            <div className='w-full flex flex-col md:flex-row items-center justify-around gap-10'>
+            <div className='w-full flex flex-col items-center justify-around gap-3'>
               {comments.map(comment => (
-                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} />
+                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner.id === comment.user.id} />
               ))}
             </div>
 
@@ -116,7 +119,7 @@ export async function getServerSideProps (context) {
   return {
     props: {
       property: fetchedProperty,
-      comments: fetchedComments,
+      commentsArray: fetchedComments,
       title: 'Detalles del inmueble'
     }
   }

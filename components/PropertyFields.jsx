@@ -383,8 +383,8 @@ const validate = (step) => (values) => {
       errors.description = 'No puede dejar vacío este campo'
     } else if (values.description.length < 3) {
       errors.description = 'La descripción debe tener al menos 3 caracteres'
-    } else if (values.description.length > 500) {
-      errors.description = 'La descripción no puede tener más de 500 caracteres'
+    } else if (values.description.length > 2048) {
+      errors.description = 'La descripción no puede tener más de 2048 caracteres. Por favor, sea más conciso'
     }
 
     if (!values.price) {

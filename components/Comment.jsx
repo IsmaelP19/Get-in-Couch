@@ -6,7 +6,7 @@ import commentService from '../services/comments'
 import { useState } from 'react'
 import { useAppContext } from '../context/state'
 
-export default function Comment ({ comment, isTenant }) {
+export default function Comment ({ comment, isTenant, hasLived, isOwner }) {
   const { user } = useAppContext()
   const [likes, setLikes] = useState(comment.likes)
 
@@ -26,23 +26,28 @@ export default function Comment ({ comment, isTenant }) {
 
   const handleLike = async () => {
     if (likes.includes(user?.id)) {
-      await commentService.update(comment.id, { likes: comment.likes.filter(like => like !== user.id) })
-      setLikes(comment.likes.filter(like => like !== user.id))
+      const likes = new Set(comment.likes.filter(like => like !== user.id))
+      await commentService.update(comment.id, { likes: Array.from(likes) })
+      setLikes(Array.from(likes))
     } else {
-      await commentService.update(comment.id, { likes: [...comment.likes, user.id] })
-      setLikes([...comment.likes, user.id])
+      const likes = new Set(comment.likes)
+      likes.add(user.id)
+      await commentService.update(comment.id, { likes: Array.from(likes) })
+      setLikes(Array.from(likes))
     }
   }
 
   return (
     <div className='flex flex-col gap-3 bg-blue-100 w-full p-4 mt-4 rounded-xl border-2 border-slate-900 '>
-      <div className='flex flex-row flex-wrap justify-center items-center gap-4'>
+      <div className='flex flex-row flex-wrap justify-center md:justify-start items-center gap-4'>
         <Link href={`/profile/${comment.user.username}`} passHref>
           <ProfilePhoto isComment src={profilePhoto} alt={comment.user.username} username={comment.user.username} width={50} height={50} />
         </Link>
-        {isTenant && <Tag text='Ha vivido en este inmueble' verified style='text-base font-bold text-purple-900' />}
+        {isTenant && <Tag text='Viviendo en este inmueble' verified style='text-base font-bold text-blue-800' />}
+        {hasLived && <Tag text='Ha vivido en este inmueble' verified style='text-base font-bold text-purple-800' />}
+        {isOwner && <Tag text='Propietario' verified style='text-base font-bold text-green-800' />}
       </div>
-      <span>{comment.content}</span>
+      <span className='whitespace-pre-line'>{comment.content}</span>
       <div className='flex flex-row gap-3 justify-between flex-wrap'>
         <span className='text-base italic text-black flex flex-row gap-2 items-center'>
           <AiOutlineEdit className='inline-block mr-1' />
