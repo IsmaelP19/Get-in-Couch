@@ -19,7 +19,6 @@ import { Pagination } from '@nextui-org/react'
   The comments should be populated on the property object.
 */
 export default function PropertyDetails ({ property }) {
-  // FIXME: commentsArray should be fetched on the first render, not on the server side, to increase performance.
   const [showText, setShowText] = useState('Ver más imágenes')
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
@@ -31,7 +30,8 @@ export default function PropertyDetails ({ property }) {
     const fetchComments = async () => {
       const fetchedComments = await propertiesService.getCommentsByProperty(property.id)
       setComments(fetchedComments.comments)
-      setTotalPages(fetchedComments.pages)
+      if (fetchedComments.pages === 0) setTotalPages(1)
+      else { setTotalPages(fetchedComments.pages) }
     }
     fetchComments()
   }, [property.id])

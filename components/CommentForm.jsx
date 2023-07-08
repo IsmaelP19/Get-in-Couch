@@ -28,16 +28,17 @@ export default function CommentForm ({ property, setComments, comments, setPage,
   const { user, setMessage } = useAppContext()
 
   const createComment = (commentObject) => {
-    commentObject.user = user.id
+    commentObject.user = user?.id
     commentObject.property = property.id
+    const scrollPosition = window.scrollY
 
     commentsService.create(commentObject)
       .then(async response => {
-        const scrollPosition = window.scrollY
+        window.scrollTo(0, scrollPosition)
         showMessage('Se ha creado correctamente el comentario 😎', 'success', setMessage, 4000)
         const newComment = response
         newComment.user = user
-        window.scrollTo(0, scrollPosition)
+
         // change to the first page of the comments Pagination component if the user is not in the first page
         if (page !== 1) {
           setPage(1)
@@ -55,8 +56,13 @@ export default function CommentForm ({ property, setComments, comments, setPage,
         }
       })
       .catch(error => {
-        console.log(error)
-        showMessage('Ha ocurrido un error al crear el comentario. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
+        if (!user) {
+          showMessage('Debes iniciar sesión para poder comentar', 'error', setMessage, 4000)
+        } else {
+          console.log(error)
+          showMessage('Ha ocurrido un error al crear el comentario. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
+        }
+        window.scrollTo(0, scrollPosition)
       })
   }
 
