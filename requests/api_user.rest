@@ -9,7 +9,8 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:3000/api/users/
+GET http://localhost:3000/api/users/pepitogrillo17
+X-Origin: getincouch.vercel.app
 
 ###
 POST http://localhost:3000/api/login
@@ -32,6 +33,7 @@ Content-Type: application/json
 ### IsmaelPerez_19 is about to follow pepitogrillo17
 PUT http://localhost:3000/api/users/pepitogrillo17
 Content-Type: application/json
+X-Origin: getincouch.vercel.app
 
 {
   "username": "IsmaelPerez_19"
@@ -40,6 +42,7 @@ Content-Type: application/json
 ###
 PUT http://localhost:3000/api/users/pepitogrillo17
 Content-Type: application/json
+X-Origin: getincouch.vercel.app
 
 {
   "username": "pepitogrillo17"

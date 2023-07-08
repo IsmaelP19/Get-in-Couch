@@ -16,12 +16,14 @@ export default function PropertyForm ({ property }) {
       .then(response => {
         showMessage('Se ha actualizado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)
         setTimeout(() => {
-          router.push(`/properties/${response.id}`)
+          router.push(`/properties/${property.id}`)
         }, 4000)
       })
       .catch(error => {
         if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
           showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
+        } else if (error.response.status === 413) {
+          showMessage('Has añadido demasiadas imágenes. Por favor, considere subir menos imágenes o intente reducir el tamaño de ellas.', 'info', setMessage, 6000)
         } else {
           showMessage('Ha ocurrido un error al actualizar el anuncio. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
         }

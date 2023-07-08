@@ -26,7 +26,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -42,8 +42,6 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
-
-  await Property.deleteMany({})
 })
 
 describe('GET all endpoint', () => {
@@ -92,7 +90,7 @@ describe('GET all endpoint', () => {
     await propertiesRouter(req1, res1)
 
     expect(res1.status).toHaveBeenCalledWith(404)
-    expect(res1.json).toHaveBeenCalledWith({ message: 'no properties found', total: propertiesAtStart.length })
+    expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 
   test('When there are properties in db but not enough to show another page', async () => {
@@ -114,7 +112,7 @@ describe('GET all endpoint', () => {
     await propertiesRouter(req1, res1)
 
     expect(res1.status).toHaveBeenCalledWith(404)
-    expect(res1.json).toHaveBeenCalledWith({ message: 'no properties found', total: propertiesAtStart.length })
+    expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 })
 
@@ -127,7 +125,7 @@ describe('GET by id endpoint', () => {
     const req1 = {
       method: 'GET',
       query: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     }
 

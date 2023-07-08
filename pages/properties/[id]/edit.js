@@ -10,12 +10,12 @@ export default function EditProperty ({ property }) {
   const router = useRouter()
 
   useEffect(() => {
-    if (done && (!user?.isOwner || property.owner !== user?.id)) {
+    if (done && (!user?.isOwner || property.owner.id !== user?.id)) {
       router.push('/403')
     }
   }, [user, router, done, property])
 
-  return (user?.isOwner && property.owner === user?.id) && (
+  return (user?.isOwner && property.owner.id === user?.id) && (
     <>
       <div className='flex flex-col justify-center w-full'>
         <Notification message={message[0]} type={message[1]} />

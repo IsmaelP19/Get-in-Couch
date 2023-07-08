@@ -26,7 +26,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -80,7 +80,7 @@ describe('DELETE endpoint', () => {
     const req1 = {
       method: 'DELETE',
       query: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     }
 

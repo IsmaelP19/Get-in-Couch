@@ -26,7 +26,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -59,7 +59,7 @@ describe('UPDATE by id endpoint', () => {
     const req1 = {
       method: 'PUT',
       query: {
-        id: mongoose.Types.ObjectId() // Non-existent id
+        id: new mongoose.Types.ObjectId() // Non-existent id
       },
       body: {
         property: otherProperty

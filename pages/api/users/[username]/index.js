@@ -31,6 +31,9 @@ export default async function usersUsernameRouter (req, res) {
 
       user ? res.json(user) : res.status(404).json({ error: 'user not found' })
     } else if (req.method === 'PUT') {
+      // FIXME: not working as expected on tests (not updating the followed and followers arrays) but working on production
+
+      // newFollower wants to follow user
       let user = await User.findOne({ username })
       if (process.env.NODE_ENV === 'test' && user) {
         // passwordHash is removed with the transform function of the model
@@ -51,22 +54,24 @@ export default async function usersUsernameRouter (req, res) {
           // but it is still returned in the response of the mock on tests
           newFollower = newFollower.toJSON()
         }
-
+        let message
         if (newFollower) {
           // first we check if the user is already following the new follower
           if (user.followers.includes(newFollower._id)) {
-          // if the user is already following the new follower, we remove it from the followers array
+            // if the user is already following the new follower, we remove it from the followers array
             await User.updateOne({ _id: user._id }, { $pull: { followers: newFollower._id } })
             await User.updateOne({ _id: newFollower._id }, { $pull: { followed: user._id } })
+            message = `${newFollower.username} succesfully unfollowed ${user.username}`
           } else {
             await User.updateOne({ _id: user._id }, { $push: { followers: newFollower._id } })
             await User.updateOne({ _id: newFollower._id }, { $push: { followed: user._id } })
+            message = `${newFollower.username} succesfully followed ${user.username}`
           }
         } else {
           return res.status(404).json({ error: 'user who is performing the action not found' })
         }
 
-        res.status(201).json({ message: 'user succesfully updated' })
+        res.status(201).json({ message })
       } else {
         res.status(404).json({ error: 'user not found' })
       }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 /* eslint-disable no-extra-boolean-cast */
 
@@ -233,6 +233,12 @@ const ImageUploader = ({ formik }) => {
   const [showDelete, setShowDelete] = useState(null)
   const [deleteIndex, setDeleteIndex] = useState(null)
 
+  useEffect(() => {
+    if (formik.values.images) {
+      setImages(formik.values.images)
+    }
+  }, [formik.values.images])
+
   const handleDelete = (index) => {
     setDeleteIndex(index)
   }
@@ -377,8 +383,8 @@ const validate = (step) => (values) => {
       errors.description = 'No puede dejar vacío este campo'
     } else if (values.description.length < 3) {
       errors.description = 'La descripción debe tener al menos 3 caracteres'
-    } else if (values.description.length > 500) {
-      errors.description = 'La descripción no puede tener más de 500 caracteres'
+    } else if (values.description.length > 2048) {
+      errors.description = 'La descripción no puede tener más de 2048 caracteres. Por favor, sea más conciso'
     }
 
     if (!values.price) {

@@ -12,7 +12,8 @@ const propertySchema = new mongoose.Schema({
   description: { // the description the owner enters when creating the property
     type: String,
     required: true,
-    minLength: 3
+    minLength: 3,
+    maxLength: 2048
   },
   price: {
     type: Number,
@@ -142,18 +143,22 @@ const propertySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  lastEdited: {
+    type: Date,
+    default: Date.now
+  },
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
   ],
-  // comments: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'Comment'
-  //   }
-  // ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment'
+    }
+  ],
   views: {
     type: Number,
     default: 0
@@ -163,8 +168,13 @@ const propertySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
+  ],
+  tenantsHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
   ]
-
 })
 
 // propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location

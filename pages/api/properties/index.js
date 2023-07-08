@@ -84,23 +84,27 @@ export default async function propertiesRouter (req, res) {
         return res.status(400).json({ error: error.message })
       }
     } else if (req.method === 'GET') {
+      const page = req.query?.page || 1 // default page is 1
+
+      if (typeof parseInt(page) !== 'number') return res.status(400).json({ error: `Page must be a valid number (page is ${parseInt(1)})` })
+      const limit = req.query?.limit || 10
+      if (typeof parseInt(limit) !== 'number') return res.status(400).json({ error: 'Limit must be a valid number' })
+      const skip = (page - 1) * 10
+
       let properties = await Property.find({})
+        .skip(skip)
+        .limit(limit)
+
       if (process.env.NODE_ENV === 'test') {
         // passwordHash is removed with the transform function of the model
         // but it is still returned in the response of the mock on tests
         properties = properties.map(property => property.toJSON())
       }
 
-      const page = req.query.page ? parseInt(req.query.page) : 1 // default page is 1
-      const startIndex = (page - 1) * 10
-      const endIndex = startIndex + 10
-      const propertiesToReturn = properties.slice(startIndex, endIndex)
-
-      // if there are no properties to return, redirect to 404
-      if (propertiesToReturn.length === 0) {
-        return res.status(404).json({ message: 'no properties found', total: properties.length })
-      }
-      return res.status(200).json({ properties: propertiesToReturn, message: 'properties succesfully retrieved', total: properties.length })
+      const total = await Property.countDocuments({})
+      const status = properties.length === 0 ? 404 : 200
+      const message = status === 404 ? 'no properties found' : 'properties succesfully retrieved'
+      return res.status(status).json({ properties, message, total })
     }
   } catch (error) {
     errorHandler(error, req, res)

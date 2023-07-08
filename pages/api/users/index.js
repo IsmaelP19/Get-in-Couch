@@ -41,7 +41,7 @@ export default async function usersRouter (req, res) {
       })
 
       const savedUser = await user.save()
-      res.json(savedUser)
+      res.status(201).json(savedUser)
     } else if (req.method === 'GET') {
       let users
       if (process.env.NODE_ENV === 'test') {
