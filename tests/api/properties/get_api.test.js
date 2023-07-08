@@ -26,7 +26,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -125,7 +125,7 @@ describe('GET by id endpoint', () => {
     const req1 = {
       method: 'GET',
       query: {
-        id: mongoose.Types.ObjectId()
+        id: new mongoose.Types.ObjectId()
       }
     }
 

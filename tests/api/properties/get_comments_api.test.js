@@ -34,12 +34,12 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId(),
   rating: 3
 }
 
@@ -84,21 +84,24 @@ describe('GET all comments from a property endpoint', () => {
     expect(res1.status).toHaveBeenCalledWith(200)
     expect(res1.json).toHaveBeenCalledTimes(1)
     expect(res1.json).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({
-          content: commentsAtStart[0].content,
-          user: commentsAtStart[0].user,
-          rating: commentsAtStart[0].rating,
-          property: commentsAtStart[0].property
-        })
-      ]
+      {
+        comments: [
+          expect.objectContaining({
+            content: commentsAtStart[0].content,
+            user: commentsAtStart[0].user,
+            rating: commentsAtStart[0].rating,
+            property: commentsAtStart[0].property
+          })
+        ],
+        pages: 1
+      }
     )
   })
 
   test('When the property does not exist', async () => {
     const req1 = {
       method: 'GET',
-      query: { id: mongoose.Types.ObjectId() }
+      query: { id: new mongoose.Types.ObjectId() }
     }
 
     const res1 = {

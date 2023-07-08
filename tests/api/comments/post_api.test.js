@@ -16,7 +16,7 @@ const propertiesInDb = async () => {
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId(),
   rating: 4
 }
 
@@ -38,7 +38,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -211,7 +211,7 @@ describe('POST: When there are no comments in db and one is added', () => {
   })
 
   test('Creation fails with valid propertyId but non-existent property', async () => {
-    const propertyId = mongoose.Types.ObjectId()
+    const propertyId = new mongoose.Types.ObjectId()
     const commentsAtStart = await commentsInDb(propertyId)
     expect(commentsAtStart).toHaveLength(0)
 

@@ -20,9 +20,9 @@ export default async function propertiesIdCommentsRouter (req, res) {
         return res.status(200).json([])
       } else if (property.comments.length > 0) {
         let limit = req.query?.limit
-        if (limit === 'undefined') limit = 5
+        if (limit === 'undefined' || limit === undefined) limit = 5
         let page = req.query?.page
-        if (page === 'undefined') page = 1
+        if (page === 'undefined' || page === undefined) page = 1
         const skip = limit * (page - 1)
 
         let comments = await Comment.find({ property: propertyId }).sort({ publishDate: -1 }).skip(skip).limit(limit)

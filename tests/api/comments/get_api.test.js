@@ -22,7 +22,7 @@ const propertiesInDb = async () => {
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId(),
   rating: 4
 }
 
@@ -44,7 +44,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -167,7 +167,7 @@ describe('GET comments by id', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis()
     }
-    await commentsIdRouter({ ...req, query: { id: mongoose.Types.ObjectId() } }, res1)
+    await commentsIdRouter({ ...req, query: { id: new mongoose.Types.ObjectId() } }, res1)
     expect(res1.status).toHaveBeenCalledWith(404)
     expect(res1.json).toHaveBeenCalledWith({ error: 'comment not found' })
   })

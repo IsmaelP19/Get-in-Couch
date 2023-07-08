@@ -25,7 +25,7 @@ const newProperty = {
   parking: 'Parking',
   airConditioning: true,
   heating: false,
-  owner: mongoose.Types.ObjectId()
+  owner: new mongoose.Types.ObjectId()
 }
 
 const req = {
@@ -324,7 +324,7 @@ describe('POST: When there is some attribute missing', () => {
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
 
-    newProperty.owner = mongoose.Types.ObjectId()
+    newProperty.owner = new mongoose.Types.ObjectId()
   })
 })
 
@@ -578,7 +578,7 @@ describe('POST: When there is some invalid values', () => {
     await propertiesRouter(req, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: owner: Cast to ObjectId failed for value "Test" (type string) at path "owner" because of "BSONTypeError"' })
+    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: owner: Cast to ObjectId failed for value "Test" (type string) at path "owner" because of "BSONError"' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
