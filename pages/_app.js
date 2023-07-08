@@ -20,19 +20,17 @@ export default function App ({ Component, pageProps }) {
   return (
     <>
       <AppWrapper>
-      <NextUIProvider>
-
-        <DefaultSeo {...DEFAULT_SEO} />
-        <NextSeo title={pageProps.title} />
-        <div className='min-h-screen flex flex-col'>
-          <Navbar />
-          <main className='flex-1 flex'>
+        <NextUIProvider>
+          <DefaultSeo {...DEFAULT_SEO} />
+          <NextSeo title={pageProps.title} />
+          <div className='min-h-screen flex flex-col'>
+            <Navbar />
+            <main className='flex-1 flex'>
               <Component {...pageProps} />
-          </main>
-          <Footer />
-        </div>
+            </main>
+            <Footer />
+          </div>
         </NextUIProvider>
-
       </AppWrapper>
     </>
   )
