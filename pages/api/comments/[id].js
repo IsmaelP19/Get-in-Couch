@@ -31,8 +31,7 @@ export default async function commentsIdRouter (req, res) {
         property.comments = property.comments.filter(c => c.toString() !== commentId)
         await property.save()
 
-        comment.remove()
-        // this deletes the comment but not from the property comments array
+        await Comment.findByIdAndDelete(commentId)
 
         return res.status(204).end()
       }

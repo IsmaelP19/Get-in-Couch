@@ -2,6 +2,7 @@ import { useAppContext } from '../context/state'
 import { showMessage } from '../utils/utils'
 import commentsService from '../services/comments'
 import { useFormik } from 'formik'
+import propertiesService from '../services/properties'
 
 const validate = (values) => {
   const errors = {}
@@ -11,7 +12,7 @@ const validate = (values) => {
   } else if (values.content.length < 50) {
     errors.content = 'El comentario debe tener al menos 50 caracteres'
   } else if (values.content.length > 1024) {
-    errors.content = 'El comentario no puede tener más de 1024 caracteres'
+    errors.content = 'El comentario no puede tener más de 1024 caracteres. Por favor, sea más conciso.'
   }
 
   if (!values.rating || values.rating === 'Selecciona una puntuación') {
@@ -23,23 +24,35 @@ const validate = (values) => {
   return errors
 }
 
-export default function CommentForm ({ property, setComments }) {
+export default function CommentForm ({ property, setComments, comments, setPage, page, setTotalPages, totalPages }) {
   const { user, setMessage } = useAppContext()
 
   const createComment = (commentObject) => {
     commentObject.user = user.id
     commentObject.property = property.id
 
-    // FIXME: se pierden los saltos de línea en el contenido del comentario.
-
     commentsService.create(commentObject)
-      .then(response => {
+      .then(async response => {
         const scrollPosition = window.scrollY
-        showMessage('Se ha creado correctamente el comentario 😎', 'success', setMessage, 4000) // FIXME: not working
+        showMessage('Se ha creado correctamente el comentario 😎', 'success', setMessage, 4000)
         const newComment = response
         newComment.user = user
-        setComments(comments => [newComment, ...comments])
         window.scrollTo(0, scrollPosition)
+        // change to the first page of the comments Pagination component if the user is not in the first page
+        if (page !== 1) {
+          setPage(1)
+          const newComments = await propertiesService.getCommentsByProperty(property.id)
+          setComments([...newComments.comments])
+        } else { // if I am on page 1 I want to add the new comment to the comments array and delete the last one
+          comments.unshift(newComment)
+
+          if (comments.length === 6) {
+            comments.pop()
+            setTotalPages(totalPages + 1)
+          }
+
+          setComments([...comments])
+        }
       })
       .catch(error => {
         console.log(error)

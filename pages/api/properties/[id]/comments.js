@@ -19,12 +19,20 @@ export default async function propertiesIdCommentsRouter (req, res) {
       } else if (property.comments.length === 0) {
         return res.status(200).json([])
       } else if (property.comments.length > 0) {
-        let comments = await Comment.find({ property: propertyId }).sort({ publishDate: -1 })
+        let limit = req.query?.limit
+        if (limit === 'undefined') limit = 5
+        let page = req.query?.page
+        if (page === 'undefined') page = 1
+        const skip = limit * (page - 1)
+
+        let comments = await Comment.find({ property: propertyId }).sort({ publishDate: -1 }).skip(skip).limit(limit)
+
         if (comments && process.env.NODE_ENV !== 'test') {
           comments = await Promise.all(comments.map(async comment => await comment.populate('user', 'username name surname profilePicture')))
         }
-
-        return res.status(200).json(comments)
+        const total = await Comment.countDocuments({ property: propertyId })
+        const pages = Math.ceil(total / limit)
+        return res.status(200).json({ comments, pages })
       }
     }
   } catch (error) {

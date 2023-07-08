@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { DefaultSeo, NextSeo } from 'next-seo'
 import { AppWrapper } from '../context/state'
+import { NextUIProvider } from '@nextui-org/react'
 
 const DEFAULT_SEO = {
   titleTemplate: '%s | Get in Couch 🏠',
@@ -19,15 +20,19 @@ export default function App ({ Component, pageProps }) {
   return (
     <>
       <AppWrapper>
+      <NextUIProvider>
+
         <DefaultSeo {...DEFAULT_SEO} />
         <NextSeo title={pageProps.title} />
         <div className='min-h-screen flex flex-col'>
           <Navbar />
           <main className='flex-1 flex'>
-            <Component {...pageProps} />
+              <Component {...pageProps} />
           </main>
           <Footer />
         </div>
+        </NextUIProvider>
+
       </AppWrapper>
     </>
   )

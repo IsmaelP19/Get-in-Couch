@@ -3,12 +3,14 @@ import Comment from '../../../components/Comment'
 import PropertyCard from '../../../components/PropertyCard'
 import PropertyInfo from '../../../components/PropertyInfo'
 import propertiesService from '../../../services/properties'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { MdDeleteOutline } from 'react-icons/md'
 import { useRouter } from 'next/router'
 import { useAppContext } from '../../../context/state'
 import CommentForm from '../../../components/CommentForm'
+import Notification from '../../../components/Notification'
+import { Pagination } from '@nextui-org/react'
 
 /*
   We have the property object on the PropertyDetails page.
@@ -16,11 +18,30 @@ import CommentForm from '../../../components/CommentForm'
   First, we have to load the comments from the property.
   The comments should be populated on the property object.
 */
-export default function PropertyDetails ({ property, commentsArray }) {
+export default function PropertyDetails ({ property }) {
+  // FIXME: commentsArray should be fetched on the first render, not on the server side, to increase performance.
   const [showText, setShowText] = useState('Ver más imágenes')
-  const [comments, setComments] = useState(commentsArray)
-  const { user } = useAppContext()
+  const [comments, setComments] = useState([])
+  const [totalPages, setTotalPages] = useState(1)
+  const [page, setPage] = useState(1)
+  const { user, message } = useAppContext()
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const fetchedComments = await propertiesService.getCommentsByProperty(property.id)
+      setComments(fetchedComments.comments)
+      setTotalPages(fetchedComments.pages)
+    }
+    fetchComments()
+  }, [property.id])
+
+  const handlePageChange = async (page) => {
+    setPage(page)
+    const fetchedComments = await propertiesService.getCommentsByProperty(property.id, 5, page)
+    setComments(fetchedComments.comments)
+    setTotalPages(fetchedComments.pages) // in case the total number of pages has changed
+  }
 
   const handleShowGallery = () => {
     const gallery = document.querySelector('#gallery')
@@ -84,14 +105,17 @@ export default function PropertyDetails ({ property, commentsArray }) {
 
       <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-10 gap-5'>
         <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
-        <CommentForm property={property} setComments={setComments} />
-        {comments.length > 0
+        <Notification message={message[0]} type={message[1]} />
+        <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} setTotalPages={setTotalPages} totalPages={totalPages} />
+        {comments?.length > 0
           ? (
 
             <div className='w-full flex flex-col items-center justify-around gap-3'>
               {comments.map(comment => (
-                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner.id === comment.user.id} />
+                <Comment key={comment.id} comment={comment} n={comments.length} page={page} setTotalPages={setTotalPages} setComments={setComments} setPage={setPage} isTenant={property.tenants.includes(comment.user.id)} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner?.id === comment.user.id} />
               ))}
+              <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} />
+
             </div>
 
             )
@@ -112,14 +136,10 @@ export async function getServerSideProps (context) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }
-  const fetchedComments = await propertiesService.getCommentsByProperty(id)
-  // Theoretically, we shouldn't have any errors on the comments. The only possible error is that the property doesn't exist.
-  // This error is handled on the previous if statement.
 
   return {
     props: {
       property: fetchedProperty,
-      commentsArray: fetchedComments,
       title: 'Detalles del inmueble'
     }
   }

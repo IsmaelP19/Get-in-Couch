@@ -16,7 +16,6 @@ export default function PropertyForm ({ property }) {
       .then(response => {
         showMessage('Se ha actualizado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)
         setTimeout(() => {
-          // we will redirect to the property page and we will pass the propertyObject to prevent another API call
           router.push(`/properties/${property.id}`)
         }, 4000)
       })
