@@ -93,7 +93,7 @@ describe('GET all comments from a property endpoint', () => {
             property: commentsAtStart[0].property
           })
         ],
-        pages: 1
+        total: 1
       }
     )
   })

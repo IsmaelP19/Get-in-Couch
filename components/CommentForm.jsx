@@ -24,18 +24,17 @@ const validate = (values) => {
   return errors
 }
 
-export default function CommentForm ({ property, setComments, comments, setPage, page, setTotalPages, totalPages }) {
+export default function CommentForm ({ property, setComments, comments, setTotalComments, totalComments, setPage, page }) {
   const { user, setMessage } = useAppContext()
 
   const createComment = (commentObject) => {
     commentObject.user = user?.id
     commentObject.property = property.id
-    const scrollPosition = window.scrollY
 
     commentsService.create(commentObject)
       .then(async response => {
-        window.scrollTo(0, scrollPosition)
         showMessage('Se ha creado correctamente el comentario 😎', 'success', setMessage, 4000)
+
         const newComment = response
         newComment.user = user
 
@@ -44,13 +43,12 @@ export default function CommentForm ({ property, setComments, comments, setPage,
           setPage(1)
           const newComments = await propertiesService.getCommentsByProperty(property.id)
           setComments([...newComments.comments])
+          setTotalComments(newComments.total)
         } else { // if I am on page 1 I want to add the new comment to the comments array and delete the last one
           comments.unshift(newComment)
+          setTotalComments(totalComments + 1)
 
-          if (comments.length === 6) {
-            comments.pop()
-            setTotalPages(totalPages + 1)
-          }
+          if (comments.length === 6) comments.pop()
 
           setComments([...comments])
         }
@@ -62,7 +60,6 @@ export default function CommentForm ({ property, setComments, comments, setPage,
           console.log(error)
           showMessage('Ha ocurrido un error al crear el comentario. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
         }
-        window.scrollTo(0, scrollPosition)
       })
   }
 
@@ -106,7 +103,7 @@ export default function CommentForm ({ property, setComments, comments, setPage,
         {formik.touched.rating && formik.errors.rating ? <div className='text-red-600' role='alert'>{formik.errors.rating}</div> : null}
       </div>
 
-      <button type='submit' className='font-bold p-2 border-2 self-center w-20 rounded-xl bg-slate-400 border-black hover:bg-green-500 active:bg-green-500 duration-100 ease-in transition-all'>Enviar</button>
+      <button type='submit' className='font-bold p-2 border-2 self-center w-20 rounded-xl bg-slate-400 border-black hover:bg-green-500 active:bg-green-500 focus:bg-green-500 duration-100 ease-in transition-all'>Enviar</button>
     </form>
   )
 }

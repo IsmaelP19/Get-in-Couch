@@ -43,9 +43,9 @@ const tokenExtractor = (request, response) => {
   }
 }
 
-const showMessage = (message, type, setMessage, time) => {
+const showMessage = (message, type, setMessage, time, scroll) => {
   setMessage([message, type])
-  window.scrollTo(0, 0)
+  if (scroll) window.scrollTo(0, 0)
   setTimeout(() => {
     setMessage('')
   }, time)

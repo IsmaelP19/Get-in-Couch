@@ -31,8 +31,7 @@ export default async function propertiesIdCommentsRouter (req, res) {
           comments = await Promise.all(comments.map(async comment => await comment.populate('user', 'username name surname profilePicture')))
         }
         const total = await Comment.countDocuments({ property: propertyId })
-        const pages = Math.ceil(total / limit)
-        return res.status(200).json({ comments, pages })
+        return res.status(200).json({ comments, total })
       }
     }
   } catch (error) {

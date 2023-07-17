@@ -22,6 +22,7 @@ export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
+  const [totalComments, setTotalComments] = useState(0)
   const [page, setPage] = useState(1)
   const { user, message } = useAppContext()
   const router = useRouter()
@@ -30,17 +31,26 @@ export default function PropertyDetails ({ property }) {
     const fetchComments = async () => {
       const fetchedComments = await propertiesService.getCommentsByProperty(property.id)
       setComments(fetchedComments.comments)
-      if (fetchedComments.pages === 0) setTotalPages(1)
-      else { setTotalPages(fetchedComments.pages) }
+      setTotalComments(fetchedComments.total)
+      // fetchedComments.comments === 0 ? setTotalPages(1) : setTotalPages(Math.ceil(fetchedComments.total / 5))
     }
     fetchComments()
   }, [property.id])
+
+  useEffect(() => {
+    if (totalComments === 0) {
+      setTotalPages(1)
+    } else {
+      setTotalPages(Math.ceil(totalComments / 5))
+    }
+  }, [totalComments])
 
   const handlePageChange = async (page) => {
     setPage(page)
     const fetchedComments = await propertiesService.getCommentsByProperty(property.id, 5, page)
     setComments(fetchedComments.comments)
-    setTotalPages(fetchedComments.pages) // in case the total number of pages has changed
+    setTotalComments(fetchedComments.total) // in case the total number of comments has changed
+    // setTotalPages(fetchedComments.pages) // in case the total number of pages has changed
   }
 
   const handleShowGallery = () => {
@@ -106,13 +116,13 @@ export default function PropertyDetails ({ property }) {
       <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-10 gap-5'>
         <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
         <Notification message={message[0]} type={message[1]} />
-        <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} setTotalPages={setTotalPages} totalPages={totalPages} />
+        <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} />
         {comments?.length > 0
           ? (
 
             <div className='w-full flex flex-col items-center justify-around gap-3'>
               {comments.map(comment => (
-                <Comment key={comment.id} comment={comment} n={comments.length} page={page} setTotalPages={setTotalPages} setComments={setComments} setPage={setPage} isTenant={property.tenants.includes(comment.user.id)} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner?.id === comment.user.id} />
+                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} setPage={setPage} page={page} n={comments.length} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner?.id === comment.user.id} setComments={setComments} setTotalComments={setTotalComments} />
               ))}
               <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} />
 
