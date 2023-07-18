@@ -87,13 +87,11 @@ export default async function propertiesRouter (req, res) {
       const page = req.query?.page || 1 // default page is 1
 
       if (typeof parseInt(page) !== 'number') return res.status(400).json({ error: `Page must be a valid number (page is ${parseInt(1)})` })
-      const limit = req.query?.limit || 10
+      const limit = req.query?.limit || 8
       if (typeof parseInt(limit) !== 'number') return res.status(400).json({ error: 'Limit must be a valid number' })
-      const skip = (page - 1) * 10
+      const skip = limit * (page - 1)
 
-      let properties = await Property.find({})
-        .skip(skip)
-        .limit(limit)
+      let properties = await Property.find({}).sort({ publishDate: -1 }).skip(skip).limit(limit)
 
       if (process.env.NODE_ENV === 'test') {
         // passwordHash is removed with the transform function of the model

@@ -10,20 +10,15 @@ import { useRouter } from 'next/router'
 import { useAppContext } from '../../../context/state'
 import CommentForm from '../../../components/CommentForm'
 import Notification from '../../../components/Notification'
-import { Pagination } from '@nextui-org/react'
+import { Pagination, Loading } from '@nextui-org/react'
 
-/*
-  We have the property object on the PropertyDetails page.
-  We will pass it to the comment object.
-  First, we have to load the comments from the property.
-  The comments should be populated on the property object.
-*/
 export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
   const [totalComments, setTotalComments] = useState(0)
   const [page, setPage] = useState(1)
+  const [done, setDone] = useState(false)
   const { user, message } = useAppContext()
   const router = useRouter()
 
@@ -32,7 +27,7 @@ export default function PropertyDetails ({ property }) {
       const fetchedComments = await propertiesService.getCommentsByProperty(property.id)
       setComments(fetchedComments.comments)
       setTotalComments(fetchedComments.total)
-      // fetchedComments.comments === 0 ? setTotalPages(1) : setTotalPages(Math.ceil(fetchedComments.total / 5))
+      setDone(true)
     }
     fetchComments()
   }, [property.id])
@@ -46,11 +41,12 @@ export default function PropertyDetails ({ property }) {
   }, [totalComments])
 
   const handlePageChange = async (page) => {
+    setDone(false)
     setPage(page)
     const fetchedComments = await propertiesService.getCommentsByProperty(property.id, 5, page)
     setComments(fetchedComments.comments)
     setTotalComments(fetchedComments.total) // in case the total number of comments has changed
-    // setTotalPages(fetchedComments.pages) // in case the total number of pages has changed
+    setDone(true)
   }
 
   const handleShowGallery = () => {
@@ -117,7 +113,8 @@ export default function PropertyDetails ({ property }) {
         <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
         <Notification message={message[0]} type={message[1]} />
         <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} />
-        {comments?.length > 0
+        {!done && <Loading color='primary' />}
+        {done && comments?.length > 0
           ? (
 
             <div className='w-full flex flex-col items-center justify-around gap-3'>
@@ -130,7 +127,7 @@ export default function PropertyDetails ({ property }) {
 
             )
           : (
-            <span className='text-center mt-4 text-xl'>Aún no hay comentarios disponibles... ¿Por qué no creas uno?</span>
+              done && <span className='text-center mt-4 text-xl'>Aún no hay comentarios disponibles... ¿Por qué no creas uno?</span>
             )}
       </div>
 
