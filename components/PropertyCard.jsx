@@ -1,3 +1,5 @@
+import { GrMapLocation } from 'react-icons/gr'
+
 export default function PropertyCard ({ property, style }) {
   const { id, title, price, location, features, images, tenants } = property
 
@@ -14,7 +16,11 @@ export default function PropertyCard ({ property, style }) {
 
       <div className='flex flex-col w-[300px] items-center gap-4 pb-5'>
         <h2 className='font-bold text-center '>{cardTitle}</h2>
-        <h3 className='italic'> {cardSubtitle} </h3>
+        <h3 className='italic'>
+          <GrMapLocation className='inline-block mr-1' />
+
+          {cardSubtitle}
+        </h3>
         <span>{freeRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
         <div className='flex w-full items-center justify-around'>
