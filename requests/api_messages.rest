@@ -1,0 +1,7 @@
+POST http://localhost:3000/api/conversations
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "participants": ["6491c3ecaf25306723ff8814", "63f409c4d4c47a1ee29599b9"]
+}

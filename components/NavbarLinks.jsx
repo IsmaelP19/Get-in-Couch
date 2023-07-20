@@ -7,7 +7,8 @@ export default function NavbarLinks () {
 
   const links = [
     { id: 1, name: 'Inmuebles', link: '/properties' },
-    { id: 2, name: 'Mapa', link: '/map' }
+    { id: 2, name: 'Mapa', link: '/map' },
+    { id: 3, name: 'Chats', link: '/chats' }
   ]
   const handleClick = () => {
     isOpen &&

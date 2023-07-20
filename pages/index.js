@@ -1,6 +1,5 @@
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
-import utils from '../utils/utils'
 import propertiesService from '../services/properties'
 import userService from '../services/users'
 export default function Home ({ registeredUsers, properties }) {
@@ -29,8 +28,6 @@ export async function getServerSideProps (context) {
     'Cache-Control',
     'public, s-maxage=10, stale-while-revalidate=59'
   )
-  utils.createConnection()
-  // for faster response time, we create the connection to db before the user requests the page
 
   const registeredUsers = await userService.getAll()
 
