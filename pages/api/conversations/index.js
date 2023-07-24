@@ -16,7 +16,7 @@ export default async function conversationsRouter (req, res) {
         participants: {
           $in: [req.query?.user]
         }
-      })
+      }).populate('participants', 'username name surname profilePicture')
 
       return res.status(200).json(conversations)
     } else if (req.method === 'POST') {
@@ -27,6 +27,10 @@ export default async function conversationsRouter (req, res) {
       }
 
       const participants = [...new Set(body.participants)]
+
+      if (participants.length !== 2) {
+        return res.status(400).json({ error: 'participants array must have 2 different participants' })
+      }
 
       // check if the conversation between those participants already exists
       let conversation = await Conversation.findOne({

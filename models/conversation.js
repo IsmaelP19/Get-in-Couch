@@ -1,13 +1,11 @@
 import mongoose from 'mongoose'
-
 const uniqueValidator = require('mongoose-unique-validator')
 
 const conversationSchema = new mongoose.Schema({
   messages: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Message',
-      unique: true
+      ref: 'Message'
     }
   ],
   participants: [
@@ -15,7 +13,11 @@ const conversationSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
-  ]
+  ],
+  lastTalked: {
+    type: Date,
+    default: Date.now
+  }
 })
 
 conversationSchema.plugin(uniqueValidator)

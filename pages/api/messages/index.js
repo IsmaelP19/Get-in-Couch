@@ -37,9 +37,11 @@ export default async function messagesRouter (req, res) {
         })
       }
 
+      const date = Date.now()
       // create the message
-      const newMessage = new Message({ message, author, receiver })
+      const newMessage = new Message({ message, author, receiver, date })
       conversation.messages.push(newMessage)
+      conversation.lastTalked = date
 
       await newMessage.save()
       await conversation.save()

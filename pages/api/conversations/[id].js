@@ -1,4 +1,6 @@
 import Conversation from '../../../models/conversation'
+// eslint-disable-next-line no-unused-vars
+import Message from '../../../models/message'
 import { errorHandler, createConnection } from '../../../utils/utils'
 
 export default async function conversationsIdRouter (req, res) {
@@ -13,13 +15,30 @@ export default async function conversationsIdRouter (req, res) {
     if (!conversationId) return res.status(400).json({ error: 'id is required' })
 
     if (req.method === 'GET') {
-      let conversation = await Conversation.findById(conversationId)
+      // const conversation = await Conversation.findById(conversationId).populate('messages', 'message author receiver date read')
+      const conversation = await Conversation.findById(conversationId)
+        .populate({
+          path: 'messages',
+          populate: {
+            path: 'author receiver',
+            select: { username: 1, name: 1, surname: 1, profilePicture: 1 }
+          }
 
-      if (conversation && process.env.NODE_ENV !== 'test') {
-        conversation = await conversation.populate('participants', 'username name surname profilePicture').populate('messages').execPopulate()
+        })
+
+      // if (conversation && process.env.NODE_ENV !== 'test') {
+      //   conversation = await conversation
+      //     .populate('messages', 'message author receiver date read')
+      // }
+      if (conversation.messages) {
+        conversation.messages.sort((a, b) => {
+          const aDate = new Date(a.date)
+          const bDate = new Date(b.date)
+          return aDate - bDate
+        })
       }
 
-      return conversation ? res.status(200).json(conversation) : res.status(404).json({ error: 'conversation not found' })
+      return conversation ? res.status(200).json(conversation.messages) : res.status(404).json({ error: 'conversation not found' })
     }
     // else if (req.method === 'DELETE') {
     //   const comment = await Comment.findById(commentId)
@@ -54,6 +73,7 @@ export default async function conversationsIdRouter (req, res) {
     //   return res.status(200).end()
     // }
   } catch (error) {
+    console.log(error)
     errorHandler(error, req, res)
   }
 }

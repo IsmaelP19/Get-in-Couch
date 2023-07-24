@@ -1,68 +1,84 @@
-// import { Server } from 'socket.io'
-// import messageHandler from '../../utils/sockets/messageHandler.js'
-
-// /pages/api/socket.js
 import { Server } from 'socket.io'
-import Conversation from '../../models/conversation'
 import Message from '../../models/message'
+import Conversation from '../../models/conversation'
 
-export default function Socket (req, res) {
+export const config = {
+  api: {
+    bodyParser: false
+  }
+}
+
+export default function handler (req, res) {
+  const io = new Server(res.socket.server, {
+    path: '/api/socket'
+  })
   if (!res.socket.server.io) {
-    console.log('*New Socket.io server instance')
-    const io = new Server(res.socket.server)
-
-    io.on('connection', (socket) => {
-      console.log('A user connected')
-
-      // Manejar el evento de envío de mensajes
-      socket.on('sendMessage', async (messageData) => { // messageData will have message, author, receiver, date and read
-        try {
-          // Guardar el mensaje en la base de datos (puedes ajustar esto según tu modelo)
-          // we will try to find the conversation by the participants and if it doesn't exist, we will create it
-
-          let conversation = await Conversation.findOne({
-            participants: {
-              $all: [messageData.author, messageData.receiver]
-            }
-          })
-
-          if (!conversation) { // Si no existe la conversación, la creamos
-            conversation = new Conversation({
-              messages: [],
-              participants: [messageData.author, messageData.receiver]
-            })
-          }
-
-          // create the message
-          const message = new Message({
-            message: messageData.message,
-            author: messageData.author,
-            receiver: messageData.receiver,
-            date: Date.now(),
-            read: false
-          })
-
-          await message.save()
-
-          // Añadir el mensaje a la conversación
-          conversation.messages.push(message)
-
-          await conversation.save()
-
-          // Emitir el mensaje a los otros participantes de la conversación
-          socket.to(conversation._id).emit('message', message)
-        } catch (error) {
-          console.error('Error al enviar el mensaje:', error)
-        }
-      })
-
-      socket.on('disconnect', () => {
-        console.log('User disconnected')
-      })
-    })
-
+    console.log('*First use, starting socket.io')
+    // Adjuntamos el servidor Socket.io al servidor HTTP solo si no está adjuntado previamente
     res.socket.server.io = io
   }
 
+  // const io = res.socket.server.io || new Server(res.socket.server)
+
+  // Manejador de eventos para cuando un cliente se conecta
+
+  io.on('connection', (socket) => {
+    console.log('Cliente conectado:', socket.id)
+
+    // Manejador de eventos para cuando un cliente se desconecta
+    socket.on('disconnect', () => {
+      console.log('Cliente desconectado:', socket.id)
+    })
+
+    // Manejador de eventos para cuando se envía un nuevo mensaje
+    socket.on('send:message', async (messageData) => {
+      try {
+        // Verificamos si la conversación existe a partir del conversationId
+        const conversation = await Conversation.findById(messageData.conversationId)
+        if (!conversation) {
+          // Manejo de error si la conversación no existe
+          socket.emit('error', 'La conversación no existe') // FIXME: crear la conversación cuando no exista directamente
+          return
+        }
+
+        // Creamos el mensaje y lo asociamos a la conversación
+        const date = new Date()
+        const message = new Message({
+          message: messageData.message,
+          author: messageData.author,
+          receiver: messageData.receiver,
+          date
+        })
+
+        // Guardamos el mensaje y actualizamos la conversación
+        const savedMessage = await message.save()
+
+        conversation.messages.push(message)
+        conversation.lastTalked = date
+        await conversation.save()
+
+        // Emitimos el mensaje a todos los clientes conectados en la misma sala (conversación)
+        io.to(messageData.conversationId).emit('receive:message', {
+          message: savedMessage
+        })
+      } catch (error) {
+        // Manejo de errores generales
+        socket.emit('error', 'Error al enviar el mensaje')
+        console.error('Error al enviar el mensaje:', error)
+      }
+    })
+
+    // Manejador de eventos para unirse a una sala (conversación)
+    socket.on('join:conversation', (conversationId) => {
+      socket.join(conversationId)
+    })
+
+    // Manejador de eventos para abandonar una sala (conversación)
+    socket.on('leave:conversation', (conversationId) => {
+      socket.leave(conversationId)
+    })
+  })
+
+  // No olvides cerrar la respuesta para Next.js después de manejar Socket.io
   res.end()
 }
