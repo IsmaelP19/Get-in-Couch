@@ -1,0 +1,19 @@
+POST http://localhost:3000/api/conversations
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "participants": ["64be9cea2ff15b4ef8928db0", "63f409c4d4c47a1ee29599b9"]
+}
+
+###
+
+POST http://localhost:3000/api/messages
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "message": "I'm fine. What about you?",
+  "receiver": "63f409c4d4c47a1ee29599b9",
+  "author": "63f1975aff912523d6589228"
+}

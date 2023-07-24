@@ -23,9 +23,9 @@ export default function App ({ Component, pageProps }) {
         {/* <NextUIProvider> */}
         <DefaultSeo {...DEFAULT_SEO} />
         <NextSeo title={pageProps.title} />
-        <div className='min-h-screen flex flex-col'>
+        <div className='min-h-screen flex flex-col' id='parent'>
           <Navbar />
-          <main className='flex-1 flex'>
+          <main className='flex-1 flex' id='main'>
             <Component {...pageProps} />
           </main>
           <Footer />

@@ -19,7 +19,7 @@ export default function Footer () {
   ]
 
   return (
-    <footer className='shadow-md w-full bottom-0 bg-slate-900 text-gray-100 md:px-10'>
+    <footer className='shadow-md w-full bottom-0 bg-slate-900 text-gray-100 md:px-10' id='footer'>
       <div className='flex md:flex-row flex-col md:items-start items-center justify-around p-8'>
         <Column header='Compañía' links={company} />
         <Column header='Soporte' links={support} />
