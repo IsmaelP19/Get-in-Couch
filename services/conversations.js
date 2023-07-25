@@ -13,4 +13,9 @@ const getMessagesFromConversation = async (id) => {
   return response.data
 }
 
-export default { getAllConversations, getMessagesFromConversation }
+const create = async (newObject) => {
+  const response = await axios.post(baseUrl, newObject, customHeader)
+  return response.data
+}
+
+export default { create, getAllConversations, getMessagesFromConversation }

@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from 'react'
 import conversationService from '../services/conversations'
 import Message from './Message'
 import MessageForm from './MessageForm'
+import { Loading } from '@nextui-org/react'
+import Link from 'next/link'
 
 export default function ChatLayout ({ conversations }) {
   // these conversations are populated, so we know the user with whom we are chatting with (his/her username, name, surname and profilePicture)
@@ -10,16 +12,18 @@ export default function ChatLayout ({ conversations }) {
   const [conversation, setConversation] = useState(null) // selected conversation
   const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
+  const [done, setDone] = useState(false)
   const chatContainerRef = useRef(null)
 
   const handleConversationClick = (selectedConversation) => {
     setConversation(selectedConversation)
+    setDone(false)
     getMessages(selectedConversation.id)
   }
 
   useEffect(() => {
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-  }, [messages])
+  }, [messages, done])
 
   useEffect(() => {
     if (conversations.length !== 0) { setConversation(conversations[0]) }
@@ -44,7 +48,7 @@ export default function ChatLayout ({ conversations }) {
       setMessages([])
       setLastMessageId(null)
     }
-    // setDone(true)
+    setDone(true)
   }
   useEffect(() => {
     if (conversation?.id) {
@@ -76,18 +80,34 @@ export default function ChatLayout ({ conversations }) {
         <span className='p-2 text-2xl text-gray-600 font-bold border-b border-slate-300 hidden md:flex'>
           Mensajes
         </span>
-        <span className='p-4 shadow-2xl text-2xl text-gray-600 font-bold border-b border-slate-300 flex md:hidden'>
-          {conversation && `${conversation.participants[0].name} ${conversation.participants[0].surname}`}
-        </span>
+        <div className='p-4 shadow-2xl text-2xl text-gray-600 font-bold border-b border-slate-300 flex flex-col md:hidden'>
+          <span>
+            {conversation && `${conversation.participants[0].name} ${conversation.participants[0].surname}`}
+          </span>
+          {conversation &&
+            <Link href={`/profile/${conversation.participants[0].username}`} className='italic text-slate-500 hover:underline hover:text-blue-600'>
+              <span>
+                @{conversation.participants[0].username}
+              </span>
+            </Link>}
+
+        </div>
 
         <div ref={chatContainerRef} className='flex flex-col gap-3 p-2 h-full overflow-y-auto'>
 
-          {conversation && messages.length !== 0 &&
+          {!done && (
+            <div className='flex flex-col m-auto'>
+              <Loading color='primary' />
+              <span>Cargando mensajes</span>
+            </div>
+          )}
+
+          {conversation && messages.length !== 0 && done &&
             messages.map((message) => (
               <Message key={message.id} message={message} />
             ))}
 
-          {conversation && messages.length === 0 && <span>Comience a chatear con {conversation.participants[0].name} {conversation.participants[0].surname}</span>}
+          {conversation && messages.length === 0 && done && <span>Comience a chatear con {conversation.participants[0].name} {conversation.participants[0].surname}</span>}
 
         </div>
 

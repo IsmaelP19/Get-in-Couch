@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ProfilePhoto from '../../components/ProfilePhoto'
 import userService from '../../services/users'
 import { useAppContext } from '../../context/state'
+import conversationsService from '../../services/conversations'
 // TODO: add saved properties to my profile page
 
 export default function Profile ({ userObject }) {
@@ -11,6 +12,15 @@ export default function Profile ({ userObject }) {
   const [follow, setFollow] = useState(false)
   const [followersState, setFollowers] = useState(followers.length)
   const { user, setUser } = useAppContext()
+
+  const handleContact = async () => {
+    try {
+      await conversationsService.create({ participants: [user.id, userObject.id] })
+      window.location.href = '/chats'
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     async function checkFollow () {
@@ -28,7 +38,6 @@ export default function Profile ({ userObject }) {
   }
 
   const handleFollow = async () => {
-    // TODO: add it to the user of context
     await userService.follow(userObject.username, user.username)
 
     setFollow(!follow)
@@ -73,7 +82,7 @@ export default function Profile ({ userObject }) {
       <>
         {followBtn}
 
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black'>
+        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleContact}>
           Contactar
         </button>
       </>
@@ -113,6 +122,7 @@ export default function Profile ({ userObject }) {
               {description}
             </span>
             <div className='flex gap-3'>
+              {/* TODO: add clickable to show followers and followed on another page */}
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
                 {followersState} seguidores
               </span>

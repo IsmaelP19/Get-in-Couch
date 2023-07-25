@@ -40,7 +40,7 @@ export default async function conversationsRouter (req, res) {
       })
 
       if (conversation) {
-        return res.status(400).json({ message: 'conversation already exists', conversation })
+        return res.status(201).json({ message: 'conversation already exists', conversation }) // status 201 because if not throws an error in the frontend before redirecting to the chat
       }
 
       conversation = new Conversation({
