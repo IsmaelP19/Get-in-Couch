@@ -10,9 +10,11 @@ export default function Chats () {
 
   useEffect(() => {
     document.getElementById('footer').classList.add('hidden')
+    document.getElementById('main').classList.add('overflow-y-hidden')
 
     return () => {
       document.getElementById('footer').classList.remove('hidden')
+      document.getElementById('main').classList.remove('overflow-y-hidden')
     }
   }, [])
 
