@@ -55,7 +55,7 @@ export default function Chats () {
 
   return (done && !!user)
     ? (
-      <div className='flex flex-col justify-center items-center w-full'>
+      <div className='flex flex-col justify-center items-center w-full h-[calc(100vh-60px) md:h-[calc(100vh-76px)'>
         <ChatLayout conversations={conversations} />
       </div>
 
