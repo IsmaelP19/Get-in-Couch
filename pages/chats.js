@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useLayoutEffect } from 'react'
 import { useAppContext } from '../context/state'
 import { Loading } from '@nextui-org/react'
 import conversationsService from '../services/conversations'
@@ -9,7 +9,7 @@ export default function Chats () {
   const [conversations, setConversations] = useState([]) // we will fetch them
   const [maxHeight, setMaxHeight] = useState('')
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const setMaxHeightFunction = () => {
       const navbarHeight = document.getElementById('navbar').offsetHeight
       const footerHeight = document.getElementById('footer').offsetHeight
@@ -30,31 +30,42 @@ export default function Chats () {
 
   useEffect(() => {
     const conversationsInitializer = async (id) => {
-      const conversations = await conversationsService.getAllConversations(id)
-      const updatedConversations = conversations.map((conversation) => {
-        const participants = conversation.participants.filter((participant) => participant.username !== user.username)
-        const lastTalked = new Date(conversation.lastTalked).toLocaleString()
-        return { ...conversation, participants, lastTalked }
-      })
+      const convers = await conversationsService.getAllConversations(id)
 
-      updatedConversations.sort((a, b) => {
+      convers.sort((a, b) => {
         const aDate = new Date(a.lastTalked)
         const bDate = new Date(b.lastTalked)
         return bDate - aDate
       })
 
-      setConversations(updatedConversations)
+      const updatedConversations = convers.map((conversation) => {
+        const participants = conversation.participants.filter((participant) => participant.username !== user.username)
+        const lastTalked = new Date(conversation.lastTalked).toLocaleString()
+        return { ...conversation, participants, lastTalked }
+      })
+
+      return updatedConversations
     }
 
     if (done && !!user) {
-      conversationsInitializer(user.id)
+      const intervalId = setInterval(() => {
+        conversationsInitializer(user.id)
+          .then((convers) => {
+            if (JSON.stringify(convers) !== JSON.stringify(conversations)) {
+              setConversations(convers)
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }, 1000)
+      return () => clearInterval(intervalId)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [done]) // we only want to fetch them once the user is logged in, so we only use the done variable as a dependency: if once is true, then we know if the user is logged in or not
+  })
 
   return (done && !!user)
     ? (
-      <div className='flex flex-col justify-center items-center w-full m-2' style={{ height: `${maxHeight}` }}>
+      <div className='flex flex-col justify-center items-center w-full m-0 md:m-2' style={{ height: `${maxHeight}` }}>
         <ChatLayout conversations={conversations} />
       </div>
 

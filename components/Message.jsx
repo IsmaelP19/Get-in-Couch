@@ -17,7 +17,7 @@ export default function Message ({ message }) {
   */
 
   return (
-    <div className={`flex flex-col w-fit gap-2 p-2 rounded-xl border-2 ${message.author.id === user.id ? 'border-blue-300 bg-blue-400 text-white self-end' : 'border-gray-200 bg-gray-300'}`}>
+    <div className={`flex flex-col w-fit gap-2 p-2 rounded-2xl border-2 ${message.author.id === user.id ? 'border-blue-300 bg-blue-400 text-white self-end rounded-ee-none' : 'border-gray-200 bg-gray-300 rounded-es-none'}`}>
       <div className='flex flex-row items-center justify-start gap-3 text-base '>
         <Image src={message.author.profilePhoto || '/static/images/default_avatar.png'} width={30} height={30} alt={message.author.username} />
         <span>
