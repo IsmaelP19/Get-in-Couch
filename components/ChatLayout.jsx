@@ -60,18 +60,23 @@ export default function ChatLayout ({ conversations }) {
   }, [conversation?.id, lastMessageId])
 
   return (
-    <div className='flex flex-row  md:items-start items-center md:my-0 my-5 border h-full w-full border-slate-400 rounded-none md:rounded-md shadow-lg'>
+    <div className='flex flex-row  md:items-start items-center  my-0 border h-full w-full border-slate-400 '>
       <div className='flex flex-col w-1/6 md:w-1/4 h-full border-r border-slate-400'>
         <span className='p-2 text-2xl text-gray-600 font-bold border-b border-slate-300 hidden md:flex'>
           Conversaciones
         </span>
         <ul className='flex flex-col md:items-start items-center h-full w-full overflow-y-auto'>
           {conversations.map((conver) => (
-            <li key={conver.id} className={`flex flex-row items-center justify-center md:justify-start gap-3 text-base cursor-pointer  p-2 border-b w-full ${conversation?.id === conver.id ? 'bg-blue-500 text-white' : 'hover:bg-slate-100 hover:shadow-xl'}  border-slate-300`} onClick={() => handleConversationClick(conver)}>
+            <li key={conver.id} className={`flex flex-row items-center justify-center md:justify-start md:gap-3 text-base cursor-pointer  p-2 border-b w-full ${conversation?.id === conver.id ? 'bg-blue-400 text-white' : 'hover:bg-slate-100 hover:shadow-xl'}  border-slate-300`} onClick={() => handleConversationClick(conver)}>
               <Image src={conver.participants[0].profilePhoto || '/static/images/default_avatar.png'} width={50} height={50} alt={conver.participants[0].username} />
-              <span className=' text-xl hidden md:flex'>
-                {`${conver.participants[0].name} ${conver.participants[0].surname}`}
-              </span>
+              <div className='flex flex-col justify-center items-start'>
+                <span className=' text-xl hidden md:flex'>
+                  {`${conver.participants[0].name} ${conver.participants[0].surname}`}
+                </span>
+                <span className=' text-base italic hidden md:flex'>
+                  @{conver.participants[0].username}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
