@@ -13,7 +13,21 @@ export default function ChatLayout ({ conversations }) {
   const [messages, setMessages] = useState([])
   const [lastMessageId, setLastMessageId] = useState(null)
   const [done, setDone] = useState(false)
+  const [maxHeight, setMaxHeight] = useState(null)
   const chatContainerRef = useRef(null)
+
+  const handleResize = () => {
+    const navbarHeight = document.getElementById('navbar').offsetHeight
+    const keyboardHeight = window.innerHeight - window.visualViewport.height
+    setMaxHeight(window.innerHeight - navbarHeight - keyboardHeight)
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   const handleConversationClick = (selectedConversation) => {
     setConversation(selectedConversation)
@@ -60,7 +74,7 @@ export default function ChatLayout ({ conversations }) {
   }, [conversation?.id, lastMessageId])
 
   return (
-    <div className='flex flex-row  md:items-start items-center  my-0 border h-full w-full border-slate-400 '>
+    <div className='flex flex-row  md:items-start items-center  my-0 border h-full w-full border-slate-400 ' style={{ maxHeight }} id='chatLayout'>
       <div className='flex flex-col w-1/6 md:w-1/4 h-full border-r border-slate-400'>
         <span className='p-2 text-2xl text-gray-600 font-bold border-b border-slate-300 hidden md:flex'>
           Conversaciones
