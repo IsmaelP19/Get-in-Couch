@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useLayoutEffect } from 'react'
 import { useAppContext } from '../context/state'
 import { Loading } from '@nextui-org/react'
 import conversationsService from '../services/conversations'
@@ -7,14 +7,24 @@ import ChatLayout from '../components/ChatLayout'
 export default function Chats () {
   const { user, done } = useAppContext()
   const [conversations, setConversations] = useState([]) // we will fetch them
+  const [maxHeight, setMaxHeight] = useState()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const navbarHeight = document.querySelector('#navbar').offsetHeight
+    const newMaxHeight = window.visualViewport.height - navbarHeight
+    setMaxHeight(newMaxHeight)
+
+    const handleResize = () => {
+      const newMaxHeight = window.visualViewport.height - navbarHeight
+      setMaxHeight(newMaxHeight)
+    }
+
     document.getElementById('footer').classList.add('hidden')
-    document.getElementById('main').classList.add('overflow-y-hidden')
+    window.addEventListener('resize', handleResize)
 
     return () => {
+      window.removeEventListener('resize', handleResize)
       document.getElementById('footer').classList.remove('hidden')
-      document.getElementById('main').classList.remove('overflow-y-hidden')
     }
   }, [])
 
@@ -55,7 +65,7 @@ export default function Chats () {
 
   return (done && !!user)
     ? (
-      <div className='flex flex-col justify-center items-center w-full h-[calc(100vh-60px) md:h-[calc(100vh-76px)'>
+      <div className='flex flex-col justify-center items-center w-full' style={{ maxHeight }}>
         <ChatLayout conversations={conversations} />
       </div>
 
