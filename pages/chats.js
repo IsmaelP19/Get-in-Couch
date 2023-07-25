@@ -12,20 +12,17 @@ export default function Chats () {
   useLayoutEffect(() => {
     const setMaxHeightFunction = () => {
       const navbarHeight = document.getElementById('navbar').offsetHeight
-      const footerHeight = document.getElementById('footer').offsetHeight
-
-      let height = window.innerHeight - navbarHeight - footerHeight - 20
-      if (window.innerWidth < 770) { // mobile and tablets
-        height = window.innerHeight - navbarHeight - 30
-        setMaxHeight(height + 'px')
-      } else {
-        setMaxHeight(height + 'px')
-      }
+      const height = window.innerHeight - navbarHeight
+      document.getElementById('footer').classList.add('hidden')
+      setMaxHeight(height + 'px')
     }
 
     setMaxHeightFunction()
     window.addEventListener('resize', setMaxHeightFunction)
-    return () => window.removeEventListener('resize', setMaxHeightFunction)
+    return () => {
+      window.removeEventListener('resize', setMaxHeightFunction)
+      document.getElementById('footer').classList.remove('hidden')
+    }
   }, [])
 
   useEffect(() => {
@@ -65,13 +62,13 @@ export default function Chats () {
 
   return (done && !!user)
     ? (
-      <div className='flex flex-col justify-center items-center w-full m-0 md:m-2' style={{ height: `${maxHeight}` }}>
+      <div className='flex flex-col justify-center items-center w-full m-0' style={{ height: `${maxHeight}` }}>
         <ChatLayout conversations={conversations} />
       </div>
 
       )
     : (
-      <div className='flex flex-col justify-center items-center w-full m-2' style={{ height: `${maxHeight}` }}>
+      <div className='flex flex-col justify-center items-center w-full ' style={{ height: `${maxHeight}` }}>
         <Loading color='primary' />
         <span>
           Cargando...
