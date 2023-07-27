@@ -23,7 +23,7 @@ export default function Comment ({ comment, isTenant, setPage, page, n, hasLived
   const { user, setMessage } = useAppContext()
   const [likes, setLikes] = useState(comment.likes)
 
-  const profilePhoto = comment.user?.profilePhoto || '/static/images/default_avatar.png'
+  const profilePicture = comment.user?.profilePicture || '/static/images/default_avatar.png'
   const date = new Date(comment.publishDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })
 
   const createRating = () => {
@@ -79,7 +79,7 @@ export default function Comment ({ comment, isTenant, setPage, page, n, hasLived
       <div className='flex flex-row justify-between gap-4'>
         <div className='flex flex-row flex-wrap justify-start items-center gap-4'>
           <Link href={`/profile/${comment.user.username}`} passHref>
-            <ProfilePhoto isComment src={profilePhoto} alt={comment.user.username} username={comment.user.username} width={50} height={50} />
+            <ProfilePhoto isComment src={profilePicture} alt={comment.user.username} username={comment.user.username} width={50} height={50} />
           </Link>
           {isTenant && <Tag text='Viviendo en este inmueble' verified style='text-base font-bold text-blue-800' />}
           {hasLived && <Tag text='Ha vivido en este inmueble' verified style='text-base font-bold text-purple-800' />}

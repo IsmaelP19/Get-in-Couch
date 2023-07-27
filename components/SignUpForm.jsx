@@ -1,11 +1,12 @@
 import { useFormik } from 'formik'
 import 'react-phone-number-input/style.css'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useAppContext } from '../context/state'
 import { useRouter } from 'next/router'
 import { showMessage } from '../utils/utils'
 import userService from '../services/users'
+import { MdOutlineDelete } from 'react-icons/md'
 
 const validate = (values, phoneNumber) => {
   const errors = {}
@@ -23,6 +24,12 @@ const validate = (values, phoneNumber) => {
     errors.password = 'La contraseña debe tener al menos 8 caracteres'
   } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(values.password)) {
     errors.password = 'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.'
+  }
+
+  if (!values.passwordConfirmation) {
+    errors.passwordConfirmation = 'No puede dejar vacío este campo'
+  } else if (values.passwordConfirmation !== values.password) {
+    errors.passwordConfirmation = 'Las contraseñas no coinciden'
   }
 
   if (!values.username) {
@@ -59,6 +66,56 @@ export default function SignUpForm () {
   const { setMessage } = useAppContext()
   const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState()
+  const [profilePicture, setProfilePicture] = useState('')
+  const imageInputRef = useRef(null)
+
+  const handleChange = (event) => {
+    return new Promise((resolve) => {
+      const file = event.target.files[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const img = new Image()
+          img.src = event.target.result
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            const MAX_WIDTH = 1280
+            const MAX_HEIGHT = 720
+            let width = img.width
+            let height = img.height
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width
+              width = MAX_WIDTH
+            }
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height
+              height = MAX_HEIGHT
+            }
+            canvas.width = width
+            canvas.height = height
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, width, height)
+            const base64Image = canvas.toDataURL('image/jpeg', 0.8)
+            resolve(base64Image)
+          }
+          img.src = event.target.result
+        }
+        reader.readAsDataURL(file)
+      }
+    }).then((base64Image) => {
+      formik.setFieldValue('profilePicture', base64Image)
+      setProfilePicture(base64Image)
+    }).catch((error) => {
+      console.log(error)
+      showMessage('Ha ocurrido un error al subir la imagen 😢', 'error', setMessage, 4000)
+    })
+  }
+
+  const handleDelete = () => {
+    formik.setFieldValue('profilePicture', '')
+    setProfilePicture('')
+    imageInputRef.current.value = ''
+  }
 
   const createUser = (userObject) => {
     userService.create(userObject)
@@ -85,11 +142,13 @@ export default function SignUpForm () {
     initialValues: {
       email: '',
       password: '',
+      passwordConfirmation: '',
       username: '',
       name: '',
       surname: '',
       phoneNumber: '',
-      isOwner: false
+      isOwner: false,
+      profilePicture: ''
     },
     onSubmit: values => {
       values.phoneNumber = phoneNumber
@@ -114,6 +173,11 @@ export default function SignUpForm () {
           <label htmlFor='password'>Contraseña</label>
           <input type='password' name='password' id='password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} className='border border-solid border-slate-600' />
           {formik.touched.password && formik.errors.password ? <div className='text-red-600'>{formik.errors.password}</div> : null}
+        </div>
+        <div className='flex flex-col gap-y-1'>
+          <label htmlFor='passwordCondfirmation'>Repite tu contraseña</label>
+          <input type='password' name='passwordConfirmation' id='passwordConfirmation' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.passwordConfirmation} className='border border-solid border-slate-600' />
+          {formik.touched.passwordConfirmation && formik.errors.passwordConfirmation ? <div className='text-red-600'>{formik.errors.passwordConfirmation}</div> : null}
         </div>
 
         <div className='flex flex-col gap-y-1'>
@@ -145,6 +209,19 @@ export default function SignUpForm () {
           />
           {formik.touched.phoneNumber && formik.errors.phoneNumber ? <div className='text-red-600'>{formik.errors.phoneNumber}</div> : null}
         </div>
+
+        <div className='flex flex-col gap-y-3 mt-2'>
+          <label htmlFor='profilePicture' className='bg-slate-200 text-center px-2 py-1 border-gray-600 border-2 font-bold active:bg-blue-400 '>Selecciona una imagen de perfil</label>
+          <input type='file' ref={imageInputRef} name='profilePicture' id='profilePicture' onChange={handleChange} className='hidden' accept='image/*' title=' ' />
+          {profilePicture && (
+            <div className='flex flex-row items-center justify-center gap-3'>
+              <img src={profilePicture} alt='Imagen de perfil' className='w-1/2 ' />
+              <MdOutlineDelete size={30} className='text-red-600 hover:text-red-800 cursor-pointer' onClick={handleDelete} />
+
+            </div>
+          )}
+        </div>
+
         <div className='flex flex-row items-center gap-x-4'>
           <label htmlFor='isOwner'>¿Eres propietario?</label>
           <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} />
