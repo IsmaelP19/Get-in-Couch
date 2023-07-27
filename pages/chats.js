@@ -11,12 +11,12 @@ export default function Chats () {
 
   useLayoutEffect(() => {
     const navbarHeight = document.querySelector('#navbar').offsetHeight
-    const newMaxHeight = window.visualViewport.height - navbarHeight
+    const newMaxHeight = window.innerHeight - navbarHeight - 17
     setMaxHeight(newMaxHeight)
 
     const handleResize = () => {
-      const newMaxHeight = window.visualViewport.height - navbarHeight
-      setMaxHeight(newMaxHeight)
+      const newMaxHeight = window.visualViewport.height - navbarHeight - 17
+      if (newMaxHeight !== maxHeight) { setMaxHeight(newMaxHeight) }
     }
 
     document.getElementById('footer').classList.add('hidden')
@@ -65,7 +65,7 @@ export default function Chats () {
 
   return (done && !!user)
     ? (
-      <div className='flex flex-col justify-center items-center w-full' style={{ maxHeight }}>
+      <div className='flex flex-col justify-center items-center w-full shadow-xl' style={{ maxHeight }}>
         <ChatLayout conversations={conversations} />
       </div>
 

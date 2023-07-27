@@ -247,8 +247,7 @@ const ImageUploader = ({ formik }) => {
     const images = formik.values.images
     images.splice(deleteIndex, 1)
     formik.setFieldValue('images', images)
-    setImages(images) // this is not updating the content of the input type file
-
+    setImages(images)
     setShowDelete(null)
     setDeleteIndex(null)
   }
