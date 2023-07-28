@@ -49,8 +49,10 @@ export default async function usersUsernameRouter (req, res) {
 
         // ###### User is updating its profile ######
         if (body?.updating) {
-          const check = await User.findOne({ username: body.username.toLowerCase() })
-          if (check) {
+          const username = body.username.toLowerCase()
+          const check = await User.findOne({ username })
+
+          if (check.id !== user.id) {
             return res.status(400).json({ error: 'User validation failed: expected `username` to be unique' })
           }
 
@@ -71,7 +73,7 @@ export default async function usersUsernameRouter (req, res) {
           const userToUpdate = {
             email: body.email,
             passwordHash,
-            username: body.username,
+            username,
             name: body.name,
             surname: body.surname,
             phoneNumber: body.phoneNumber,

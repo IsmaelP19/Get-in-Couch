@@ -96,7 +96,7 @@ export default function SignUpForm ({ userObject }) {
       .then(returnedUser => {
         showMessage('Se ha actualizado tu perfil satisfactoriamente 😎', 'success', setMessage, 4000, true)
         setTimeout(() => {
-          router.push(`/profile/${updatedUserObject.username}`)
+          router.push(`/profile/${updatedUserObject.username.toLowerCase()}`)
         }, 3000)
       })
       .catch(error => {
@@ -227,7 +227,7 @@ export default function SignUpForm ({ userObject }) {
 
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='username'>Nombre de usuario</label>
-          <input type='text' name='username' id='username' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.username} className='border border-solid border-slate-600' />
+          <input type='text' name='username' id='username' onChange={(e) => formik.setFieldValue('username', e.target.value.toLowerCase())} onBlur={formik.handleBlur} value={formik.values.username} className='border border-solid border-slate-600' />
           {formik.touched.username && formik.errors.username ? <div className='text-red-600'>{formik.errors.username}</div> : null}
         </div>
         <div className='flex flex-col gap-y-1'>
