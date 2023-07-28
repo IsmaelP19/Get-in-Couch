@@ -1,5 +1,6 @@
 import User from '../../../../models/user'
 import { errorHandler, createConnection } from '../../../../utils/utils'
+import bcrypt from 'bcrypt'
 
 export default async function usersUsernameRouter (req, res) {
   try {
@@ -29,7 +30,7 @@ export default async function usersUsernameRouter (req, res) {
         user = user.toJSON()
       }
 
-      user ? res.json(user) : res.status(404).json({ error: 'user not found' })
+      return user ? res.json(user) : res.status(404).json({ error: 'user not found' })
     } else if (req.method === 'PUT') {
       // FIXME: not working as expected on tests (not updating the followed and followers arrays) but working on production
 
@@ -44,8 +45,66 @@ export default async function usersUsernameRouter (req, res) {
 
       // we have to add the follower
       if (user) {
+        const body = req.body
+
+        // ###### User is updating its profile ######
+        if (body?.updating) {
+          const check = await User.findOne({ username: body.username.toLowerCase() })
+          if (check) {
+            return res.status(400).json({ error: 'User validation failed: expected `username` to be unique' })
+          }
+
+          const password = body.password
+          let passwordHash
+          if (password) {
+            password.length < 8 && res.status(400).json({ error: 'password is too short' })
+            passwordHash = await bcrypt.hash(password, 10)
+          }
+
+          const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          if (!body.email) {
+            return res.status(400).json({ error: 'User validation failed: email: Path `email` is required.' })
+          } else if (!emailRegex.test(body.email)) {
+            return res.status(400).json({ error: 'User validation failed: email: ' + body.email + ' is not a valid email' })
+          }
+
+          const userToUpdate = {
+            email: body.email,
+            passwordHash,
+            username: body.username,
+            name: body.name,
+            surname: body.surname,
+            phoneNumber: body.phoneNumber,
+            isOwner: body.isOwner,
+            memberSince: user.memberSince,
+            description: body.description, // TODO: add an input to enter bio
+            profilePicture: body.profilePicture,
+            followers: user.followers, // will be [] if empty
+            followed: user.followed // will be [] if empty
+          }
+
+          try {
+            await User.updateOne({ _id: user._id }, userToUpdate)
+          } catch (error) {
+            if (error.message.includes('phoneNumber_1 dup key')) {
+              return res.status(400).json({ error: 'User validation failed: expected `phoneNumber` to be unique' })
+            } else if (error.message.includes('username_1 dup key')) {
+              return res.status(400).json({ error: 'User validation failed: expected `username` to be unique' })
+            } else if (error.message.includes('email_1 dup key')) {
+              return res.status(400).json({ error: 'User validation failed: email: expected `email` to be unique' })
+            } else {
+              return res.status(400).json({ error: error.message })
+            }
+          }
+          return res.status(200).json({ message: 'user succesfully updated' })
+          // FIXME: fix tests about following ourselves (now it will understand that we are updating our profile)
+          // return res.status(400).json({ error: 'you cannot follow yourself' })
+        }
         const newFollowerUsername = req.body.username
-        if (newFollowerUsername === username) return res.status(400).json({ error: 'you cannot follow yourself' })
+
+        if (newFollowerUsername === username) {
+          return res.status(400).json({ error: 'you cannot follow yourself' })
+        }
 
         // we find now the User that is going to be added as a follower
         let newFollower = await User.findOne({ username: newFollowerUsername })
