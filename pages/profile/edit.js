@@ -1,7 +1,7 @@
 import SignUpForm from '../../components/SignUpForm'
 import Notification from '../../components/Notification'
 import { useAppContext } from '../../context/state'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Loading } from '@nextui-org/react'
 import usersService from '../../services/users'
