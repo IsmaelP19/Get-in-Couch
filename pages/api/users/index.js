@@ -33,7 +33,7 @@ export default async function usersRouter (req, res) {
       const user = new User({
         email: body.email,
         passwordHash,
-        username: body.username.toLowerCase(),
+        username: body.username?.toLowerCase(),
         name: body.name,
         surname: body.surname,
         phoneNumber: body.phoneNumber,
