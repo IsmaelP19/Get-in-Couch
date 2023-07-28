@@ -3,6 +3,9 @@ import ProfilePhoto from '../../components/ProfilePhoto'
 import userService from '../../services/users'
 import { useAppContext } from '../../context/state'
 import conversationsService from '../../services/conversations'
+import { AiOutlineEdit } from 'react-icons/ai'
+import { PiSignOutBold } from 'react-icons/pi'
+import { useRouter } from 'next/router'
 // TODO: add saved properties to my profile page
 
 export default function Profile ({ userObject }) {
@@ -12,6 +15,7 @@ export default function Profile ({ userObject }) {
   const [follow, setFollow] = useState(false)
   const [followersState, setFollowers] = useState(followers.length)
   const { user, setUser } = useAppContext()
+  const router = useRouter()
 
   const handleContact = async () => {
     try {
@@ -35,6 +39,10 @@ export default function Profile ({ userObject }) {
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
     window.location.href = '/'
+  }
+
+  const handleEdit = () => {
+    router.push('/profile/edit')
   }
 
   const handleFollow = async () => {
@@ -70,10 +78,12 @@ export default function Profile ({ userObject }) {
   const buttons = user?.username === userObject.username
     ? (
       <>
-        <button className='bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black'>
+        <button className='flex gap-2 items-center justify-center bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleEdit}>
+          <AiOutlineEdit />
           Editar perfil
         </button>
-        <button className='bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleLogout}>
+        <button className='flex gap-2 items-center justify-center bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleLogout}>
+          <PiSignOutBold />
           Cerrar sesión
         </button>
       </>
@@ -98,20 +108,18 @@ export default function Profile ({ userObject }) {
 
   profilePicture || (profilePicture = '/static/images/default_avatar.png')
 
-  // TODO: add a loading spinner
-
   return (
     <>
       <main className='w-full'>
-        <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-10 my-5 md:mx-20 md:my-14 '>
-          <div className='flex flex-col md:w-1/3 gap-5 '>
+        <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-5 my-5 md:mx-15 md:my-14 '>
+          <div className='flex flex-col md:w-1/4 gap-5 '>
             <ProfilePhoto src={profilePicture} alt='' username={userObject.username} width={100} height={100} />
 
             <div className='flex items-center justify-center gap-2'>
               {done && user && buttons}
             </div>
           </div>
-          <div className='flex flex-col gap-2  md:w-2/3 items-center md:items-start justify-center '>
+          <div className='flex flex-col gap-2 md:px-10 md:py-2 md:w-3/4 items-center md:items-start justify-center'>
             <span className='font-bold text-2xl'>
               {name} {surname}
             </span>
@@ -121,7 +129,7 @@ export default function Profile ({ userObject }) {
             <span className='text-gray-600 font-thin text-base'>
               {description}
             </span>
-            <div className='flex gap-3'>
+            <div className='flex gap-3 '>
               {/* TODO: add clickable to show followers and followed on another page */}
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
                 {followersState} seguidores
@@ -129,6 +137,7 @@ export default function Profile ({ userObject }) {
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
                 {followed.length} seguidos
               </span>
+
             </div>
           </div>
         </div>
@@ -140,11 +149,14 @@ export default function Profile ({ userObject }) {
 
 export async function getServerSideProps (context) {
   const { username } = context.query
-  const user = await userService.getUser(username)
-
-  if (user.error === 'user not found') {
-    context.res.writeHead(302, { Location: '/404' })
-    context.res.end()
+  let user = {}
+  try {
+    user = await userService.getUser(username)
+  } catch (error) {
+    if (error.response.data.error === 'user not found') {
+      context.res.writeHead(302, { Location: '/404' })
+      context.res.end()
+    }
   }
 
   return {

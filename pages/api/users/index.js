@@ -38,7 +38,8 @@ export default async function usersRouter (req, res) {
         surname: body.surname,
         phoneNumber: body.phoneNumber,
         isOwner: body.isOwner,
-        profilePicture: body?.profilePicture || null
+        description: body.description,
+        profilePicture: body.profilePicture
       })
 
       const savedUser = await user.save()

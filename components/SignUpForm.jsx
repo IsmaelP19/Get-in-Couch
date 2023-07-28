@@ -1,73 +1,26 @@
 import { useFormik } from 'formik'
 import 'react-phone-number-input/style.css'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAppContext } from '../context/state'
 import { useRouter } from 'next/router'
 import { showMessage } from '../utils/utils'
 import userService from '../services/users'
 import { MdOutlineDelete } from 'react-icons/md'
 
-const validate = (values, phoneNumber) => {
-  const errors = {}
-  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
-  if (!values.email) {
-    errors.email = 'No puede dejar vacío este campo'
-  } else if (!emailRegex.test(values.email)) {
-    errors.email = 'Introduzca una dirección de correo electrónico válida'
-  }
-
-  if (!values.password) {
-    errors.password = 'No puede dejar vacío este campo'
-  } else if (values.password.length < 8) {
-    errors.password = 'La contraseña debe tener al menos 8 caracteres'
-  } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(values.password)) {
-    errors.password = 'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.'
-  }
-
-  if (!values.passwordConfirmation) {
-    errors.passwordConfirmation = 'No puede dejar vacío este campo'
-  } else if (values.passwordConfirmation !== values.password) {
-    errors.passwordConfirmation = 'Las contraseñas no coinciden'
-  }
-
-  if (!values.username) {
-    errors.username = 'No puede dejar vacío este campo'
-  } else if (values.username.length < 3) {
-    errors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
-  } else if (!/^[a-zA-Z0-9_&.]+$/.test(values.username)) {
-    errors.username = 'El nombre de usuario solo puede contener letras y números (sin espacios ni caracteres especiales)'
-  } else if (values.username.length > 20) {
-    errors.username = 'El nombre de usuario no puede tener más de 20 caracteres'
-  }
-
-  if (!values.name) {
-    errors.name = 'No puede dejar vacío este campo'
-  } else if (values.name.length < 3) {
-    errors.name = 'El nombre debe tener al menos 3 caracteres'
-  }
-  if (!values.surname) {
-    errors.surname = 'No puede dejar vacío este campo'
-  } else if (values.surname.length < 3) {
-    errors.surname = 'Los apellidos deben contener al menos 3 caracteres'
-  }
-
-  if (!phoneNumber) {
-    errors.phoneNumber = 'No puede dejar vacío este campo'
-  } else if (!isValidPhoneNumber(phoneNumber)) {
-    errors.phoneNumber = 'El número introducido no es válido'
-  }
-
-  return errors
-}
-
-export default function SignUpForm () {
+export default function SignUpForm ({ userObject }) {
   const { setMessage } = useAppContext()
   const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState()
   const [profilePicture, setProfilePicture] = useState('')
   const imageInputRef = useRef(null)
+
+  useEffect(() => {
+    if (userObject) {
+      setPhoneNumber(userObject.phoneNumber)
+      setProfilePicture(userObject.profilePicture)
+    }
+  }, [userObject])
 
   const handleChange = (event) => {
     return new Promise((resolve) => {
@@ -120,39 +73,131 @@ export default function SignUpForm () {
   const createUser = (userObject) => {
     userService.create(userObject)
       .then(returnedUser => {
-        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 4000)
+        showMessage('Se ha registrado satisfactoriamente. Ya puede iniciar sesión 😎', 'success', setMessage, 4000, true)
         setTimeout(() => {
           router.push('/login')
-        }, 4000)
+        }, 3000)
       })
       .catch(error => {
         if (error.response.data.error.includes('`email` to be unique')) {
-          showMessage('El email introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+          showMessage('El email introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000, true)
         } else if (error.response.data.error.includes('`username` to be unique')) {
-          showMessage('El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+          showMessage('El nombre de usuario introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000, true)
         } else if (error.response.data.error.includes('`phoneNumber` to be unique')) {
-          showMessage('El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000)
+          showMessage('El número de teléfono introducido ya está registrado. ¿Por qué no inicias sesión? 🤔', 'info', setMessage, 9000, true)
         } else {
-          showMessage('Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000)
+          showMessage('Ha ocurrido un error al registrar al usuario 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000, true)
         }
       })
   }
 
+  const updateUser = (updatedUserObject) => {
+    userService.update(userObject.username, updatedUserObject)
+      .then(returnedUser => {
+        showMessage('Se ha actualizado tu perfil satisfactoriamente 😎', 'success', setMessage, 4000, true)
+        setTimeout(() => {
+          router.push(`/profile/${updatedUserObject.username}`)
+        }, 3000)
+      })
+      .catch(error => {
+        if (error.response.data.error.includes('expected `email` to be unique')) {
+          showMessage('El email introducido ya está registrado. ¿Tal vez te hayas registrado en otro momento? 🤔', 'info', setMessage, 9000, true)
+        } else if (error.response.data.error.includes('expected `username` to be unique')) {
+          showMessage('El nombre de usuario introducido ya está registrado. ¡Prueba con más creatividad! 🤔🎨', 'info', setMessage, 9000, true)
+        } else if (error.response.data.error.includes('expected `phoneNumber` to be unique')) {
+          showMessage('El número de teléfono introducido ya está registrado. ¿Tal vez te hayas registrado en otro momento? 🤔', 'info', setMessage, 9000, true)
+        } else {
+          showMessage('Ha ocurrido un error al actualizar tu perfil 😢. Por favor, prueba más tarde ⌛', 'error', setMessage, 9000, true)
+        }
+      })
+  }
+
+  const validate = (values, phoneNumber) => {
+    const errors = {}
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    if (!values.email) {
+      errors.email = 'No puede dejar vacío este campo'
+    } else if (!emailRegex.test(values.email)) {
+      errors.email = 'Introduzca una dirección de correo electrónico válida'
+    }
+
+    if (!userObject) {
+      if (!values.password) {
+        errors.password = 'No puede dejar vacío este campo'
+      } else if (values.password.length < 8) {
+        errors.password = 'La contraseña debe tener al menos 8 caracteres'
+      } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(values.password)) {
+        errors.password = 'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.'
+      }
+
+      if (!values.passwordConfirmation) {
+        errors.passwordConfirmation = 'No puede dejar vacío este campo'
+      } else if (values.passwordConfirmation !== values.password) {
+        errors.passwordConfirmation = 'Las contraseñas no coinciden'
+      }
+    } else { // Updating profile
+      if (values.password) {
+        if (values.password.length < 8) {
+          errors.password = 'La contraseña debe tener al menos 8 caracteres'
+        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(values.password)) {
+          errors.password = 'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.'
+        } else if (values.passwordConfirmation !== values.password) {
+          errors.passwordConfirmation = 'Las contraseñas no coinciden'
+        }
+      }
+    }
+
+    if (!values.username) {
+      errors.username = 'No puede dejar vacío este campo'
+    } else if (values.username.length < 3) {
+      errors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
+    } else if (!/^[a-zA-Z0-9_&.]+$/.test(values.username)) {
+      errors.username = 'El nombre de usuario solo puede contener letras y números (sin espacios ni caracteres especiales)'
+    } else if (values.username.length > 20) {
+      errors.username = 'El nombre de usuario no puede tener más de 20 caracteres'
+    }
+
+    if (!values.name) {
+      errors.name = 'No puede dejar vacío este campo'
+    } else if (values.name.length < 3) {
+      errors.name = 'El nombre debe tener al menos 3 caracteres'
+    }
+    if (!values.surname) {
+      errors.surname = 'No puede dejar vacío este campo'
+    } else if (values.surname.length < 3) {
+      errors.surname = 'Los apellidos deben contener al menos 3 caracteres'
+    }
+
+    if (values.description?.length > 240) {
+      errors.description = 'La descripción no puede tener más de 240 caracteres'
+    }
+
+    if (!phoneNumber) {
+      errors.phoneNumber = 'No puede dejar vacío este campo'
+    } else if (!isValidPhoneNumber(phoneNumber)) {
+      errors.phoneNumber = 'El número introducido no es válido'
+    }
+
+    return errors
+  }
+
   const formik = useFormik({
     initialValues: {
-      email: '',
-      password: '',
-      passwordConfirmation: '',
-      username: '',
-      name: '',
-      surname: '',
-      phoneNumber: '',
-      isOwner: false,
-      profilePicture: ''
+      email: userObject?.email || '',
+      password: '', // won't retrieve it from the user object because it's hashed and it's not stored in the database
+      passwordConfirmation: '', // won't retrieve it from the user object because it's hashed and it's not stored in the database
+      username: userObject?.username || '',
+      name: userObject?.name || '',
+      surname: userObject?.surname || '',
+      phoneNumber: userObject?.phoneNumber || '',
+      isOwner: userObject?.isOwner || false,
+      description: userObject?.description || '',
+      profilePicture: userObject?.profilePicture || ''
     },
     onSubmit: values => {
       values.phoneNumber = phoneNumber
-      createUser(values)
+      userObject ? updateUser(values) : createUser(values)
     },
     validate (values) {
       return validate(values, phoneNumber)
@@ -162,7 +207,7 @@ export default function SignUpForm () {
 
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
-      <h1 className='font-bold text-center text-2xl mb-2'>Registro</h1>
+      <h1 className='font-bold text-center text-2xl mb-2'>{userObject ? 'Editar perfil' : 'Registro'}</h1>
       <form onSubmit={formik.handleSubmit} className='flex flex-col gap-4'>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='email'>Email</label>
@@ -171,12 +216,12 @@ export default function SignUpForm () {
         </div>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='password'>Contraseña</label>
-          <input type='password' name='password' id='password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} className='border border-solid border-slate-600' />
+          <input type='password' name='password' id='password' autoComplete='new-password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password} className='border border-solid border-slate-600' />
           {formik.touched.password && formik.errors.password ? <div className='text-red-600'>{formik.errors.password}</div> : null}
         </div>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='passwordCondfirmation'>Repite tu contraseña</label>
-          <input type='password' name='passwordConfirmation' id='passwordConfirmation' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.passwordConfirmation} className='border border-solid border-slate-600' />
+          <input type='password' name='passwordConfirmation' id='passwordConfirmation' autoComplete='new-password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.passwordConfirmation} className='border border-solid border-slate-600' />
           {formik.touched.passwordConfirmation && formik.errors.passwordConfirmation ? <div className='text-red-600'>{formik.errors.passwordConfirmation}</div> : null}
         </div>
 
@@ -210,9 +255,15 @@ export default function SignUpForm () {
           {formik.touched.phoneNumber && formik.errors.phoneNumber ? <div className='text-red-600'>{formik.errors.phoneNumber}</div> : null}
         </div>
 
+        <div className='flex flex-col gap-y-1'>
+          <label htmlFor='description'>Biografía</label>
+          <textarea name='description' id='description' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.description} className='border border-solid border-slate-600' />
+          {formik.touched.description && formik.errors.description ? <div className='text-red-600'>{formik.errors.description}</div> : null}
+        </div>
+
         <div className='flex flex-col gap-y-3 mt-2'>
           <label htmlFor='profilePicture' className='bg-slate-200 text-center px-2 py-1 border-gray-600 border-2 font-bold active:bg-blue-400 '>Selecciona una imagen de perfil</label>
-          <input type='file' ref={imageInputRef} name='profilePicture' id='profilePicture' onChange={handleChange} className='hidden' accept='image/*' title=' ' />
+          <input type='file' ref={imageInputRef} name='profilePicture' id='profilePicture' onChange={handleChange} className='hidden' accept='image/*' title='' />
           {profilePicture && (
             <div className='flex flex-row items-center justify-center gap-3'>
               <img src={profilePicture} alt='Imagen de perfil' className='w-1/2 ' />
@@ -224,10 +275,10 @@ export default function SignUpForm () {
 
         <div className='flex flex-row items-center gap-x-4'>
           <label htmlFor='isOwner'>¿Eres propietario?</label>
-          <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} />
+          <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} checked={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} />
         </div>
         <div className='flex items-center justify-center'>
-          <button type='submit' className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black py-2 px-6 rounded-full duration-200 border-2 border-gray-200 font-bold w-3/5 '>Registrarse</button>
+          <button type='submit' className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black py-2 px-6 rounded-full duration-200 border-2 border-gray-200 font-bold w-3/5 '>{userObject ? 'Actualizar' : 'Registrarse'}</button>
         </div>
       </form>
     </div>

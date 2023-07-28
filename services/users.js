@@ -12,6 +12,11 @@ const create = async (newObject) => {
   return response.data
 }
 
+const update = async (username, newObject) => {
+  const response = await axios.put(`${baseUrl}/${username}`, { ...newObject, updating: true }, customHeader)
+  return response.data
+}
+
 const getUser = async (username) => {
   const response = await axios.get(`${baseUrl}/${username}`, customHeader)
   return response.data
@@ -33,4 +38,4 @@ const follow = async (username, newFollower) => {
   return response.data
 }
 
-export default { getAll, create, getUser, removeUser, login, follow }
+export default { getAll, create, update, getUser, removeUser, login, follow }

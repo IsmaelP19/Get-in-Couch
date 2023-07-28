@@ -42,7 +42,8 @@ const userSchema = new mongoose.Schema({
     default: Date.now
   },
   description: {
-    type: String
+    type: String,
+    maxLength: 240
   },
   profilePicture: {
     type: String
@@ -71,8 +72,6 @@ userSchema.set('toJSON', {
     delete returnedObject.__v
     // the passwordHash should not be revealed
     delete returnedObject.passwordHash
-    delete returnedObject.phoneNumber
-    delete returnedObject.email
   }
 })
 
