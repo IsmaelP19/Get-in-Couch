@@ -34,6 +34,6 @@ export async function getServerSideProps (context) {
   const properties = await propertiesService.getAll()
 
   return {
-    props: { registeredUsers: registeredUsers.length || 0, properties: properties.total, title: 'Inicio' }
+    props: { registeredUsers: registeredUsers.total || 0, properties: properties.total, title: 'Inicio' }
   }
 }

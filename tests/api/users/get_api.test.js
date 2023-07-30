@@ -25,7 +25,7 @@ describe('GET all endpoint', () => {
       method: 'POST',
       body: {
         email: 'newemail@domain.com',
-        password: 'test',
+        password: 'testtest',
         username: 'test',
         name: 'test',
         surname: 'test',
@@ -34,22 +34,28 @@ describe('GET all endpoint', () => {
       }
     }
 
-    const res1 = {}
+    const res1 = {
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
+    }
 
     await usersRouter(req1, res1)
+    expect(res1.status).toHaveBeenCalledWith(201)
+
     const usersAtStart = await usersInDb()
+    expect(usersAtStart).toHaveLength(1)
 
     const req = {
       method: 'GET'
     }
 
     const res = {
-      json: jest.fn().mockReturnThis()
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
     }
 
     await usersRouter(req, res)
-
-    expect(res.json).toHaveBeenCalledWith(usersAtStart)
+    expect(res.json).toHaveBeenCalledWith({ total: usersAtStart.length, users: usersAtStart })
   })
 
   test('When there are no users in db', async () => {
@@ -58,12 +64,13 @@ describe('GET all endpoint', () => {
     }
 
     const res = {
-      json: jest.fn().mockReturnThis()
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
     }
 
     await usersRouter(req, res)
 
-    expect(res.json).toHaveBeenCalledWith([])
+    expect(res.json).toHaveBeenCalledWith({ total: 0, users: [] })
   })
 })
 
@@ -83,7 +90,10 @@ describe('GET by username endpoint', () => {
       }
     }
 
-    const res = {}
+    const res = {
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
+    }
 
     await usersRouter(req, res)
   })
@@ -99,7 +109,8 @@ describe('GET by username endpoint', () => {
     }
 
     const res = {
-      json: jest.fn().mockReturnThis()
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
     }
 
     await usersUsernameRouter(req, res)
@@ -120,8 +131,8 @@ describe('GET by username endpoint', () => {
     }
 
     const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis()
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
     }
 
     await usersUsernameRouter(req, res)
