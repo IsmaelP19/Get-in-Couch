@@ -52,7 +52,7 @@ export default async function usersUsernameRouter (req, res) {
           const username = body.username.toLowerCase()
           const check = await User.findOne({ username })
 
-          if (check.id !== user.id) {
+          if (check && check.id !== user.id) { // if the username is already taken by another user
             return res.status(400).json({ error: 'User validation failed: expected `username` to be unique' })
           }
 

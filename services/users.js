@@ -7,6 +7,11 @@ const getAll = async () => {
   return response.data
 }
 
+const search = async (search, page, limit) => {
+  const response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}`, customHeader)
+  return response.data
+}
+
 const create = async (newObject) => {
   const response = await axios.post(baseUrl, newObject, customHeader)
   return response.data
@@ -38,4 +43,4 @@ const follow = async (username, newFollower) => {
   return response.data
 }
 
-export default { getAll, create, update, getUser, removeUser, login, follow }
+export default { getAll, search, create, update, getUser, removeUser, login, follow }

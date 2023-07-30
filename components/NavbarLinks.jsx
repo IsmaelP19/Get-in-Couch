@@ -1,15 +1,31 @@
 import Link from 'next/link'
 import LinkButton from './LinkButton'
 import { useAppContext } from '../context/state'
+import { useState, useEffect } from 'react'
 
 export default function NavbarLinks () {
   const { user, done, isOpen, setOpenDrawer } = useAppContext()
-
-  const links = [
+  const [links, setLinks] = useState([
     { id: 1, name: 'Inmuebles', link: '/properties' },
-    { id: 2, name: 'Mapa', link: '/map' },
-    { id: 3, name: 'Chats', link: '/chats' }
-  ]
+    { id: 2, name: 'Mapa', link: '/map' }
+  ])
+  // const links = [
+  //   { id: 1, name: 'Inmuebles', link: '/properties' },
+  //   { id: 2, name: 'Mapa', link: '/map' }
+  // ]
+
+  useEffect(() => {
+    if (done && user) {
+      const newLinks = [
+        { id: 1, name: 'Inmuebles', link: '/properties' },
+        { id: 2, name: 'Mapa', link: '/map' },
+        { id: 3, name: 'Usuarios', link: '/users' },
+        { id: 4, name: 'Chats', link: '/chats' }
+      ]
+      setLinks([...newLinks])
+    }
+  }, [done, user])
+
   const handleClick = () => {
     isOpen &&
     setOpenDrawer(!isOpen)

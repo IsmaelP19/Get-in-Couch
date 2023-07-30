@@ -24,15 +24,10 @@ export default function PropertyInfo ({ property }) {
         <Tag text={property.features.numberOfBathrooms + ' baños'} />
         <Tag text={property.features.parking} />
 
-        {property.features.floor && <Tag text={'Planta ' + property.features.floor} />}
-        {property.features.elevator && <Tag text='Ascensor' />}
         {property.features.airConditioning && <Tag text='Aire acondicionado' />}
         {property.features.heating && <Tag text='Calefacción' />}
         <Tag text={property.features.furniture} />
 
-        {property.features.terrace && <Tag text='Terraza' />}
-        {property.features.balcony && <Tag text='Balcón' />}
-        {property.features.swimmingPool && <Tag text='Piscina' />}
         {property.features.garden && <Tag text='Jardín' />}
         {property.features.petsAllowed && <Tag text='Se admiten mascotas' />}
         {property.features.smokingAllowed && <Tag text='Se permite fumar' />}

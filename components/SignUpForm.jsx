@@ -9,7 +9,7 @@ import userService from '../services/users'
 import { MdOutlineDelete } from 'react-icons/md'
 
 export default function SignUpForm ({ userObject }) {
-  const { setMessage } = useAppContext()
+  const { setUser, setMessage } = useAppContext()
   const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState()
   const [profilePicture, setProfilePicture] = useState('')
@@ -95,6 +95,15 @@ export default function SignUpForm ({ userObject }) {
     userService.update(userObject.username, updatedUserObject)
       .then(returnedUser => {
         showMessage('Se ha actualizado tu perfil satisfactoriamente 😎', 'success', setMessage, 4000, true)
+        if (userObject.username !== updatedUserObject.username) {
+          const localStorageUser = JSON.parse(localStorage.getItem('loggedUser'))
+          localStorageUser.username = updatedUserObject.username
+          localStorage.setItem('loggedUser', JSON.stringify(localStorageUser))
+        }
+        updatedUserObject.followed = userObject.followed
+        updatedUserObject.followers = userObject.followers
+        setUser(updatedUserObject)
+
         setTimeout(() => {
           router.push(`/profile/${updatedUserObject.username.toLowerCase()}`)
         }, 3000)

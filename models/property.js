@@ -83,28 +83,15 @@ const propertySchema = new mongoose.Schema({
       min: 1, // even a studio has at least one bedroom (the living room and all the rest)
       required: true
     },
-
-    floor: {
-      type: Number
-    },
     furniture: {
       type: String,
       enum: ['Amueblado', 'Semi-amueblado', 'Sin muebles'],
       required: true
     },
-    terrace: {
-      type: Boolean
-    },
-    balcony: {
-      type: Boolean
-    },
     parking: {
       type: String,
       enum: ['Garaje', 'Parking', 'Sin parking'],
       required: true
-    },
-    elevator: {
-      type: Boolean
     },
     airConditioning: {
       type: Boolean,
