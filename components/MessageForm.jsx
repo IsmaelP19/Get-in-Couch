@@ -7,14 +7,19 @@ export default function MessageForm ({ messages, setMessages, conversation }) {
 
   const createMessage = (messageObject) => {
     messageObject.author = user?.id
-    messageObject.receiver = conversation.participants[0].id
+    messageObject.receiver = conversation.participants[0]?.id
 
-    if (messageObject.message === '') return
+    if (messageObject.message.trim() === '') return // Don't send empty messages
 
     messagesService.create(messageObject)
       .then(response => {
-        response.author = user
+        // messagesService.sendPusherMessage(conversation.id, response)
+
+        // response.receiver = conversation.participants[0] // FIXME: check if this is necessary
         response.date = new Date(response.date).toLocaleString()
+        messagesService.sendPusherMessage(conversation.id, response)
+
+        response.author = user
         setMessages([...messages, response])
       })
       .catch(error => {
