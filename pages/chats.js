@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppContext } from '../context/state'
 import { Loading } from '@nextui-org/react'
 import conversationsService from '../services/conversations'
@@ -10,7 +10,6 @@ export default function Chats () {
   const [conversations, setConversations] = useState([])
   const [maxHeight, setMaxHeight] = useState()
   const [fetchedConversations, setFetchedConversations] = useState(false)
-  const conversationsRef = useRef([])
 
   // media queries
   useEffect(() => {
@@ -33,6 +32,18 @@ export default function Chats () {
       document.getElementById('footer').classList.remove('hidden')
     }
   }, [])
+
+  // update the conversations order evertytime the conversations array is modified
+  // useEffect(() => {
+  //   if (conversations.length > 1) {
+  //     conversations.sort((a, b) => {
+  //       const aDate = new Date(a.lastTalked)
+  //       const bDate = new Date(b.lastTalked)
+  //       return bDate - aDate
+  //     })
+  //     setConversations([...conversations])
+  //   }
+  // }, [conversations])
 
   useEffect(() => {
     const conversationsInitializer = async (id) => {
@@ -58,7 +69,6 @@ export default function Chats () {
     if (done && !!user) {
       const initializeConversations = async () => {
         const convers = await conversationsInitializer(user.id)
-        conversationsRef.current = convers
         setConversations(convers)
         setFetchedConversations(true)
       }

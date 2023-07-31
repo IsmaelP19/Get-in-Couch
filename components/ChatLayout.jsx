@@ -61,6 +61,8 @@ const ChatLayout = ({ conversations, setConversations, fetchedConversations }) =
       (conversation) => conversation.id === conversationId
     )
 
+    console.log('conversation index: ', existingConversationIndex)
+
     if (existingConversationIndex === -1) {
       // If the conversation is not in the list, add it with the new message
       if (message.receiver === user?.id) {
@@ -68,23 +70,43 @@ const ChatLayout = ({ conversations, setConversations, fetchedConversations }) =
           ...prevConversations,
           {
             id: conversationId,
-            participants: [message.author, message.receiver], // FIXME: Check if this is correct
+            participants: [message.author, message.receiver],
             messages: [message.id],
             lastTalked: new Date(message.date).toLocaleString()
           }
         ])
       }
     } else {
-      if (message.author !== user?.id) {
-        messagesService.getMessageInfo(message.id)
-          .then((populatedMessage) => {
-            populatedMessage.date = new Date(populatedMessage.date).toLocaleString()
-            setMessages((prevMessages) => [...prevMessages, populatedMessage])
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      }
+      if (conversationId === conversation?.id) {
+        if (message.author !== user?.id) {
+          messagesService.getMessageInfo(message.id)
+            .then((populatedMessage) => {
+              populatedMessage.date = new Date(populatedMessage.date).toLocaleString()
+              setMessages((prevMessages) => [...prevMessages, populatedMessage])
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        }
+      } else {
+        // if the conversation is in the list but not selected, we modify the lastTalked field of the conversation and update the conversations list (to move it to the top of the list)
+        const newConversations = [...conversations]
+        console.log('newConversations: ', newConversations)
+        newConversations[existingConversationIndex].lastTalked = newMessage.message.date
+
+        // FIXME: transform to datetime in order to sort because lastTalked attributes are strings
+        newConversations.sort((a, b) => {
+          const aDate = (a.lastTalked)
+          const bDate = (b.lastTalked)
+          return bDate - aDate
+        })
+
+        console.log('ordered conversations: ', newConversations)
+        setConversations([...newConversations])
+
+        // setConversation(conversations[existingConversationIndex])
+        // handleConversationClick(conversations[existingConversationIndex])
+
       // setMessages((prevMessages) => [...prevMessages, message])
       // if (message.author !== user?.id) {
       //   messagesService.getMessageInfo(message.id)
@@ -95,6 +117,7 @@ const ChatLayout = ({ conversations, setConversations, fetchedConversations }) =
       //       console.log(err)
       //     })
       // }
+      }
     }
   }
 
