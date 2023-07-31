@@ -1,22 +1,28 @@
-import { useEffect, useState, useLayoutEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAppContext } from '../context/state'
 import { Loading } from '@nextui-org/react'
 import conversationsService from '../services/conversations'
 import ChatLayout from '../components/ChatLayout'
+// import Pusher from 'pusher-js'
 
 export default function Chats () {
   const { user, done } = useAppContext()
-  const [conversations, setConversations] = useState([]) // we will fetch them
+  const [conversations, setConversations] = useState([])
   const [maxHeight, setMaxHeight] = useState()
+  const [fetchedConversations, setFetchedConversations] = useState(false)
+  const conversationsRef = useRef([])
 
-  useLayoutEffect(() => {
+  // media queries
+  useEffect(() => {
     const navbarHeight = document.querySelector('#navbar').offsetHeight
     const newMaxHeight = window.innerHeight - navbarHeight - 17
     setMaxHeight(newMaxHeight)
 
     const handleResize = () => {
       const newMaxHeight = window.visualViewport.height - navbarHeight - 17
-      if (newMaxHeight !== maxHeight) { setMaxHeight(newMaxHeight) }
+      if (newMaxHeight !== maxHeight) {
+        setMaxHeight(newMaxHeight)
+      }
     }
 
     document.getElementById('footer').classList.add('hidden')
@@ -39,7 +45,9 @@ export default function Chats () {
       })
 
       const updatedConversations = convers.map((conversation) => {
-        const participants = conversation.participants.filter((participant) => participant.username !== user.username)
+        const participants = conversation.participants.filter(
+          (participant) => participant.username !== user.username
+        )
         const lastTalked = new Date(conversation.lastTalked).toLocaleString()
         return { ...conversation, participants, lastTalked }
       })
@@ -48,39 +56,33 @@ export default function Chats () {
     }
 
     if (done && !!user) {
-      const intervalId = setInterval(() => {
-        conversationsInitializer(user.id)
-          .then((convers) => {
-            if (JSON.stringify(convers) !== JSON.stringify(conversations)) {
-              setConversations(convers)
-            }
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }, 1000)
-      return () => clearInterval(intervalId)
+      const initializeConversations = async () => {
+        const convers = await conversationsInitializer(user.id)
+        conversationsRef.current = convers
+        setConversations(convers)
+        setFetchedConversations(true)
+      }
+      initializeConversations()
     }
-  })
 
-  return (done && !!user)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, user])
+
+  return done && !!user
     ? (
       <div className='flex flex-col justify-center items-center w-full shadow-xl' style={{ maxHeight }}>
-        <ChatLayout conversations={conversations} />
+        <ChatLayout conversations={conversations} setConversations={setConversations} fetchedConversations={fetchedConversations} />
       </div>
-
       )
     : (
       <div className='flex flex-col justify-center items-center w-full '>
         <Loading color='primary' />
-        <span>
-          Cargando...
-        </span>
+        <span>Cargando...</span>
       </div>
       )
 }
 
-export async function getServerSideProps (context) {
+export async function getServerSideProps () {
   return {
     props: {
       title: 'Mis chats'

@@ -8,4 +8,14 @@ const create = async (newObject) => {
   return response.data
 }
 
-export default { create }
+const sendPusherMessage = async (conversationId, message) => {
+  const response = await axios.post('/api/pusher', { conversationId, message }, customHeader)
+  return response.data
+}
+
+const getMessageInfo = async (messageId) => {
+  const response = await axios.get(`${baseUrl}/${messageId}`, customHeader)
+  return response.data
+}
+
+export default { create, sendPusherMessage, getMessageInfo }
