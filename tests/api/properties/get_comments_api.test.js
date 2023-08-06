@@ -2,9 +2,11 @@ import mongoose from 'mongoose'
 import Property from '../../../models/property'
 import propertiesRouter from '../../../pages/api/properties'
 import Comment from '../../../models/comment'
+import User from '../../../models/user'
 import commentsRouter from '../../../pages/api/comments/index'
 import commentsIdRouter from '../../../pages/api/comments/[id]'
 import propertiesIdCommentsRouter from '../../../pages/api/properties/[id]/comments'
+import usersRouter from '../../../pages/api/users/index'
 
 const propertiesInDb = async () => {
   const properties = await Property.find({})
@@ -14,6 +16,22 @@ const propertiesInDb = async () => {
 const commentsInDb = async (propertyId) => {
   const comments = await Comment.find({ property: propertyId })
   return comments.map(comment => comment.toJSON())
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+const newUser = {
+  email: 'test@test.com',
+  password: 's1st3m4s',
+  username: 'test',
+  name: 'Test',
+  surname: 'Tset',
+  phoneNumber: '123456789',
+  isOwner: true,
+  description: 'Test description'
 }
 
 const newProperty = {
@@ -33,8 +51,7 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false,
-  owner: new mongoose.Types.ObjectId()
+  heating: false
 }
 
 const newComment = {
@@ -54,6 +71,12 @@ const res = {
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {})
+
+  await User.deleteMany({})
+  await usersRouter({ ...req, body: newUser }, res)
+
+  const users = await usersInDb()
+  newProperty.owner = users[0].id
 })
 
 describe('GET all comments from a property endpoint', () => {
@@ -155,6 +178,8 @@ describe('GET all comments from a property endpoint', () => {
 })
 
 afterAll(async () => {
+  await Comment.deleteMany({})
   await Property.deleteMany({})
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

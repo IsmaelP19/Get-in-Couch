@@ -6,6 +6,7 @@ import conversationsService from '../../services/conversations'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
+import { FaBookmark } from 'react-icons/fa'
 // TODO: add saved properties to my profile page
 
 export default function Profile ({ userObject }) {
@@ -60,6 +61,10 @@ export default function Profile ({ userObject }) {
     }
   }
 
+  const handleSaved = () => {
+    router.push('/saved')
+  }
+
   let followBtn
   if (user?.username && follow) {
     followBtn = (
@@ -77,16 +82,16 @@ export default function Profile ({ userObject }) {
 
   const buttons = user?.username === userObject.username
     ? (
-      <>
+      <div className='flex flex-col md:flex-row flex-wrap gap-3 items-center justify-center'>
         <button className='flex gap-2 items-center justify-center bg-gray-200 hover:bg-slate-600 text-black hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleEdit}>
-          <AiOutlineEdit />
+          <AiOutlineEdit className='text-2xl' />
           Editar perfil
         </button>
         <button className='flex gap-2 items-center justify-center bg-red-400 hover:bg-red-900  font-bold  hover:text-white py-2 px-4 rounded-2xl border-2 border-black' onClick={handleLogout}>
-          <PiSignOutBold />
+          <PiSignOutBold className='text-2xl' />
           Cerrar sesión
         </button>
-      </>
+      </div>
       )
     : (
       <>
@@ -129,7 +134,7 @@ export default function Profile ({ userObject }) {
             <span className='text-gray-600 font-thin text-base'>
               {description}
             </span>
-            <div className='flex gap-3 '>
+            <div className='flex gap-3 px-3 md:px-0 flex-wrap-reverse items-center justify-center'>
               {/* TODO: add clickable to show followers and followed on another page */}
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
                 {followersState} seguidores
@@ -137,6 +142,13 @@ export default function Profile ({ userObject }) {
               <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
                 {followed.length} seguidos
               </span>
+              {user?.username === userObject.username && (
+                <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleSaved}>
+                  Guardados
+                  <FaBookmark className='text-xl ' />
+                </button>
+
+              )}
 
             </div>
           </div>

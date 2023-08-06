@@ -43,4 +43,14 @@ const follow = async (username, newFollower) => {
   return response.data
 }
 
-export default { getAll, search, create, update, getUser, removeUser, login, follow }
+const getSavedProperties = async (username, page) => {
+  const response = await axios.get(`${baseUrl}/${username}/saved?page=${page}`, customHeader)
+  return response.data
+}
+
+const updateSavedProperties = async (username, propertyId) => {
+  const response = await axios.put(`${baseUrl}/${username}/saved`, { property: propertyId }, customHeader)
+  return response.data
+}
+
+export default { getAll, search, create, update, getUser, removeUser, login, follow, getSavedProperties, updateSavedProperties }

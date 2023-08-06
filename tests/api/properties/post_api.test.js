@@ -1,6 +1,13 @@
 import mongoose from 'mongoose'
+import User from '../../../models/user'
 import Property from '../../../models/property'
 import propertiesRouter from '../../../pages/api/properties/index'
+import usersRouter from '../../../pages/api/users/index'
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
 
 const propertiesInDb = async () => {
   const properties = await Property.find({})
@@ -24,8 +31,18 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false,
-  owner: new mongoose.Types.ObjectId()
+  heating: false
+}
+
+const newUser = {
+  email: 'test@test.com',
+  password: 's1st3m4s',
+  username: 'test',
+  name: 'Test',
+  surname: 'Tset',
+  phoneNumber: '123456789',
+  isOwner: true,
+  description: 'Test description'
 }
 
 const req = {
@@ -41,11 +58,16 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
+  await User.deleteMany({})
+  await usersRouter({ method: 'POST', body: newUser }, res)
 })
 
 describe('POST: When there are no properties in db and one is added', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
+
+    const users = await usersInDb()
+    newProperty.owner = users[0].id
   })
 
   test('Creation succeeds with just required data', async () => {
@@ -68,6 +90,9 @@ describe('POST: When there are no properties in db and one is added', () => {
 describe('POST: When there is some attribute missing', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
+
+    const users = await usersInDb()
+    newProperty.owner = users[0].id
   })
 
   test('Creation fails with missing title', async () => {
@@ -316,10 +341,15 @@ describe('POST: When there is some attribute missing', () => {
     newProperty.heating = true
     delete newProperty.owner
 
-    await propertiesRouter(req, res)
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
 
-    expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: owner: Path `owner` is required.' })
+    await propertiesRouter(req, res1)
+
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'owner not found' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -331,6 +361,8 @@ describe('POST: When there is some attribute missing', () => {
 describe('POST: When there is some invalid values', () => {
   beforeEach(async () => {
     await Property.deleteMany({})
+    const users = await usersInDb()
+    newProperty.owner = users[0].id
   })
 
   test('Creation fails with invalid title', async () => {
@@ -575,10 +607,15 @@ describe('POST: When there is some invalid values', () => {
     newProperty.heating = true
     newProperty.owner = 'Test' // Must be a valid ObjectId
 
-    await propertiesRouter(req, res)
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
 
-    expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.json).toHaveBeenCalledWith({ error: 'Property validation failed: owner: Cast to ObjectId failed for value "Test" (type string) at path "owner" because of "BSONError"' })
+    await propertiesRouter(req, res1)
+
+    expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'malformatted id' })
 
     const propertiesAtEnd = await propertiesInDb()
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
@@ -591,5 +628,6 @@ describe('POST: When there is some invalid values', () => {
 
 afterAll(async () => {
   await Property.deleteMany({})
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

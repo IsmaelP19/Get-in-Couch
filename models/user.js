@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema({
       ref: 'Property'
     }
   ],
-  properties: [
+  properties: [ // properties of the user (only owners have properties - tenants don't)
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Property'
