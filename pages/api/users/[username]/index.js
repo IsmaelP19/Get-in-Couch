@@ -82,7 +82,7 @@ export default async function usersUsernameRouter (req, res) {
             description: body.description, // TODO: add an input to enter bio
             profilePicture: body.profilePicture,
             followers: user.followers, // will be [] if empty
-            followed: user.followed, // will be [] if empty
+            following: user.following, // will be [] if empty
             favorites: user.favorites, // will be [] if empty
             properties: user.properties // will be [] if empty
           }
@@ -123,11 +123,11 @@ export default async function usersUsernameRouter (req, res) {
           if (user.followers.includes(newFollower._id)) {
             // if the user is already following the new follower, we remove it from the followers array
             await User.updateOne({ _id: user._id }, { $pull: { followers: newFollower._id } })
-            await User.updateOne({ _id: newFollower._id }, { $pull: { followed: user._id } })
+            await User.updateOne({ _id: newFollower._id }, { $pull: { following: user._id } })
             message = `${newFollower.username} succesfully unfollowed ${user.username}`
           } else {
             await User.updateOne({ _id: user._id }, { $push: { followers: newFollower._id } })
-            await User.updateOne({ _id: newFollower._id }, { $push: { followed: user._id } })
+            await User.updateOne({ _id: newFollower._id }, { $push: { following: user._id } })
             message = `${newFollower.username} succesfully followed ${user.username}`
           }
         } else {

@@ -1,4 +1,4 @@
-import UserSearch from '../components/UserSearch'
+import UserSearch from '../components/UserCard'
 import { useState, useEffect } from 'react'
 import usersService from '../services/users'
 import { Loading, Pagination } from '@nextui-org/react'
@@ -83,7 +83,7 @@ export default function Users () {
         total={totalPages}
         onChange={handlePageChange}
         shadow bordered loop
-        className=''
+        className='z-0'
       />
     </div>
 

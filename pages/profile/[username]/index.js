@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react'
-import ProfilePhoto from '../../components/ProfilePhoto'
-import userService from '../../services/users'
-import { useAppContext } from '../../context/state'
-import conversationsService from '../../services/conversations'
+import ProfilePhoto from '../../../components/ProfilePhoto'
+import userService from '../../../services/users'
+import { useAppContext } from '../../../context/state'
+import conversationsService from '../../../services/conversations'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
 import { FaBookmark } from 'react-icons/fa'
-// TODO: add saved properties to my profile page
 
 export default function Profile ({ userObject }) {
-  const { name, surname, description, memberSince, followers, followed } = userObject
+  const { name, surname, description, memberSince, followers, following } = userObject
   let { profilePicture } = userObject
   const [done, setDone] = useState(false) // this done is different from the one in context, this one will be used to know whether I follow the user or not
   const [follow, setFollow] = useState(false)
-  const [followersState, setFollowers] = useState(followers.length)
+  const [followersState, setFollowers] = useState(0)
   const { user, setUser } = useAppContext()
   const router = useRouter()
 
@@ -28,8 +27,16 @@ export default function Profile ({ userObject }) {
   }
 
   useEffect(() => {
+    if (userObject.username === user?.username) {
+      setFollowers(user.followers.length)
+    } else {
+      setFollowers(followers.length)
+    }
+  }, [userObject])
+
+  useEffect(() => {
     async function checkFollow () {
-      if (user?.followed.includes(userObject.id)) {
+      if (user?.following.includes(userObject.id)) {
         setFollow(true)
       }
       setDone(true)
@@ -52,17 +59,25 @@ export default function Profile ({ userObject }) {
     setFollow(!follow)
     if (follow) {
       setFollowers(followersState - 1)
-      const updatedUser = { ...user, followed: user.followed.filter((followedUser) => followedUser !== userObject.id) }
+      const updatedUser = { ...user, following: user.following.filter((followedUser) => followedUser !== userObject.id) }
       setUser(updatedUser)
     } else {
       setFollowers(followersState + 1)
-      const updatedUser = { ...user, followed: [...user.followed, userObject.id] }
+      const updatedUser = { ...user, following: [...user.following, userObject.id] }
       setUser(updatedUser)
     }
   }
 
   const handleSaved = () => {
     router.push('/saved')
+  }
+
+  const handleFollowersPage = () => {
+    router.push(`/profile/${userObject.username}/followers`)
+  }
+
+  const handleFollowingPage = () => {
+    router.push(`/profile/${userObject.username}/following`)
   }
 
   let followBtn
@@ -135,13 +150,13 @@ export default function Profile ({ userObject }) {
               {description}
             </span>
             <div className='flex gap-3 px-3 md:px-0 flex-wrap-reverse items-center justify-center'>
-              {/* TODO: add clickable to show followers and followed on another page */}
-              <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
-                {followersState} seguidores
-              </span>
-              <span className='bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl'>
-                {followed.length} seguidos
-              </span>
+
+              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowersPage}>
+                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
+              </button>
+              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowingPage}>
+                {following.length} siguiendo
+              </button>
               {user?.username === userObject.username && (
                 <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleSaved}>
                   Guardados

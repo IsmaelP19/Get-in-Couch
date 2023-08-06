@@ -100,7 +100,7 @@ export default function SignUpForm ({ userObject }) {
           localStorageUser.username = updatedUserObject.username
           localStorage.setItem('loggedUser', JSON.stringify(localStorageUser))
         }
-        updatedUserObject.followed = userObject.followed
+        updatedUserObject.following = userObject.following
         updatedUserObject.followers = userObject.followers
         setUser(updatedUserObject)
 

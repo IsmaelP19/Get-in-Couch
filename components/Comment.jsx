@@ -85,13 +85,9 @@ export default function Comment ({ comment, isTenant, setPage, page, n, hasLived
           {hasLived && <Tag text='Ha vivido en este inmueble' verified style='text-base font-bold text-purple-800' />}
           {isOwner && <Tag text='Propietario' verified style='text-base font-bold text-green-800' />}
         </div>
-        {user && user?.id === comment.user.id &&
-          <button className='flex flex-row justify-center gap-2 items-center text-base font-bold self-center text-red-800 hover:underline w-32' onClick={handleDelete}>
-            <AiFillDelete />
-            Borrar
-          </button>}
 
       </div>
+
       <span className='whitespace-pre-line break-words'>{comment.content}</span>
       <div className='flex flex-row gap-3 justify-between flex-wrap'>
         <span className='text-base italic text-black flex flex-row gap-2 items-center'>
@@ -111,6 +107,11 @@ export default function Comment ({ comment, isTenant, setPage, page, n, hasLived
 
         </span>
         <span className='text-base font-bold text-black flex flex-row items-center gap-3'>Valoración: {createRating()}</span>
+        {user && user?.id === comment.user.id &&
+          <button className='flex flex-row justify-center gap-2 items-center text-base font-bold self-center text-red-800 hover:underline' onClick={handleDelete}>
+            <AiFillDelete />
+            Borrar
+          </button>}
 
       </div>
     </div>

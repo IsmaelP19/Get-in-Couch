@@ -21,13 +21,11 @@ export default function Saved () {
     } else if (done && user) {
       async function getSavedProperties () {
         const response = await userService.getSavedProperties(user?.username, 1)
-        console.log(response)
         setSavedProperties(response.favorites)
         setTotalPages(Math.ceil(response.total / 8))
         setLoading(false)
       }
       getSavedProperties()
-      console.log('retrieved saved properties')
     }
   }, [router, done])
 
@@ -52,9 +50,9 @@ export default function Saved () {
         : (
           <div className='w-full flex flex-col'>
             <h1 className='p-10 font-bold text-3xl text-center'>
-              <IoBookmark className='inline-block mr-2' />
+              <IoBookmark className='inline-block mr-2 text-green-600' />
               Anuncios guardados
-              <IoBookmark className='inline-block ml-2' />
+              <IoBookmark className='inline-block ml-2 text-green-600' />
 
             </h1>
             {savedProperties.length > 0
@@ -67,7 +65,7 @@ export default function Saved () {
                       </Link>
                     ))}
                   </div>
-                  <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} />
+                  <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} className='z-0' />
                 </div>
                 )
               : (
