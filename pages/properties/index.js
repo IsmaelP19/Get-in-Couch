@@ -58,7 +58,7 @@ export default function Catalogue () {
                 </Link>
               ))}
             </div>
-            <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} />
+            <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} className='z-0' />
           </div>
           )
         : (

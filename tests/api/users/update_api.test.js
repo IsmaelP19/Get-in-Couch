@@ -78,7 +78,7 @@ describe('UPDATE by username endpoint', () => {
   test('When the user to follow does not exist the operation fails', async () => {
     const usersAtStart = await usersInDb()
     const username = usersAtStart[0].username
-    const followedAtStart = usersAtStart[0].followed
+    const followingAtStart = usersAtStart[0].following
 
     const req = {
       method: 'PUT',
@@ -103,7 +103,7 @@ describe('UPDATE by username endpoint', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'user not found' })
 
     const usersAtEnd = await usersInDb()
-    expect(usersAtEnd[0].followed.length).toBe(followedAtStart.length)
+    expect(usersAtEnd[0].following.length).toBe(followingAtStart.length)
   })
 
   test('When the user who wants to follow does not exist the operation fails', async () => {
@@ -141,7 +141,7 @@ describe('UPDATE by username endpoint', () => {
     const usersAtStart = await usersInDb()
     const username1 = usersAtStart[0].username
     const followersAtStart = usersAtStart[0].followers
-    const followedAtStart = usersAtStart[0].followed
+    const followingAtStart = usersAtStart[0].following
 
     const req = {
       method: 'PUT',
@@ -167,7 +167,7 @@ describe('UPDATE by username endpoint', () => {
 
     const usersAtEnd = await usersInDb()
     expect(usersAtEnd[0].followers.length).toBe(followersAtStart.length)
-    expect(usersAtEnd[0].followed.length).toBe(followedAtStart.length)
+    expect(usersAtEnd[0].following.length).toBe(followingAtStart.length)
   })
 })
 

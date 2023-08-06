@@ -120,7 +120,7 @@ export default function PropertyDetails ({ property }) {
               {comments.map(comment => (
                 <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} setPage={setPage} page={page} n={comments.length} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner?.id === comment.user.id} setComments={setComments} setTotalComments={setTotalComments} />
               ))}
-              <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} />
+              <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} className='z-0' />
 
             </div>
 

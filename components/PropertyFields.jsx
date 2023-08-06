@@ -459,7 +459,6 @@ const validate = (step) => (values) => {
     if (!values.airConditioning) {
       errors.airConditioning = 'No puede dejar vacío este campo'
     } else if (values.airConditioning.toString() !== 'true' && values.airConditioning.toString() !== 'false') {
-      console.log(values.airConditioning)
       errors.airConditioning = 'Introduzca un valor válido'
     }
 
