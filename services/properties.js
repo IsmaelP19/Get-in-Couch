@@ -19,7 +19,8 @@ const getProperty = async (id) => {
   return response.data
 }
 
-const removeProperty = async (id) => {
+const removeProperty = async (id, loggedUser) => {
+  customHeader.data = { loggedUser }
   const response = await axios.delete(`${baseUrl}/${id}`, customHeader)
   return response.data
 }

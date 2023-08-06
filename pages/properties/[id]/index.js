@@ -11,7 +11,6 @@ import { useAppContext } from '../../../context/state'
 import CommentForm from '../../../components/CommentForm'
 import Notification from '../../../components/Notification'
 import { Pagination, Loading } from '@nextui-org/react'
-
 export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
   const [comments, setComments] = useState([])
@@ -74,7 +73,7 @@ export default function PropertyDetails ({ property }) {
   const handleDelete = async () => {
     const confirm = window.confirm('¿Estás seguro de que quieres eliminar este inmueble?')
     if (confirm) {
-      await propertiesService.removeProperty(property.id)
+      await propertiesService.removeProperty(property.id, user.id)
       router.push('/properties')
     }
   }

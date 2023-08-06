@@ -82,7 +82,9 @@ export default async function usersUsernameRouter (req, res) {
             description: body.description, // TODO: add an input to enter bio
             profilePicture: body.profilePicture,
             followers: user.followers, // will be [] if empty
-            followed: user.followed // will be [] if empty
+            followed: user.followed, // will be [] if empty
+            favorites: user.favorites, // will be [] if empty
+            properties: user.properties // will be [] if empty
           }
 
           try {

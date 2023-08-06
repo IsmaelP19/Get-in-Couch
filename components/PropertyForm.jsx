@@ -12,6 +12,7 @@ export default function PropertyForm ({ property }) {
   const router = useRouter()
 
   const updateProperty = (propertyObject) => {
+    propertyObject.loggedUser = user.id
     propertiesService.update(property.id, propertyObject)
       .then(response => {
         showMessage('Se ha actualizado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)

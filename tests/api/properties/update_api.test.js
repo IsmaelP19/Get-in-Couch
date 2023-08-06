@@ -1,11 +1,29 @@
 import mongoose from 'mongoose'
 import Property from '../../../models/property'
+import User from '../../../models/user'
 import propertiesRouter from '../../../pages/api/properties/index'
 import propertiesIdRouter from '../../../pages/api/properties/[id]'
+import usersRouter from '../../../pages/api/users/index'
 
 const propertiesInDb = async () => {
   const properties = await Property.find({})
   return properties.map(property => property.toJSON())
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+const newUser = {
+  email: 'test@test.com',
+  password: 's1st3m4s',
+  username: 'test',
+  name: 'Test',
+  surname: 'Tset',
+  phoneNumber: '123456789',
+  isOwner: true,
+  description: 'Test description'
 }
 
 const newProperty = {
@@ -25,8 +43,7 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false,
-  owner: new mongoose.Types.ObjectId()
+  heating: false
 }
 
 const req = {
@@ -42,8 +59,13 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
-
   await Property.deleteMany({})
+  await User.deleteMany({})
+
+  await usersRouter({ method: 'POST', body: newUser }, res)
+
+  const users = await usersInDb()
+  newProperty.owner = users[0].id
 })
 
 describe('UPDATE by id endpoint', () => {
@@ -79,6 +101,7 @@ describe('UPDATE by id endpoint', () => {
 
   test('When the property exists', async () => {
     const propertiesAtStart = await propertiesInDb()
+    const users = await usersInDb()
 
     const req1 = {
       method: 'PUT',
@@ -86,7 +109,8 @@ describe('UPDATE by id endpoint', () => {
         id: propertiesAtStart[0].id
       },
       body: {
-        title: 'Other title'
+        title: 'Other title',
+        loggedUser: users[0].id
       }
     }
 
@@ -128,6 +152,7 @@ describe('UPDATE by id endpoint', () => {
     const propertiesAtEnd = await propertiesInDb()
 
     expect(res1.status).toHaveBeenCalledWith(400)
+    expect(res1.json).toHaveBeenCalledWith({ error: 'logged user not found' })
     expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length)
     expect(propertiesAtEnd[0].title).toBe(propertiesAtStart[0].title)
   })
@@ -163,5 +188,6 @@ describe('UPDATE by id endpoint', () => {
 
 afterAll(async () => {
   await Property.deleteMany({})
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

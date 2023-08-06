@@ -1,11 +1,29 @@
 import mongoose from 'mongoose'
 import Property from '../../../models/property'
+import User from '../../../models/user'
 import propertiesRouter from '../../../pages/api/properties/index'
 import propertiesIdRouter from '../../../pages/api/properties/[id]'
+import usersRouter from '../../../pages/api/users/index'
 
 const propertiesInDb = async () => {
   const properties = await Property.find({})
   return properties.map(property => property.toJSON())
+}
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+const newUser = {
+  email: 'test@test.com',
+  password: 's1st3m4s',
+  username: 'test',
+  name: 'Test',
+  surname: 'Tset',
+  phoneNumber: '123456789',
+  isOwner: true,
+  description: 'Test description'
 }
 
 const newProperty = {
@@ -25,8 +43,7 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false,
-  owner: new mongoose.Types.ObjectId()
+  heating: false
 }
 
 const req = {
@@ -42,6 +59,12 @@ const res = {
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI_TEST, {
   })
+
+  await User.deleteMany({})
+  await usersRouter({ method: 'POST', body: newUser }, res)
+
+  const users = await usersInDb()
+  newProperty.owner = users[0].id
 })
 
 describe('GET all endpoint', () => {
@@ -60,7 +83,7 @@ describe('GET all endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesRouter(req1, res1)
@@ -84,7 +107,7 @@ describe('GET all endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesRouter(req1, res1)
@@ -106,7 +129,7 @@ describe('GET all endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesRouter(req1, res1)
@@ -131,7 +154,7 @@ describe('GET by id endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesIdRouter(req1, res1)
@@ -153,7 +176,7 @@ describe('GET by id endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesIdRouter(req1, res1)
@@ -172,7 +195,7 @@ describe('GET by id endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesIdRouter(req1, res1)
@@ -189,7 +212,7 @@ describe('GET by id endpoint', () => {
 
     const res1 = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn().mockReturnThis()
     }
 
     await propertiesIdRouter(req1, res1)
@@ -201,5 +224,6 @@ describe('GET by id endpoint', () => {
 
 afterAll(async () => {
   await Property.deleteMany({})
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

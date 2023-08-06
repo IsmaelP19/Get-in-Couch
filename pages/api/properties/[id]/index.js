@@ -1,4 +1,5 @@
 import Property from '../../../../models/property'
+import User from '../../../../models/user'
 import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../../utils/utils'
 
 export const config = { api: { bodyParser: { sizeLimit: '5mb' } } }
@@ -26,8 +27,20 @@ export default async function propertiesIdRouter (req, res) {
 
       property ? res.status(200).json(property) : res.status(404).json({ error: 'property not found' })
     } else if (req.method === 'DELETE') {
+      // FIXME: add loggedUser on req.body on the frontend
+
       const property = await Property.findById(id)
+      const loggedUser = await User.findById(req.body.loggedUser)
+      if (!loggedUser) {
+        return res.status(400).json({ error: 'logged user not found' })
+      }
       if (property) {
+        const owner = await User.findById(property.owner)
+        if (owner.id !== loggedUser.id) {
+          return res.status(403).json({ error: 'you don\'t have enough permissions to delete the given property' })
+        }
+        owner.properties = owner.properties.filter(property => property.toString() !== id.toString())
+        await owner.save()
         await Property.findByIdAndRemove(id)
         res.status(204).json({ message: 'property succesfully deleted' })
       } else {
@@ -37,6 +50,14 @@ export default async function propertiesIdRouter (req, res) {
       const property = await Property.findById(id)
       if (property) {
         const body = req.body
+        // FIXME: add loggedUser on req.body on the frontend
+
+        const loggedUser = await User.findById(body?.loggedUser)
+        if (!loggedUser) {
+          return res.status(400).json({ error: 'logged user not found' })
+        } else if (loggedUser.id !== property.owner.toString()) {
+          return res.status(403).json({ error: 'you don\'t have enough permissions to update the given property' })
+        }
         try {
           let coordinates = property.location.coordinates
           const location = { // new location object (it contains the old location if none is provided)
