@@ -57,15 +57,17 @@ export default async function usersRouter (req, res) {
 
       const search = req.query?.search
       if (search) {
-        users = await User.find({ $or: [{ username: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }, { surname: { $regex: search, $options: 'i' } }] }, 'username name surname profilePicture').sort({ memberSince: -1 }).skip(skip).limit(limit)
-        total = await User.countDocuments({ $or: [{ username: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }, { surname: { $regex: search, $options: 'i' } }] })
+        const $regex = search
+        const $options = 'i'
+        users = await User.find({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, 'username name surname profilePicture description').sort({ memberSince: -1 }).skip(skip).limit(limit)
+        total = await User.countDocuments({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] })
       } else {
         if (process.env.NODE_ENV === 'test') {
           // passwordHash is removed with the transform function of the model
           // but it is still returned in the response of the mock on tests
           users = await (await User.find({}).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
         } else {
-          users = await User.find({}, 'username name surname profilePicture').sort({ memberSince: -1 }).skip(skip).limit(limit)
+          users = await User.find({}, 'username name surname profilePicture description').sort({ memberSince: -1 }).skip(skip).limit(limit)
         }
         total = await User.countDocuments({})
       }
