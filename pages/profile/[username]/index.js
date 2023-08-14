@@ -133,7 +133,7 @@ export default function Profile ({ userObject }) {
       <main className='w-full'>
         <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-5 my-5 md:mx-15 md:my-14 '>
           <div className='flex flex-col md:w-1/4 gap-5 '>
-            <ProfilePhoto src={profilePicture} alt='' username={userObject.username} width={100} height={100} />
+            <ProfilePhoto src={profilePicture} alt='' username={userObject.username} width={500} height={500} />
 
             <div className='flex items-center justify-center gap-2'>
               {done && user && buttons}
