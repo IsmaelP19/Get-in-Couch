@@ -64,6 +64,7 @@ export default async function propertiesRouter (req, res) {
               propertySize: body.propertySize,
               numberOfBathrooms: body.numberOfBathrooms,
               numberOfBedrooms: body.numberOfBedrooms,
+              availableRooms: body.availableRooms,
               // isAvailable: body.isAvailable, //FIXME: NOT ON THE SCHEMA --> will be calculated on the frontend
               floor: body.floor || null,
               furniture: body.furniture,

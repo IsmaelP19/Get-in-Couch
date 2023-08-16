@@ -23,6 +23,8 @@ export default function PropertyForm ({ property }) {
       .catch(error => {
         if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
           showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
+        } else if (error.request.response.includes('Entered more available rooms than actual space available')) {
+          showMessage('Has introducido más habitaciones disponibles de las posibles. Ten en cuenta los inquilinos que actualmente residen en el inmueble.', 'info', setMessage, 8000)
         } else if (error.response.status === 413) {
           showMessage('Has añadido demasiadas imágenes. Por favor, considere subir menos imágenes o intente reducir el tamaño de ellas.', 'info', setMessage, 6000)
         } else {
@@ -63,10 +65,11 @@ export default function PropertyForm ({ property }) {
     propertySize: property?.features.propertySize || '',
     numberOfBathrooms: property?.features.numberOfBathrooms || '',
     numberOfBedrooms: property?.features.numberOfBedrooms || '',
+    availableRooms: property?.features.availableRooms ?? '', // will be '' only if availableRooms is null or undefined (not 0)
     furniture: property?.features.furniture || '',
     parking: property?.features.parking || '',
-    airConditioning: property?.features.airConditioning || '',
-    heating: property?.features.heating || '',
+    airConditioning: property?.features.airConditioning ?? '',
+    heating: property?.features.heating ?? '',
     images: property?.images || []
   }
 

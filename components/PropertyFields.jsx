@@ -129,6 +129,16 @@ const NumberOfBedrooms = ({ formik }) => {
   )
 }
 
+const AvailableRooms = ({ formik }) => {
+  return (
+    <div className='flex flex-col gap-y-1'>
+      <label htmlFor='availableRooms'>Habitaciones disponibles</label>
+      <input type='number' name='availableRooms' id='availableRooms' min='0' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.availableRooms} className='border border-solid border-slate-600' placeholder='Introduzca las habitaciones disponibles de su inmueble' />
+      {formik.touched.availableRooms && formik.errors.availableRooms ? <div className='text-red-600'>{formik.errors.availableRooms}</div> : null}
+    </div>
+  )
+}
+
 const Furniture = ({ formik }) => {
   return (
     <div className='flex flex-col gap-y-1'>
@@ -220,6 +230,7 @@ const Features = ({ formik }) => {
       <PropertySize formik={formik} />
       <NumberOfBathrooms formik={formik} />
       <NumberOfBedrooms formik={formik} />
+      <AvailableRooms formik={formik} />
       <Furniture formik={formik} />
       <Parking formik={formik} />
       <AirConditioning formik={formik} />
@@ -444,6 +455,16 @@ const validate = (step) => (values) => {
       errors.numberOfBedrooms = 'Introduzca un número'
     }
 
+    if (values.availableRooms === '') {
+      errors.availableRooms = 'No puede dejar vacío este campo'
+    } else if (values.availableRooms < 0) {
+      errors.availableRooms = 'El número de habitaciones disponibles debe ser positivo'
+    } else if (values.availableRooms > values.numberOfBedrooms) {
+      errors.availableRooms = 'No puedes tener más habitaciones disponibles de las que hay en total'
+    } else if (typeof values.availableRooms !== 'number') {
+      errors.availableRooms = 'Introduzca un número'
+    }
+
     if (!values.furniture) {
       errors.furniture = 'No puede dejar vacío este campo'
     } else if (values.furniture !== 'Amueblado' && values.furniture !== 'Semi-amueblado' && values.furniture !== 'Sin amueblar') {
@@ -456,13 +477,13 @@ const validate = (step) => (values) => {
       errors.parking = 'Introduzca un valor válido'
     }
 
-    if (!values.airConditioning) {
+    if (values.airConditioning === '') {
       errors.airConditioning = 'No puede dejar vacío este campo'
     } else if (values.airConditioning.toString() !== 'true' && values.airConditioning.toString() !== 'false') {
       errors.airConditioning = 'Introduzca un valor válido'
     }
 
-    if (!values.heating) {
+    if (values.heating === '') {
       errors.heating = 'No puede dejar vacío este campo'
     } else if (values.heating.toString() !== 'true' && values.heating.toString() !== 'false') {
       errors.heating = 'Introduzca un valor válido'

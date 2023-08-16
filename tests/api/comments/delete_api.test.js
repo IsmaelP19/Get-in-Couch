@@ -58,6 +58,7 @@ const newProperty = {
   propertySize: 100,
   numberOfBathrooms: 1,
   numberOfBedrooms: 1,
+  availableRooms: 1,
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,

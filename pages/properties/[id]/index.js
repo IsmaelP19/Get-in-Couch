@@ -13,6 +13,7 @@ import Notification from '../../../components/Notification'
 import { Pagination, Loading } from '@nextui-org/react'
 export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
+  // const [showTenants, setShowTenants] = useState(false)
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
   const [totalComments, setTotalComments] = useState(0)
@@ -28,8 +29,11 @@ export default function PropertyDetails ({ property }) {
       setTotalComments(fetchedComments.total)
       setDone(true)
     }
+    // if (user?.properties.includes(property.id)) {
+    //   setShowTenants(true)
+    // }
     fetchComments()
-  }, [property.id])
+  }, [property.id, user])
 
   useEffect(() => {
     if (totalComments === 0) {
@@ -104,6 +108,12 @@ export default function PropertyDetails ({ property }) {
 
         <PropertyInfo property={property} />
 
+        {/* {showTenants && (
+          <span>
+            <h2 className='font-bold text-2xl text-center'>Inquilinos</h2>
+          </span>
+        )} */}
+
       </div>
 
       <Gallery property={property} />
@@ -142,6 +152,9 @@ export async function getServerSideProps (context) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }
+
+  delete fetchedProperty.location?.coordinates
+  fetchedProperty.location.street = fetchedProperty.location.street.split(',')[0]
 
   return {
     props: {

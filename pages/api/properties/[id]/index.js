@@ -82,6 +82,12 @@ export default async function propertiesIdRouter (req, res) {
             }
           }
 
+          const { numberOfBedrooms, availableRooms } = body
+          const tenants = property.tenants
+          if (availableRooms > numberOfBedrooms - tenants.length) {
+            return res.status(400).json({ error: 'Entered more available rooms than actual space available (bedrooms - tenants)' })
+          }
+
           const propertyToUpdate = { // if nothing has changed, the old value is kept
             title: body.title || property.title,
             description: body.description || property.description,
@@ -91,7 +97,8 @@ export default async function propertiesIdRouter (req, res) {
               propertyType: body.propertyType || property.features.propertyType,
               propertySize: body.propertySize || property.features.propertySize,
               numberOfBathrooms: body.numberOfBathrooms || property.features.numberOfBathrooms,
-              numberOfBedrooms: body.numberOfBedrooms || property.features.numberOfBedrooms,
+              numberOfBedrooms: numberOfBedrooms || property.features.numberOfBedrooms,
+              availableRooms, // if we write || property.features.availableRooms, it will keep the old value when the new value is 0
               floor: body.floor || property.features.floor || null,
               furniture: body.furniture || property.features.furniture,
               terrace: body.terrace || property.features.terrace || null,
@@ -106,7 +113,8 @@ export default async function propertiesIdRouter (req, res) {
               smokingAllowed: body.smokingAllowed || property.features.smokingAllowed || null
             },
             lastEdited: Date.now(),
-            images: body.images || property.images || null
+            images: body.images || property.images || null,
+            tenants: body.tenants || property.tenants || null
           }
 
           await Property.findByIdAndUpdate(id, propertyToUpdate)
