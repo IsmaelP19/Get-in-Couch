@@ -6,7 +6,7 @@ import UserTag from './UserTag'
 import usersService from '../services/users'
 import propertiesService from '../services/properties'
 import { AiOutlineEdit, AiOutlineCheckCircle } from 'react-icons/ai'
-import { LiaBedSolid } from 'react-icons/lia'
+import { LiaBedSolid, LiaUserEditSolid } from 'react-icons/lia'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { IoBookmark } from 'react-icons/io5'
 
@@ -21,6 +21,7 @@ export default function PropertyInfo ({ property }) {
       setIsSaved(user.favorites.includes(property.id))
       setIsOwner(user?.properties.includes(property.id))
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done, user])
 
   useEffect(() => {
@@ -30,8 +31,8 @@ export default function PropertyInfo ({ property }) {
     }
     if (isOwner) {
       fetchTenants()
-      console.log('fetching tenants')
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOwner, property])
 
   const date = property?.lastEdited
@@ -89,7 +90,22 @@ export default function PropertyInfo ({ property }) {
               <LiaBedSolid className='inline-block mr-2 mb-1' />
               Inquilinos:
             </span>
-            {tenants.map(t => <UserTag user={t} key={t.id} />)}
+            {tenants.length > 0
+              ? (
+                <>
+                  {tenants.map(t => <UserTag user={t} key={t.id} link />)}
+                </>
+                )
+              : (
+                <span className='text-xl'>No hay inquilinos</span>
+                )}
+            <Link
+              href={'/properties/' + property.id + '/tenants'} className='flex  items-center gap-2 rounded-full px-2 py-1 border-slate-700 max-w-fit bg-blue-200 ease-in-out duration-150 transition-all hover:bg-yellow-500 self-center text-black hover:text-black border-2 justify-center font-bold'
+            >
+              <LiaUserEditSolid className='' />
+              Modificar inquilinos
+            </Link>
+
           </div>
         )}
 

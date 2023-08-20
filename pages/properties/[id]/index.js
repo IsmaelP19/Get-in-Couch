@@ -13,7 +13,6 @@ import Notification from '../../../components/Notification'
 import { Pagination, Loading } from '@nextui-org/react'
 export default function PropertyDetails ({ property }) {
   const [showText, setShowText] = useState('Ver más imágenes')
-  // const [showTenants, setShowTenants] = useState(false)
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
   const [totalComments, setTotalComments] = useState(0)
@@ -29,9 +28,6 @@ export default function PropertyDetails ({ property }) {
       setTotalComments(fetchedComments.total)
       setDone(true)
     }
-    // if (user?.properties.includes(property.id)) {
-    //   setShowTenants(true)
-    // }
     fetchComments()
   }, [property.id, user])
 
@@ -87,7 +83,7 @@ export default function PropertyDetails ({ property }) {
       <h1 className='p-10 font-bold text-3xl text-center'>Detalles del inmueble</h1>
       <div className='w-[90%] flex flex-col md:flex-row items-center justify-around gap-10'>
         <div className='flex flex-col gap-5 items-center'>
-          {user?.id === property.owner?.id && (
+          {user?.properties.includes(property?.id) && (
             <div className='flex gap-3 w-full justify-between'>
               <button className='bg-gray-200 hover:bg-red-700 px-5 self-center text-black hover:text-white rounded-full py-1 duration-200 border-2 border-slate-700 font-bold flex justify-center items-center gap-2 ' onClick={handleDelete}>
                 <MdDeleteOutline />
@@ -107,12 +103,6 @@ export default function PropertyDetails ({ property }) {
         </div>
 
         <PropertyInfo property={property} />
-
-        {/* {showTenants && (
-          <span>
-            <h2 className='font-bold text-2xl text-center'>Inquilinos</h2>
-          </span>
-        )} */}
 
       </div>
 

@@ -86,7 +86,7 @@ export default async function propertiesRouter (req, res) {
           await property.save()
 
           owner.properties = owner.properties.concat(property._id)
-          await owner.save() // TODO: check if this works
+          await owner.save()
 
           const jsonContent = { message: 'property succesfully created', id: property._id }
           if (process.env.NODE_ENV === 'test') {
