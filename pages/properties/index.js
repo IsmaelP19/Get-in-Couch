@@ -16,6 +16,11 @@ export default function Catalogue () {
   useEffect(() => {
     const fetchProperties = async () => {
       const fetchedProperties = await propertiesService.getAll(page)
+      fetchedProperties.properties.forEach(property => {
+        delete property.location?.coordinates
+        property.location.street = property.location.street.split(',')[0]
+      })
+
       setProperties(fetchedProperties.properties)
       setTotalPages(Math.ceil(fetchedProperties.total / 8))
       setDone(true)
@@ -27,6 +32,11 @@ export default function Catalogue () {
     setDone(false)
     setPage(page)
     const fetchedProperties = await propertiesService.getAll(page)
+    fetchedProperties.properties.forEach(property => {
+      delete property.location?.coordinates
+      property.location.street = property.location.street.split(',')[0]
+    })
+
     setProperties(fetchedProperties.properties)
     setTotalPages(Math.ceil(fetchedProperties.total / 8)) // in case the total number of properties has changed
     setDone(true)

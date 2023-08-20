@@ -19,6 +19,18 @@ const getProperty = async (id) => {
   return response.data
 }
 
+const getTenants = async (id, userId) => {
+  const customHeader = {
+    headers: {
+      'X-Origin': 'getincouch.vercel.app',
+      Authorization: userId
+    }
+  }
+
+  const response = await axios.get(`${baseUrl}/${id}/tenants`, customHeader)
+  return response.data
+}
+
 const removeProperty = async (id, loggedUser) => {
   customHeader.data = { loggedUser }
   const response = await axios.delete(`${baseUrl}/${id}`, customHeader)
@@ -29,9 +41,21 @@ const update = async (id, newObject) => {
   const response = await axios.put(`${baseUrl}/${id}`, newObject, customHeader)
   return response.data
 }
+
+const updateTenants = async (id, userId, newObject) => {
+  const customHeader = {
+    headers: {
+      'X-Origin': 'getincouch.vercel.app',
+      Authorization: userId
+    }
+  }
+  const response = await axios.put(`${baseUrl}/${id}/tenants`, newObject, customHeader)
+  return response.data
+}
+
 const getCommentsByProperty = async (id, limit, page) => {
   const response = await axios.get(`${baseUrl}/${id}/comments?page=${page}&limit=${limit}`, customHeader)
   return response.data
 }
 
-export default { getAll, create, getProperty, removeProperty, update, getCommentsByProperty }
+export default { getAll, create, getProperty, getTenants, removeProperty, update, updateTenants, getCommentsByProperty }

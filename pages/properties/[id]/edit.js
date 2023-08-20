@@ -10,7 +10,7 @@ export default function EditProperty ({ property }) {
   const router = useRouter()
 
   useEffect(() => {
-    if (done && (!user?.isOwner || property.owner.id !== user?.id)) {
+    if (done && (!user?.isOwner || !user?.properties.includes(property?.id))) {
       router.push('/403')
     }
   }, [user, router, done, property])
@@ -33,6 +33,10 @@ export async function getServerSideProps (context) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }
+
+  delete property.location?.coordinates
+  delete property.tenants
+  delete property.tenantsHistory
 
   return {
     props: {
