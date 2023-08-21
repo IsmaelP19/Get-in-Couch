@@ -21,23 +21,59 @@ export default async function propertiesIdTenantsRouter (req, res) {
     }
 
     if (req.method === 'GET') {
-      const tenants = await User.find({ _id: { $in: property.tenants } }).select('username name surname profilePicture')
+      const tenants = await User.find({ _id: { $in: property.tenants.map(t => t.user) } }).select('username name surname profilePicture')
       return res.status(200).json(tenants)
     } else if (req.method === 'PUT') {
       const { body } = req
-      const oldTenants = property.tenants.map(t => t.toString())
-      const newTenants = body.tenants
-      console.log(oldTenants)
-      console.log(newTenants)
-      property.tenants = newTenants
+      // body.tenants es un array de ids = ['id1', 'id2', 'id3' ...]
+
+      const oldTenants = property.tenants.map(tenant => tenant.user.toString())
+      // TODO: los que había antes (sólo sus IDs)
+      // oldTenants is an array of strings
+      // oldTenants = ['id1', 'id2', 'id3' ...]
+
+      const newTenants = [...new Set(body.tenants)] // Remove duplicates from newTenants array
+      // básicamente se convierte en set pa quitar duplicados (por si los hubiese) y se convierte en array de nuevo
+      // TODO: los que hay ahora (sólo sus IDs)
+
+      // Find the existing tenants in the property's tenants array
+      const existingTenants = property.tenants.filter(tenant => oldTenants.includes(tenant.user.toString()))
+      // no estoy haciendo nada realmente, cojo los inquilinos que había y no hago absolutamente nada
+      // FIXME: aquí cojo literalmente todos los property.tenants (oldTenants es literalmente los property.tenants pero quedandome solo con los ids) sólo que tmb coge la fecha de inclusión
+
+      // Create a map to store the original inclusion dates of existing tenants
+      const existingTenantDates = new Map()
+      existingTenants.forEach(tenant => {
+        const userId = tenant.user.toString()
+        existingTenantDates.set(userId, tenant.date)
+      })
+
+      // existingTenants tiene los objects Ids del tipo [{user, date, _id...}, {user, date, _id...}, ...}]
+      // existingTenantDates es del tipo { 'id1': 'date1', 'id2': 'date2', ... }
+
+      // Update tenants array and calculate available rooms
+      property.tenants = newTenants.map(userId => ({
+        user: userId,
+        date: existingTenantDates.get(userId) || new Date() // Use existing date if available, otherwise use current date
+      }))
       property.features.availableRooms = property.features.availableRooms - (newTenants.length - oldTenants.length)
 
-      property.tenantsHistory = property.tenantsHistory.filter(t => newTenants.includes(t))
+      // Update tenantsHistory array
+      const tenantsToAddToHistory = oldTenants.filter(userId => !newTenants.includes(userId))// FIXME: está cogiendo de los antiguos del property.tenants los que se han ido (no están en el newTenants) --> son los inquilinos que se han ido a su puta casa (vaya, la intersección entre oldTenants y newTenants)
 
-      const tenantsToRemove = oldTenants.filter(t => !newTenants.includes(t))
-      property.tenantsHistory = [...property.tenantsHistory, ...tenantsToRemove]
+      // const tenantsToAddToHistory = tenantsToRemoveFromHistory.filter(userId => !property.tenants.some(tenant => tenant.user.toString() === userId))
 
-      property.tenantsHistory = [...new Set(property.tenantsHistory)] // just in case
+      const tenantsBackFromHistory = property.tenantsHistory.filter(history => newTenants.includes(history.user.toString()))
+
+      // ahora añadimos al history los que se han ido (tenantsToAddToHistory) y quitamos los que han vuelto (tenantsBackFromHistory)
+
+      property.tenantsHistory = property.tenantsHistory.filter(history => !tenantsBackFromHistory.some(tenant => tenant.user.toString() === history.user.toString()))
+      // básicamente quita los que han vuelto a ser inquilinos y lo fueron en el pasado
+
+      property.tenantsHistory = [
+        ...property.tenantsHistory,
+        ...tenantsToAddToHistory.map(userId => ({ user: userId, date: existingTenantDates.get(userId) }))
+      ]
 
       if (property.availableRooms < 0) {
         return res.status(400).json({ error: `there are only ${property.numberOfBedrooms} rooms and ${property.tenants.length} tenants were added` })

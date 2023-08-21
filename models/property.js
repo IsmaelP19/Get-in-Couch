@@ -2,6 +2,18 @@ import mongoose from 'mongoose'
 
 const uniqueValidator = require('mongoose-unique-validator')
 
+const tenantSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+})
+
 const propertySchema = new mongoose.Schema({
   title: {
     type: String,
@@ -155,18 +167,8 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  tenants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  tenantsHistory: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ]
+  tenants: [tenantSchema],
+  tenantsHistory: [tenantSchema]
 })
 
 // propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
