@@ -67,17 +67,17 @@ export default function EditTenants ({ property }) {
       <h1 className='px-10 py-5 font-bold text-3xl text-center'>Inquilinos</h1>
       <Notification message={message[0]} type={message[1]} className='w-max-fit' />
       <div>
-        <div class='bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-[5%] mb-5' role='alert'>
-          <p class='font-bold'>Atención</p>
+        <div className='bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-[5%] mb-5' role='alert'>
+          <p className='font-bold'>Atención</p>
           <p>Recuerda verificar el número de habitaciones disponibles en caso de contar con inquilinos ajenos a Get in Couch.</p>
         </div>
-        <div class='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mx-[5%] mb-5' role='alert'>
-          <p class='font-bold'>Tenga en cuenta</p>
+        <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mx-[5%] mb-5' role='alert'>
+          <p className='font-bold'>Tenga en cuenta</p>
           <p>Los usuarios seleccionados van a pasar a formar parte de los inquilinos de su inmueble. Si decide eliminarlos como inquilinos seguirán en el historial y podrán comentar como antiguos inquilinos.</p>
         </div>
       </div>
 
-      <div className='flex flex-row flex-wrap justify-center items-center mx-[10%] gap-5'>
+      <div className='flex flex-row flex-wrap justify-center items-center  mx-[5%] gap-5'>
         {tenants.map(t => <UserTag key={t.id} user={t} action={() => handleDelete(t.id)} />)}
       </div>
 

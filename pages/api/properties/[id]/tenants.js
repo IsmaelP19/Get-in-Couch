@@ -21,7 +21,14 @@ export default async function propertiesIdTenantsRouter (req, res) {
     }
 
     if (req.method === 'GET') {
-      const tenants = await User.find({ _id: { $in: property.tenants.map(t => t.user) } }).select('username name surname profilePicture')
+      const tenants = await User.find({ _id: { $in: property.tenants.map(t => t.user) } }).select('_id username name surname profilePicture')
+
+      tenants.forEach(tenant => {
+        const tenantId = tenant._id.toString()
+        const tenantDate = property.tenants.find(t => t.user.toString() === tenantId).date.toLocaleDateString()
+        tenant._doc.date = tenantDate
+      })
+
       return res.status(200).json(tenants)
     } else if (req.method === 'PUT') {
       const { body } = req
