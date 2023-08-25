@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import ProfilePhoto from '../../../components/ProfilePhoto'
+import ProfileButton from '../../../components/ProfileButton'
+import Tag from '../../../components/Tag'
 import userService from '../../../services/users'
 import { useAppContext } from '../../../context/state'
 import conversationsService from '../../../services/conversations'
@@ -7,6 +9,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
 import { FaBookmark } from 'react-icons/fa'
+import { BsCalendar2WeekFill } from 'react-icons/bs'
 
 export default function Profile ({ userObject }) {
   const { name, surname, description, memberSince, followers, following } = userObject
@@ -70,6 +73,11 @@ export default function Profile ({ userObject }) {
 
   const handleSaved = () => {
     router.push('/saved')
+  }
+
+  const handleSituation = () => {
+    router.push('/state')
+    // this endpoint will only be available for users who are not owners (potentially tenants)
   }
 
   const handleFollowersPage = () => {
@@ -143,27 +151,35 @@ export default function Profile ({ userObject }) {
             <span className='font-bold text-2xl'>
               {name} {surname}
             </span>
+            <Tag text={userObject.isOwner ? 'Propietario' : 'Inquilino'} verified style={`text-base font-bold ${userObject.isOwner ? 'text-green-800 bg-green-100' : 'text-purple-800 bg-purple-100'}  `} />
+
             <span className='text-gray-600 font-thin text-base'>
               Miembro desde: {showDate()}
             </span>
             <span className='text-gray-600 font-thin text-base'>
               {description}
             </span>
-            <div className='flex gap-3 px-3 md:px-0 flex-wrap-reverse items-center justify-center'>
+            <div className='flex gap-3 px-3 md:px-0 flex-wrap items-center justify-center'>
 
-              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowersPage}>
-                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
-              </button>
-              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowingPage}>
-                {following.length} siguiendo
-              </button>
               {user?.username === userObject.username && (
-                <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleSaved}>
-                  Guardados
-                  <FaBookmark className='text-xl ' />
-                </button>
-
+                <>
+                  <ProfileButton handleClick={handleSaved} style={user.isOwner ? '' : 'bg-purple-200 hover:bg-purple-700 hover:text-white'}>
+                    Guardados
+                    <FaBookmark className='text-xl ' />
+                  </ProfileButton>
+                  {!user.isOwner &&
+                    <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
+                      Situación actual
+                      <BsCalendar2WeekFill className='text-xl' />
+                    </ProfileButton>}
+                </>
               )}
+              <ProfileButton handleClick={handleFollowersPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
+              </ProfileButton>
+              <ProfileButton handleClick={handleFollowingPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                {following.length} siguiendo
+              </ProfileButton>
 
             </div>
           </div>

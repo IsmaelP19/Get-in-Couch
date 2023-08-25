@@ -67,11 +67,11 @@ export default function EditTenants ({ property }) {
       <h1 className='px-10 py-5 font-bold text-3xl text-center'>Inquilinos</h1>
       <Notification message={message[0]} type={message[1]} className='w-max-fit' />
       <div>
-        <div className='bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-[5%] mb-5' role='alert'>
+        <div className='bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-[5%] mb-5 rounded' role='alert'>
           <p className='font-bold'>Atención</p>
           <p>Recuerda verificar el número de habitaciones disponibles en caso de contar con inquilinos ajenos a Get in Couch.</p>
         </div>
-        <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mx-[5%] mb-5' role='alert'>
+        <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mx-[5%] mb-5 rounded' role='alert'>
           <p className='font-bold'>Tenga en cuenta</p>
           <p>Los usuarios seleccionados van a pasar a formar parte de los inquilinos de su inmueble. Si decide eliminarlos como inquilinos seguirán en el historial y podrán comentar como antiguos inquilinos.</p>
         </div>
@@ -87,8 +87,6 @@ export default function EditTenants ({ property }) {
         <input type='hidden' name='tenants' value={tenants} />
 
         <div className='flex flex-col max-w-fit'>
-
-          {/* <span className='text-red-600'> Los usuarios seleccionados van a pasar a formar parte de su inmueble. Si decide eliminarlos de los inquilinos seguirán en el historial y podrán comentar como antiguos inquilinos.</span> */}
 
           <span className={`text-xl ${tenants.length > property.features.numberOfBedrooms ? 'bg-red-400 border-red-600' : tenants.length === property.features.numberOfBedrooms ? 'bg-yellow-400 border-yellow-500' : 'bg-green-200 border-green-500'} border-2 p-2 `}>{tenants.length}/{property.features.numberOfBedrooms} habitaciones ocupadas</span>
 

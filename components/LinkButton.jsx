@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { useAppContext } from '../context/state'
 
-export default function LinkButton ({ name, link, style }) {
+export default function LinkButton ({ name, link, style, drawer }) {
   const { isOpen, setOpenDrawer } = useAppContext()
+
   const handleClick = () => {
+    drawer &&
     isOpen &&
     setOpenDrawer(!isOpen)
   }

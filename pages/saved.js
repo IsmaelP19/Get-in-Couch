@@ -49,12 +49,12 @@ export default function Saved () {
           )
         : (
           <div className='w-full flex flex-col'>
-            <h1 className='p-10 font-bold text-3xl text-center'>
-              <IoBookmark className='inline-block mr-2 text-green-600' />
-              Anuncios guardados
-              <IoBookmark className='inline-block ml-2 text-green-600' />
+            <div className='flex gap-2 my-5 md:my-10 font-bold text-3xl text-center items-center justify-center'>
+              <IoBookmark className='text-green-600' />
+              <h1 className='w-44 sm:w-fit'>Anuncios guardados</h1>
+              <IoBookmark className='text-green-600' />
+            </div>
 
-            </h1>
             {savedProperties.length > 0
               ? (
                 <div className='flex items-center justify-center flex-col gap-5 mb-10'>
@@ -70,7 +70,7 @@ export default function Saved () {
                 )
               : (
                 <div className='flex flex-col items-center justify-center gap-3 my-5 md:my-10'>
-                  <span>No tienes propiedades guardadas</span>
+                  <span className='text-2xl text-center px-5'>No tienes propiedades guardadas</span>
                 </div>
                 )}
 

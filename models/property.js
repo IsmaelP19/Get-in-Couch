@@ -173,6 +173,7 @@ const propertySchema = new mongoose.Schema({
 
 // propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
 propertySchema.index({ 'location.street': 1, 'location.city': 1, 'location.country': 1, 'location.zipCode': 1 }, { unique: true }) // not sure if this is the correct way to do it
+propertySchema.index({ 'tenants.user': 1 })
 
 // the coordinates are ESTIMATE, so they are not unique, we can check if the complete address is unique but because of data privacy won't show them on the announcement or map
 

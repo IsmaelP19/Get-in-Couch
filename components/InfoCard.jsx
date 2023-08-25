@@ -17,7 +17,7 @@ export default function InfoCard ({ title, description, buttonName, buttonLink, 
       <p className='text-gray-200 text-xl p-3 text-center'>
         {description}
       </p>
-      <LinkButton name={buttonName} link={link} style={buttonStyle} />
+      <LinkButton name={buttonName} link={link} style={buttonStyle} drawer />
     </div>
   )
 }
