@@ -4,10 +4,9 @@ import { useRouter } from 'next/router'
 
 export default function Roommate ({ user, days, lastEvaluated }) {
   const router = useRouter()
-  // date será el número de días que lleva conviviendo el user con el propio usuario logeado.
 
   const handleEvaluate = () => {
-    if (days <= 30) router.push(`/evaluate/${user.username}`)
+    if (days >= 30) router.push(`/evaluate/${user.username}`)
   }
 
   const lastEdit = Math.floor((new Date() - new Date(lastEvaluated)) / (1000 * 60 * 60 * 24))

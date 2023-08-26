@@ -25,7 +25,7 @@ export default async function propertiesIdTenantsRouter (req, res) {
 
       tenants.forEach(tenant => {
         const tenantId = tenant._id.toString()
-        const tenantDate = property.tenants.find(t => t.user.toString() === tenantId).date.toLocaleDateString()
+        const tenantDate = property.tenants.find(t => t.user.toString() === tenantId).date.toLocaleDateString('es-ES')
         tenant._doc.date = tenantDate
       })
 

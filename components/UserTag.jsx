@@ -23,7 +23,7 @@ export default function UserTag ({ user, link, action }) {
           <div className='flex flex-col'>
             <span>{user.name} {user.surname}</span>
             <span className='italic text-base'> @{user.username}</span>
-            <span className='text-base'>Desde {user.date ?? new Date().toLocaleDateString()}
+            <span className='text-base'>Desde {user.date ?? new Date().toLocaleDateString('es-ES')}
             </span>
           </div>
           <button className='ease-in-out duration-150 transition-all hover:text-red-600 text-2xl' onClick={action}>

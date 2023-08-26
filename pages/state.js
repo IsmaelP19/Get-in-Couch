@@ -46,7 +46,6 @@ export default function State () {
 
     async function getPropertyHistory () {
       const { properties } = await usersService.getPropertyHistory(user.username)
-      console.log(properties)
       setPropertyHistory(properties)
     }
 
@@ -99,9 +98,13 @@ export default function State () {
                           </div>
                         </div>
                         <div className='flex flex-col items-center justify-center w-full mt-4'>
-                          <h2 className='text-2xl font-bold p-5'>Inmuebles en los que he vivido</h2>
+                          {propertyHistory?.length > 0 && (
+                            <h2 className='text-2xl font-bold p-5'>Inmuebles en los que he vivido</h2>
+                          )}
                           <div className='flex gap-8 flex-wrap w-[90%] items-center justify-center'>
+
                             {propertyHistory?.map(property => (
+
                               <Link href={`/properties/${property.id}`} key={property.id}>
                                 <PropertyCard property={property} />
                               </Link>

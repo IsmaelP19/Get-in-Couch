@@ -112,7 +112,7 @@ export default function Evaluate ({ userObject }) {
         {!isLoading
           ? (
             <>
-              {evaluation && <p className='text-xl'>Última evaluación: {new Date(evaluation.lastEdit).toLocaleDateString()}</p>}
+              {evaluation && <p className='text-xl'>Última evaluación: {new Date(evaluation.lastEdit).toLocaleDateString('es-ES')}</p>}
               <form onSubmit={formik.handleSubmit} className='flex flex-col p-5 sm:p-10 w-full  sm:w-[90%] bg-gray-200 gap-10 rounded-xl border-2 border-slate-700 shadow-md'>
                 <div className='flex flex-col'>
                   <label htmlFor='cleaning' className='text-xl'>Limpieza</label>
