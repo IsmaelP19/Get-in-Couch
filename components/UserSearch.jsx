@@ -7,7 +7,7 @@ import UserCard from './UserCard'
 import { Loading, Pagination } from '@nextui-org/react'
 import { AiOutlineSearch } from 'react-icons/ai'
 
-export default function UsersSearch ({ tenants, setTenants }) {
+export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
   const { user, done, setMessage } = useAppContext()
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
@@ -28,21 +28,40 @@ export default function UsersSearch ({ tenants, setTenants }) {
   }
 
   useEffect(() => {
-    usersService.search(search, 1, 5)
-      .then(response => {
-        setUsers(response.users)
-        setTotalPages(Math.ceil(response.total / 5))
-        setLoading(false)
-      }).catch(error => {
-        showMessage(error.response.data.error, 'error', setMessage, 4000, true)
-      })
+    if (onlyTenants) {
+      usersService.search(search, 1, 5, true)
+        .then(response => {
+          setUsers(response.users)
+          setTotalPages(Math.ceil(response.total / 5))
+          setLoading(false)
+        }).catch(error => {
+          showMessage(error.response.data.error, 'error', setMessage, 4000, true)
+        })
+    } else {
+      usersService.search(search, 1, 5)
+        .then(response => {
+          console.log(response.users)
+          setUsers(response.users)
+          setTotalPages(Math.ceil(response.total / 5))
+          setLoading(false)
+        }).catch(error => {
+          showMessage(error.response.data.error, 'error', setMessage, 4000, true)
+        })
+    }
   }, [search])
 
   const handlePageChange = async (page) => {
     setLoading(true)
     window.scrollTo(0, 0)
     setCurrentPage(page)
-    const fetchedUsers = await usersService.search(search, page, 5)
+
+    let fetchedUsers
+    if (onlyTenants) {
+      fetchedUsers = await usersService.search(search, page, 5, true)
+    } else {
+      fetchedUsers = await usersService.search(search, page, 5)
+    }
+
     setUsers(fetchedUsers.users)
     setTotalPages(Math.ceil(fetchedUsers.total / 5))
     setLoading(false)

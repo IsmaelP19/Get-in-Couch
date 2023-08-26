@@ -34,7 +34,6 @@ export default function EditTenants ({ property }) {
   }, [isOwner, property])
 
   const updateTenants = async (values) => {
-    // if (window.confirm('Los usuarios seleccionados van a pasar a formar parte de su inmueble. Si decide eliminarlos de los inquilinos seguirán en el historial y podrán comentar como antiguos inquilinos. \n¿Está seguro de que desea continuar?')) {
     try {
       if (values.tenants.length > property.features.numberOfBedrooms) {
         showMessage(`Has definido ${property.features.numberOfBedrooms} habitaciones en tu propiedad y añadiste ${values.tenants.length} inquilinos`, 'error', setMessage, 6000, true)
@@ -46,7 +45,14 @@ export default function EditTenants ({ property }) {
         }, 4000)
       }
     } catch (error) {
-      showMessage('Ha ocurrido un error. Por favor, inténtelo más tarde.', 'error', setMessage, 6000, true)
+      if (error.response.data.error === 'new tenants cannot be owners') {
+        showMessage('Los nuevos inquilinos no pueden ser propietarios', 'error', setMessage, 6000, true)
+      } else if (error.response.data.error === 'there are some tenants that are already living in another property') {
+        const tenants = error.response.data.alreadyTenants.map(t => `@${t.username}`)
+        showMessage(`Algunos de los inquilinos seleccionados ya viven en otra propiedad (${tenants.join(', ')})`, 'error', setMessage, 6000, true)
+      } else {
+        showMessage('Ha ocurrido un error. Por favor, inténtelo más tarde.', 'error', setMessage, 6000, true)
+      }
     }
   }
 
@@ -81,7 +87,7 @@ export default function EditTenants ({ property }) {
         {tenants.map(t => <UserTag key={t.id} user={t} action={() => handleDelete(t.id)} />)}
       </div>
 
-      <UsersSearch tenants={tenants} setTenants={setTenants} />
+      <UsersSearch tenants={tenants} setTenants={setTenants} onlyTenants />
 
       <form onSubmit={formik.handleSubmit}>
         <input type='hidden' name='tenants' value={tenants} />

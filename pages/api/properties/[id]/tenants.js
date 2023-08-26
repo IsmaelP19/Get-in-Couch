@@ -40,6 +40,22 @@ export default async function propertiesIdTenantsRouter (req, res) {
       // oldTenants = ['id1', 'id2', 'id3' ...]
 
       const newTenants = [...new Set(body.tenants)] // Remove duplicates from newTenants array
+      // TODO: check that newTenants are not owners (should return a fail)
+
+      const areNewTenantsOwners = await User.find({ _id: { $in: newTenants }, isOwner: true })
+      if (areNewTenantsOwners.length > 0) {
+        return res.status(400).json({ error: 'new tenants cannot be owners' })
+      }
+
+      const otherProperties = await Property.find({ _id: { $ne: property._id } }).populate('tenants.user')
+      const otherTenants = otherProperties.flatMap(p => p.tenants.map(tenant => tenant.user.id))
+
+      const newTenantsLivingInAnotherProperty = newTenants.filter(tenant => otherTenants.includes(tenant))
+      if (newTenantsLivingInAnotherProperty.length > 0) {
+        const tenants = await User.find({ _id: { $in: newTenantsLivingInAnotherProperty } }).select('username name surname')
+        return res.status(400).json({ error: 'there are some tenants that are already living in another property', alreadyTenants: tenants })
+      }
+
       // básicamente se convierte en set pa quitar duplicados (por si los hubiese) y se convierte en array de nuevo
       // TODO: los que hay ahora (sólo sus IDs)
 

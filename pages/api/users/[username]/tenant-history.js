@@ -16,19 +16,9 @@ export default async function usersUsernameRouter (req, res) {
       if (username) {
         const user = await User.findOne({ username })
         if (user) {
-          const livingProperty = await Property.findOne({ tenants: { $elemMatch: { user: user._id } } })
-            .populate({ path: 'tenants.user' })
-            .populate({ path: 'owner', select: '_id username name surname profilePicture' }) // profilePicture still needed?
+          const propertyHistory = await Property.find({ tenantsHistory: { $elemMatch: { user: user._id } } })
 
-          if (livingProperty) {
-            livingProperty.tenants.forEach(tenant => {
-              const tenantId = tenant.user._id.toString()
-              const tenantDate = livingProperty.tenants.find(t => t.user._id.toString() === tenantId).date
-              tenant._doc.date = tenantDate
-            })
-          }
-
-          return res.status(200).json(livingProperty ? { property: livingProperty } : { error: 'The user does not live in any property yet' })
+          return res.status(200).json(propertyHistory ? { properties: propertyHistory } : { error: 'The user has not lived in any property yet' })
         }
         return res.status(404).json({ error: 'user not found' })
       }
