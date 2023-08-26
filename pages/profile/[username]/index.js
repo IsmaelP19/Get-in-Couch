@@ -204,14 +204,20 @@ export default function Profile ({ userObject }) {
                       <span className='text-xl text-center px-3'>Este usuario aún no ha recibido ninguna valoración</span>
                       )
                     : (
-                      <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-200 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
+                      <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-100 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
+                        <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                          <p className='font-bold text-xl'>Atención</p>
+                          <span className='text-xl'>
+                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor, excepto para el ruido, que cuanto más alta sea la puntuación más ruidoso es el usuario.
+                          </span>
+                        </div>
                         <div className='self-end'>
                           <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
                         </div>
 
                         <div className='flex flex-col'>
                           <label htmlFor='cleaning' className='text-xl font-bold'>Limpieza: {(stats.averageEvaluation.cleaning)} </label>
-                          <input type='range' name='cleaning' min='0' max='5' step='any' value={stats.averageEvaluation.cleaning} readOnly className='accent-green-700 ' />
+                          <input type='range' name='cleaning' min='0' max='5' step='any' value={stats.averageEvaluation.cleaning} readOnly className='accent-blue-700 ' />
                           <div className='w-full flex justify-between mt-1'>
                             <span className='text-xl'>0</span>
                             <span className='text-xl'>1</span>
@@ -223,7 +229,7 @@ export default function Profile ({ userObject }) {
                         </div>
                         <div className='flex flex-col'>
                           <label htmlFor='communication' className='text-xl font-bold'>Comunicación: {stats.averageEvaluation.communication} </label>
-                          <input type='range' name='communication' min='0' max='5' steps='any' value={stats.averageEvaluation.communication} readOnly className='accent-green-700 ' />
+                          <input type='range' name='communication' min='0' max='5' steps='any' value={stats.averageEvaluation.communication} readOnly className='accent-blue-700 ' />
                           <div className='w-full flex justify-between mt-1'>
                             <span className='text-xl'>0</span>
                             <span className='text-xl'>1</span>
@@ -235,7 +241,7 @@ export default function Profile ({ userObject }) {
                         </div>
                         <div className='flex flex-col'>
                           <label htmlFor='tidyness' className='text-xl font-bold'>Ordenado: {(stats.averageEvaluation.tidyness)} </label>
-                          <input type='range' name='tidyness' min='0' max='5' step='any' value={stats.averageEvaluation.tidyness} readOnly className='accent-green-700 ' />
+                          <input type='range' name='tidyness' min='0' max='5' step='any' value={stats.averageEvaluation.tidyness} readOnly className='accent-blue-700 ' />
                           <div className='w-full flex justify-between mt-1'>
                             <span className='text-xl'>0</span>
                             <span className='text-xl'>1</span>
@@ -247,7 +253,7 @@ export default function Profile ({ userObject }) {
                         </div>
                         <div className='flex flex-col'>
                           <label htmlFor='respect' className='text-xl font-bold'>Respeto: {(stats.averageEvaluation.respect)} </label>
-                          <input type='range' name='respect' min='0' max='5' step='any' value={stats.averageEvaluation.respect} readOnly className='accent-green-700 ' />
+                          <input type='range' name='respect' min='0' max='5' step='any' value={stats.averageEvaluation.respect} readOnly className='accent-blue-700 ' />
                           <div className='w-full flex justify-between mt-1'>
                             <span className='text-xl'>0</span>
                             <span className='text-xl'>1</span>

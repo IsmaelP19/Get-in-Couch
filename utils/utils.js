@@ -43,12 +43,23 @@ const tokenExtractor = (request, response) => {
   }
 }
 
-const showMessage = (message, type, setMessage, time, scroll) => {
+// const showMessage = (message, type, setMessage, time, scroll) => {
+//   setMessage([message, type])
+//   if (scroll) window.scrollTo(0, 0)
+//   setTimeout(() => {
+//     setMessage('')
+//   }, time)
+// }
+
+const showMessage = (message, type, setMessage, time, scroll, isHTML = false) => {
   setMessage([message, type])
   if (scroll) window.scrollTo(0, 0)
   setTimeout(() => {
     setMessage('')
   }, time)
+  if (isHTML) {
+    return message
+  }
 }
 
 async function getCoordinatesFromAddress (address) {
@@ -56,9 +67,12 @@ async function getCoordinatesFromAddress (address) {
   const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
   const response = await fetch(url)
   const data = await response.json()
-  const latitude = data.data[0].latitude
-  const longitude = data.data[0].longitude
-  return { latitude, longitude }
+  if (data.error) throw new Error(data.error.message)
+  else {
+    const latitude = data.data[0].latitude
+    const longitude = data.data[0].longitude
+    return { latitude, longitude }
+  }
 }
 
 module.exports = {

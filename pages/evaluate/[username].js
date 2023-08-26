@@ -113,8 +113,15 @@ export default function Evaluate ({ userObject }) {
           ? (
             <>
               {evaluation && <p className='text-xl'>Última evaluación: {new Date(evaluation.lastEdit).toLocaleDateString('es-ES')}</p>}
-              <form onSubmit={formik.handleSubmit} className='flex flex-col p-5 sm:p-10 w-full  sm:w-[90%] bg-gray-200 gap-10 rounded-xl border-2 border-slate-700 shadow-md'>
+              <form onSubmit={formik.handleSubmit} className='flex flex-col p-5 sm:p-10 w-full  sm:w-[90%] bg-gray-100 gap-10 rounded-xl border-2 border-slate-700 shadow-md'>
+
                 <div className='flex flex-col'>
+                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                    <p className='font-bold text-xl'>¿Tu compañero de piso limpia los espacios comunes?</p>
+                    <span className='text-xl'>
+                      Valóralo del 0 al 5 donde 0 es que no limpia nada y 5 es que lo limpia todo.
+                    </span>
+                  </div>
                   <label htmlFor='cleaning' className='text-xl'>Limpieza</label>
                   <input
                     type='range'
@@ -124,7 +131,7 @@ export default function Evaluate ({ userObject }) {
                     step={1}
                     value={formik.values.cleaning}
                     onChange={formik.handleChange}
-                    className='accent-slate-700 w-full'
+                    className='accent-blue-700 w-full'
                   />
                   <div className='w-full flex justify-between mt-1'>
                     <span className='text-xl'>0</span>
@@ -138,8 +145,14 @@ export default function Evaluate ({ userObject }) {
                 </div>
 
                 <div className='flex flex-col'>
+                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                    <p className='font-bold text-xl'>¿Tu compañero de piso se comunica contigo?</p>
+                    <span className='text-xl'>
+                      Valóralo del 0 al 5 donde 0 es que no se comunica nada y 5 es que se comunica mucho.
+                    </span>
+                  </div>
                   <label htmlFor='communication' className='text-xl'>Comunicación</label>
-                  <input type='range' name='communication' min='0' max='5' value={formik.values.communication} onChange={formik.handleChange} className='accent-slate-700' />
+                  <input type='range' name='communication' min='0' max='5' value={formik.values.communication} onChange={formik.handleChange} className='accent-blue-700' />
                   <div className='w-full flex justify-between mt-1'>
                     <span className='text-xl'>0</span>
                     <span className='text-xl'>1</span>
@@ -151,8 +164,14 @@ export default function Evaluate ({ userObject }) {
                 </div>
 
                 <div className='flex flex-col'>
+                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                    <p className='font-bold text-xl'>¿Tu compañero de piso mantiene ordenado su espacio?</p>
+                    <span className='text-xl'>
+                      Valóralo del 0 al 5 donde 0 es que no mantiene nada ordenado y 5 es que lo mantiene todo ordenado.
+                    </span>
+                  </div>
                   <label htmlFor='tidyness' className='text-xl'>Ordenado</label>
-                  <input type='range' name='tidyness' min='0' max='5' value={formik.values.tidyness} onChange={formik.handleChange} className='accent-slate-700' />
+                  <input type='range' name='tidyness' min='0' max='5' value={formik.values.tidyness} onChange={formik.handleChange} className='accent-blue-700' />
                   <div className='w-full flex justify-between mt-1'>
                     <span className='text-xl'>0</span>
                     <span className='text-xl'>1</span>
@@ -164,8 +183,14 @@ export default function Evaluate ({ userObject }) {
                 </div>
 
                 <div className='flex flex-col'>
+                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                    <p className='font-bold text-xl'>¿Tu compañero de piso te respeta?</p>
+                    <span className='text-xl'>
+                      Valóralo del 0 al 5 donde 0 es que no te respeta nada y 5 es que te respeta mucho.
+                    </span>
+                  </div>
                   <label htmlFor='respect' className='text-xl'>Respeto</label>
-                  <input type='range' name='respect' min='0' max='5' value={formik.values.respect} onChange={formik.handleChange} className='accent-slate-700' />
+                  <input type='range' name='respect' min='0' max='5' value={formik.values.respect} onChange={formik.handleChange} className='accent-blue-700' />
                   <div className='w-full flex justify-between mt-1'>
                     <span className='text-xl'>0</span>
                     <span className='text-xl'>1</span>
@@ -177,6 +202,12 @@ export default function Evaluate ({ userObject }) {
                 </div>
 
                 <div className='flex flex-col'>
+                  <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-2  rounded' role='alert'>
+                    <p className='font-bold text-xl'>¿Tu compañero de piso hace mucho ruido?</p>
+                    <span className='text-xl'>
+                      Valóralo del 0 al 5 donde 0 es que no hace nada de ruido y 5 es que hace mucho ruido.
+                    </span>
+                  </div>
                   <label htmlFor='noisy' className='text-xl'>Ruido</label>
                   <input type='range' name='noisy' min='0' max='5' value={formik.values.noisy} onChange={formik.handleChange} className='accent-red-700' />
                   <div className='w-full flex justify-between mt-1'>
