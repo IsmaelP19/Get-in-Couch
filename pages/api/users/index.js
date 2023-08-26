@@ -55,21 +55,40 @@ export default async function usersRouter (req, res) {
       if (page === 'undefined' || page === undefined) page = 1
       const skip = limit * (page - 1)
 
+      const onlyTenants = req.query?.onlyTenants // a boolean
+
       const search = req.query?.search
       if (search) {
         const $regex = search
         const $options = 'i'
-        users = await User.find({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, 'username name surname profilePicture description').sort({ memberSince: -1 }).skip(skip).limit(limit)
-        total = await User.countDocuments({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] })
+
+        if (onlyTenants) {
+          // we will get only users that match the given criteria and also that are not owners
+          users = await User.find({ $and: [{ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, { isOwner: false }] }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
+          total = await User.countDocuments({ $and: [{ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, { isOwner: false }] })
+        } else {
+          users = await User.find({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
+
+          total = await User.countDocuments({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] })
+        }
       } else {
         if (process.env.NODE_ENV === 'test') {
-          // passwordHash is removed with the transform function of the model
-          // but it is still returned in the response of the mock on tests
-          users = await (await User.find({}).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
+          if (onlyTenants) {
+            users = await (await User.find({ isOwner: false }).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
+            total = await User.countDocuments({ isOwner: false })
+          } else {
+            users = await (await User.find({}).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
+            total = await User.countDocuments({})
+          }
         } else {
-          users = await User.find({}, 'username name surname profilePicture description').sort({ memberSince: -1 }).skip(skip).limit(limit)
+          if (onlyTenants) {
+            users = await User.find({ isOwner: false }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
+            total = await User.countDocuments({ isOwner: false })
+          } else {
+            users = await User.find({}, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
+            total = await User.countDocuments({})
+          }
         }
-        total = await User.countDocuments({})
       }
 
       return res.status(200).json({ users, total })

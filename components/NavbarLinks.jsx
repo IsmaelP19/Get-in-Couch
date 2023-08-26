@@ -35,15 +35,15 @@ export default function NavbarLinks () {
     if (user) {
       return (
         <>
-          <LinkButton name='Mi perfil' link={`/profile/${user.username}`} style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
+          <LinkButton name='Mi perfil' link={`/profile/${user.username}`} style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' drawer />
         </>
 
       )
     } else {
       return (
         <>
-          <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' />
-          <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' />
+          <LinkButton name='Registrarse' link='/signup' style='bg-slate-700 hover:bg-gray-200 text-white hover:text-black md:ml-8 my-7 md:my-0' drawer />
+          <LinkButton name='Iniciar sesión' link='/login' style='bg-gray-200 hover:bg-slate-700 text-black hover:text-white md:ml-8 my-7 md:my-0' drawer />
         </>
       )
     }

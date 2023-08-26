@@ -2,6 +2,18 @@ import mongoose from 'mongoose'
 
 const uniqueValidator = require('mongoose-unique-validator')
 
+const tenantSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+})
+
 const propertySchema = new mongoose.Schema({
   title: {
     type: String,
@@ -155,22 +167,13 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  tenants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  tenantsHistory: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ]
+  tenants: [tenantSchema],
+  tenantsHistory: [tenantSchema]
 })
 
 // propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location
 propertySchema.index({ 'location.street': 1, 'location.city': 1, 'location.country': 1, 'location.zipCode': 1 }, { unique: true }) // not sure if this is the correct way to do it
+propertySchema.index({ 'tenants.user': 1 })
 
 // the coordinates are ESTIMATE, so they are not unique, we can check if the complete address is unique but because of data privacy won't show them on the announcement or map
 

@@ -7,8 +7,13 @@ const getAll = async () => {
   return response.data
 }
 
-const search = async (search, page, limit) => {
-  const response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}`, customHeader)
+const search = async (search, page, limit, onlyTenants) => {
+  let response
+  if (onlyTenants) {
+    response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}&onlyTenants=${onlyTenants}`, customHeader)
+  } else {
+    response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}`, customHeader)
+  }
   return response.data
 }
 
@@ -53,6 +58,16 @@ const updateSavedProperties = async (username, propertyId) => {
   return response.data
 }
 
+const getLivingProperty = async (username) => {
+  const response = await axios.get(`${baseUrl}/${username}/living`, customHeader)
+  return response.data
+}
+
+const getPropertyHistory = async (username) => {
+  const response = await axios.get(`${baseUrl}/${username}/tenant-history`, customHeader)
+  return response.data
+}
+
 const getFollowers = async (username, search, page, limit) => {
   const response = await axios.get(`${baseUrl}/${username}/followers?search=${search}&page=${page}&limit=${limit}`, customHeader)
   return response.data
@@ -63,4 +78,4 @@ const getFollowing = async (username, search, page, limit) => {
   return response.data
 }
 
-export default { getAll, search, create, update, getUser, removeUser, login, follow, getSavedProperties, updateSavedProperties, getFollowers, getFollowing }
+export default { getAll, search, create, update, getUser, removeUser, login, follow, getSavedProperties, updateSavedProperties, getLivingProperty, getPropertyHistory, getFollowers, getFollowing }

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react'
 import ProfilePhoto from '../../../components/ProfilePhoto'
+import ProfileButton from '../../../components/ProfileButton'
+import Tag from '../../../components/Tag'
 import userService from '../../../services/users'
+import evaluationService from '../../../services/evaluations'
 import { useAppContext } from '../../../context/state'
 import conversationsService from '../../../services/conversations'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
 import { FaBookmark } from 'react-icons/fa'
+import { BsCalendar2WeekFill } from 'react-icons/bs'
+import { Loading } from '@nextui-org/react'
 
 export default function Profile ({ userObject }) {
   const { name, surname, description, memberSince, followers, following } = userObject
@@ -15,6 +20,7 @@ export default function Profile ({ userObject }) {
   const [follow, setFollow] = useState(false)
   const [followersState, setFollowers] = useState(0)
   const { user, setUser } = useAppContext()
+  const [stats, setStats] = useState(null)
   const router = useRouter()
 
   const handleContact = async () => {
@@ -27,11 +33,17 @@ export default function Profile ({ userObject }) {
   }
 
   useEffect(() => {
+    async function getStats () {
+      const stats = await evaluationService.getUserStats(userObject.username)
+      setStats(stats)
+    }
+
     if (userObject.username === user?.username) {
       setFollowers(user.followers.length)
     } else {
       setFollowers(followers.length)
     }
+    if (!userObject?.isOwner) getStats()
   }, [userObject])
 
   useEffect(() => {
@@ -70,6 +82,10 @@ export default function Profile ({ userObject }) {
 
   const handleSaved = () => {
     router.push('/saved')
+  }
+
+  const handleSituation = () => {
+    router.push('/state')
   }
 
   const handleFollowersPage = () => {
@@ -143,31 +159,131 @@ export default function Profile ({ userObject }) {
             <span className='font-bold text-2xl'>
               {name} {surname}
             </span>
+            <Tag text={userObject.isOwner ? 'Propietario' : 'Inquilino'} verified style={`text-base font-bold ${userObject.isOwner ? 'text-green-800 bg-green-100' : 'text-purple-800 bg-purple-100'}  `} />
+
             <span className='text-gray-600 font-thin text-base'>
               Miembro desde: {showDate()}
             </span>
             <span className='text-gray-600 font-thin text-base'>
               {description}
             </span>
-            <div className='flex gap-3 px-3 md:px-0 flex-wrap-reverse items-center justify-center'>
+            <div className='flex gap-3 px-3 md:px-0 flex-wrap items-center justify-center'>
 
-              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowersPage}>
-                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
-              </button>
-              <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleFollowingPage}>
-                {following.length} siguiendo
-              </button>
               {user?.username === userObject.username && (
-                <button className='flex flex-row items-center justify-center gap-3 bg-gray-200 text-black py-2 px-4 my-2 rounded-3xl hover:bg-slate-600 hover:text-white transition-colors duration-200 ease-in-out' onClick={handleSaved}>
-                  Guardados
-                  <FaBookmark className='text-xl ' />
-                </button>
-
+                <>
+                  <ProfileButton handleClick={handleSaved} style={user.isOwner ? 'bg-green-200 hover:bg-green-700 hover:text-white' : 'bg-purple-200 hover:bg-purple-700 hover:text-white'}>
+                    Guardados
+                    <FaBookmark className='text-xl ' />
+                  </ProfileButton>
+                  {!user.isOwner &&
+                    <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
+                      Situación actual
+                      <BsCalendar2WeekFill className='text-xl' />
+                    </ProfileButton>}
+                </>
               )}
+              <ProfileButton handleClick={handleFollowersPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
+              </ProfileButton>
+              <ProfileButton handleClick={handleFollowingPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                {following.length} siguiendo
+              </ProfileButton>
 
             </div>
           </div>
         </div>
+
+        {!userObject?.isOwner && (
+          <div className='flex flex-col items-center justify-center py-4 gap-4 w-full'>
+            <h2 className='text-2xl font-bold'>Estadísticas</h2>
+            {stats
+              ? (
+                <>
+                  {stats.total === 0
+                    ? (
+                      <span className='text-xl text-center px-3'>Este usuario aún no ha recibido ninguna valoración</span>
+                      )
+                    : (
+                      <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-200 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
+                        <div className='self-end'>
+                          <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
+                        </div>
+
+                        <div className='flex flex-col'>
+                          <label htmlFor='cleaning' className='text-xl font-bold'>Limpieza: {(stats.averageEvaluation.cleaning)} </label>
+                          <input type='range' name='cleaning' min='0' max='5' step='any' value={stats.averageEvaluation.cleaning} readOnly className='accent-green-700 ' />
+                          <div className='w-full flex justify-between mt-1'>
+                            <span className='text-xl'>0</span>
+                            <span className='text-xl'>1</span>
+                            <span className='text-xl'>2</span>
+                            <span className='text-xl'>3</span>
+                            <span className='text-xl'>4</span>
+                            <span className='text-xl'>5</span>
+                          </div>
+                        </div>
+                        <div className='flex flex-col'>
+                          <label htmlFor='communication' className='text-xl font-bold'>Comunicación: {stats.averageEvaluation.communication} </label>
+                          <input type='range' name='communication' min='0' max='5' steps='any' value={stats.averageEvaluation.communication} readOnly className='accent-green-700 ' />
+                          <div className='w-full flex justify-between mt-1'>
+                            <span className='text-xl'>0</span>
+                            <span className='text-xl'>1</span>
+                            <span className='text-xl'>2</span>
+                            <span className='text-xl'>3</span>
+                            <span className='text-xl'>4</span>
+                            <span className='text-xl'>5</span>
+                          </div>
+                        </div>
+                        <div className='flex flex-col'>
+                          <label htmlFor='tidyness' className='text-xl font-bold'>Ordenado: {(stats.averageEvaluation.tidyness)} </label>
+                          <input type='range' name='tidyness' min='0' max='5' step='any' value={stats.averageEvaluation.tidyness} readOnly className='accent-green-700 ' />
+                          <div className='w-full flex justify-between mt-1'>
+                            <span className='text-xl'>0</span>
+                            <span className='text-xl'>1</span>
+                            <span className='text-xl'>2</span>
+                            <span className='text-xl'>3</span>
+                            <span className='text-xl'>4</span>
+                            <span className='text-xl'>5</span>
+                          </div>
+                        </div>
+                        <div className='flex flex-col'>
+                          <label htmlFor='respect' className='text-xl font-bold'>Respeto: {(stats.averageEvaluation.respect)} </label>
+                          <input type='range' name='respect' min='0' max='5' step='any' value={stats.averageEvaluation.respect} readOnly className='accent-green-700 ' />
+                          <div className='w-full flex justify-between mt-1'>
+                            <span className='text-xl'>0</span>
+                            <span className='text-xl'>1</span>
+                            <span className='text-xl'>2</span>
+                            <span className='text-xl'>3</span>
+                            <span className='text-xl'>4</span>
+                            <span className='text-xl'>5</span>
+                          </div>
+                        </div>
+
+                        <div className='flex flex-col'>
+                          <label htmlFor='noisy' className='text-xl font-bold'>Ruido: {stats.averageEvaluation.noisy}</label>
+                          <input type='range' name='noisy' min='0' max='5' step='any' value={stats.averageEvaluation.noisy} readOnly className='accent-red-700' />
+                          <div className='w-full flex justify-between mt-1'>
+                            <span className='text-xl'>0</span>
+                            <span className='text-xl'>1</span>
+                            <span className='text-xl'>2</span>
+                            <span className='text-xl'>3</span>
+                            <span className='text-xl'>4</span>
+                            <span className='text-xl'>5</span>
+                          </div>
+                        </div>
+                      </div>
+                      )}
+
+                </>
+                )
+              : (
+                <>
+                  <Loading color='primary' />
+                  <span>Cargando estadísticas</span>
+                </>
+                )}
+
+          </div>
+        )}
 
       </main>
     </>

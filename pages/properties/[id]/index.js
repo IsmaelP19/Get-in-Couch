@@ -118,7 +118,18 @@ export default function PropertyDetails ({ property }) {
 
             <div className='w-full flex flex-col items-center justify-around gap-3'>
               {comments.map(comment => (
-                <Comment key={comment.id} comment={comment} isTenant={property.tenants.includes(comment.user.id)} setPage={setPage} page={page} n={comments.length} hasLived={property.tenantsHistory.includes(comment.user.id)} isOwner={property.owner?.id === comment.user.id} setComments={setComments} setTotalComments={setTotalComments} />
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  isTenant={property.tenants.some(tenant => tenant.user.toString() === comment.user.id)}
+                  setPage={setPage}
+                  page={page}
+                  n={comments.length}
+                  hasLived={property.tenantsHistory.some(history => history.user.toString() === comment.user.id)}
+                  isOwner={property.owner?.id === comment.user.id} // this could be also done with comment.user.properties.includes(property.id) BUT we don't know the value of comment.user.properties since we are not populating it on the backend response
+                  setComments={setComments}
+                  setTotalComments={setTotalComments}
+                />
               ))}
               <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} className='z-0' />
 

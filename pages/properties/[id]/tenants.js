@@ -45,7 +45,14 @@ export default function EditTenants ({ property }) {
         }, 4000)
       }
     } catch (error) {
-      showMessage('Ha ocurrido un error. Por favor, inténtelo más tarde.', 'error', setMessage, 6000, true)
+      if (error.response.data.error === 'new tenants cannot be owners') {
+        showMessage('Los nuevos inquilinos no pueden ser propietarios', 'error', setMessage, 6000, true)
+      } else if (error.response.data.error === 'there are some tenants that are already living in another property') {
+        const tenants = error.response.data.alreadyTenants.map(t => `@${t.username}`)
+        showMessage(`Algunos de los inquilinos seleccionados ya viven en otra propiedad (${tenants.join(', ')})`, 'error', setMessage, 6000, true)
+      } else {
+        showMessage('Ha ocurrido un error. Por favor, inténtelo más tarde.', 'error', setMessage, 6000, true)
+      }
     }
   }
 
@@ -65,21 +72,34 @@ export default function EditTenants ({ property }) {
     <div className='w-full flex flex-col items-center pb-10'>
       <h1 className='px-10 py-5 font-bold text-3xl text-center'>Inquilinos</h1>
       <Notification message={message[0]} type={message[1]} className='w-max-fit' />
-      <h2 className='text-xl mb-4 p-3 mx-[10%] bg-yellow-400 border-2 border-yellow-500 rounded-lg '>
-        Recuerda verificar el número de habitaciones disponibles en caso de contar con inquilinos ajenos a Get in Couch.
-      </h2>
-      <span className={`text-xl ${tenants.length > property.features.numberOfBedrooms ? 'bg-red-400 border-red-600' : tenants.length === property.features.numberOfBedrooms ? 'bg-yellow-400 border-yellow-500' : 'bg-green-200 border-green-500'} border-2 p-2 mb-5`}>{tenants.length}/{property.features.numberOfBedrooms} habitaciones ocupadas</span>
-      <div className='flex flex-row flex-wrap justify-center items-center mx-[10%] gap-5'>
+      <div>
+        <div className='bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mx-[5%] mb-5 rounded' role='alert'>
+          <p className='font-bold'>Atención</p>
+          <p>Recuerda verificar el número de habitaciones disponibles en caso de contar con inquilinos ajenos a Get in Couch.</p>
+        </div>
+        <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mx-[5%] mb-5 rounded' role='alert'>
+          <p className='font-bold'>Tenga en cuenta</p>
+          <p>Los usuarios seleccionados van a pasar a formar parte de los inquilinos de su inmueble. Si decide eliminarlos como inquilinos seguirán en el historial y podrán comentar como antiguos inquilinos.</p>
+        </div>
+      </div>
+
+      <div className='flex flex-row flex-wrap justify-center items-center  mx-[5%] gap-5'>
         {tenants.map(t => <UserTag key={t.id} user={t} action={() => handleDelete(t.id)} />)}
       </div>
 
-      <UsersSearch tenants={tenants} setTenants={setTenants} />
+      <UsersSearch tenants={tenants} setTenants={setTenants} onlyTenants />
 
-      <form onSubmit={formik.handleSubmit} className=''>
+      <form onSubmit={formik.handleSubmit}>
         <input type='hidden' name='tenants' value={tenants} />
-        <button type='submit' className={`mt-5 border-2 border-black bg-slate-700 rounded-2xl text-white font-bold py-2 px-4  hover:text-black ${tenants.length > property.features.numberOfBedrooms ? 'hover:cursor-not-allowed hover:bg-red-400' : 'hover:bg-green-400'}`} disabled={tenants.length > property.features.numberOfBedrooms}>
-          Actualizar
-        </button>
+
+        <div className='flex flex-col max-w-fit'>
+
+          <span className={`text-xl ${tenants.length > property.features.numberOfBedrooms ? 'bg-red-400 border-red-600' : tenants.length === property.features.numberOfBedrooms ? 'bg-yellow-400 border-yellow-500' : 'bg-green-200 border-green-500'} border-2 p-2 `}>{tenants.length}/{property.features.numberOfBedrooms} habitaciones ocupadas</span>
+
+          <button type='submit' className={`mt-5 max-w-fit self-center border-2 border-black bg-slate-700 rounded-2xl text-white font-bold py-2 px-4  hover:text-black ${tenants.length > property.features.numberOfBedrooms ? 'hover:cursor-not-allowed hover:bg-red-400' : 'hover:bg-green-400'}`} disabled={tenants.length > property.features.numberOfBedrooms}>
+            Actualizar
+          </button>
+        </div>
       </form>
 
     </div>
