@@ -5,16 +5,18 @@ import { useAppContext } from '../../context/state'
 import { Pagination, Loading } from '@nextui-org/react'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { BsFillHouseAddFill } from 'react-icons/bs'
 
-export default function Catalogue () {
-  const { user } = useAppContext()
+export default function MyCatalogue () {
+  const { user, done } = useAppContext()
   const [totalPages, setTotalPages] = useState(1)
   const [properties, setProperties] = useState([])
   const [page, setPage] = useState(1)
   const [isLoading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [urlSearchParams, setParams] = useState({})
+  const router = useRouter()
   // la búsqueda se hará tanto por título, como por población, ciudad o código postal ✅
   /*
   * Habrá además diferentes filtros:
@@ -30,7 +32,7 @@ export default function Catalogue () {
 
   useEffect(() => {
     const fetchProperties = async () => {
-      const fetchedProperties = await propertiesService.getAll(page, urlSearchParams)
+      const fetchedProperties = await propertiesService.getMine(page, urlSearchParams, user?.id)
       fetchedProperties.properties.forEach(property => {
         delete property.location?.coordinates
         property.location.street = property.location.street.split(',')[0]
@@ -40,8 +42,13 @@ export default function Catalogue () {
       setTotalPages(Math.ceil(fetchedProperties.total / 8))
       setLoading(false)
     }
-    fetchProperties()
-  }, [page, urlSearchParams])
+    if (done) {
+      if (user.isOwner) fetchProperties()
+      else {
+        router.push('/403')
+      }
+    }
+  }, [done, page, urlSearchParams])
 
   const handlePageChange = async (page) => {
     setLoading(true)
@@ -116,7 +123,7 @@ export default function Catalogue () {
     setLoading(false)
   }
 
-  return (
+  return (done && user?.isOwner &&
     <div className='w-full flex flex-col'>
       <h1 className='p-10 font-bold text-3xl text-center'>Inmuebles</h1>
 

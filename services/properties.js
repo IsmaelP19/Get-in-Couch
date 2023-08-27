@@ -3,8 +3,24 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL + '/properties'
 
 const customHeader = { headers: { 'X-Origin': 'getincouch.vercel.app' } }
 
-const getAll = async (page) => {
-  const url = page ? `${baseUrl}?page=${page}` : baseUrl
+const getAll = async (page, search) => {
+  let url = `${baseUrl}?page=${page}`
+  if (search) url += `&${search}`
+
+  const response = await axios.get(url, customHeader)
+  return response.data
+}
+
+const getMine = async (page, search, userId) => {
+  const customHeader = {
+    headers: {
+      'X-Origin': 'getincouch.vercel.app',
+      Authorization: userId
+    }
+  }
+
+  let url = `${baseUrl}/mine?page=${page}`
+  if (search) url += `&${search}`
   const response = await axios.get(url, customHeader)
   return response.data
 }
@@ -58,4 +74,4 @@ const getCommentsByProperty = async (id, limit, page) => {
   return response.data
 }
 
-export default { getAll, create, getProperty, getTenants, removeProperty, update, updateTenants, getCommentsByProperty }
+export default { getAll, getMine, create, getProperty, getTenants, removeProperty, update, updateTenants, getCommentsByProperty }

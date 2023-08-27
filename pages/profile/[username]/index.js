@@ -10,7 +10,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
 import { FaBookmark } from 'react-icons/fa'
-import { BsCalendar2WeekFill } from 'react-icons/bs'
+import { BsCalendar2WeekFill, BsFillHousesFill } from 'react-icons/bs'
 import { Loading } from '@nextui-org/react'
 
 export default function Profile ({ userObject }) {
@@ -85,7 +85,7 @@ export default function Profile ({ userObject }) {
   }
 
   const handleSituation = () => {
-    router.push('/state')
+    user?.isOwner ? router.push('/properties/mine') : router.push('/state')
   }
 
   const handleFollowersPage = () => {
@@ -168,27 +168,38 @@ export default function Profile ({ userObject }) {
               {description}
             </span>
             <div className='flex gap-3 px-3 md:px-0 flex-wrap items-center justify-center'>
+              <div className='flex gap-3 flex-wrap items-center justify-center'>
+                {user?.username === userObject.username && (
+                  <>
+                    <ProfileButton handleClick={handleSaved} style={user.isOwner ? 'bg-green-200 hover:bg-green-700 hover:text-white' : 'bg-purple-200 hover:bg-purple-700 hover:text-white'}>
+                      Guardados
+                      <FaBookmark className='text-xl ' />
+                    </ProfileButton>
+                    {user.isOwner
+                      ? (
+                        <ProfileButton handleClick={handleSituation} style='bg-green-200 font-bold hover:bg-green-700 hover:text-white'>
+                          Mis anuncios
+                          <BsFillHousesFill className='text-xl' />
+                        </ProfileButton>
+                        )
+                      : (
+                        <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
+                          Situación actual
+                          <BsCalendar2WeekFill className='text-xl' />
+                        </ProfileButton>
+                        )}
+                  </>
+                )}
 
-              {user?.username === userObject.username && (
-                <>
-                  <ProfileButton handleClick={handleSaved} style={user.isOwner ? 'bg-green-200 hover:bg-green-700 hover:text-white' : 'bg-purple-200 hover:bg-purple-700 hover:text-white'}>
-                    Guardados
-                    <FaBookmark className='text-xl ' />
-                  </ProfileButton>
-                  {!user.isOwner &&
-                    <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
-                      Situación actual
-                      <BsCalendar2WeekFill className='text-xl' />
-                    </ProfileButton>}
-                </>
-              )}
-              <ProfileButton handleClick={handleFollowersPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
-                {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
-              </ProfileButton>
-              <ProfileButton handleClick={handleFollowingPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
-                {following.length} siguiendo
-              </ProfileButton>
-
+              </div>
+              <div className='flex gap-3  flex-wrap items-center justify-center'>
+                <ProfileButton handleClick={handleFollowersPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                  {followersState} {followersState === 1 ? 'seguidor' : 'seguidores'}
+                </ProfileButton>
+                <ProfileButton handleClick={handleFollowingPage} style='bg-gray-200 hover:bg-slate-600 text-black hover:text-white'>
+                  {following.length} siguiendo
+                </ProfileButton>
+              </div>
             </div>
           </div>
         </div>

@@ -129,7 +129,6 @@ export default async function propertiesIdRouter (req, res) {
     }
     // TODO: add auth, only the owner of the property can delete it or update it
   } catch (error) {
-    console.log(JSON.stringify(error))
     errorHandler(error, req, res)
   }
 }

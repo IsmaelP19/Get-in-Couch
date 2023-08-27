@@ -21,7 +21,6 @@ export default function PropertyForm ({ property }) {
         }, 4000)
       })
       .catch(error => {
-        console.log(error.request.response)
         if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
           showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
         } else if (error.request.response.includes('Entered more available rooms than actual space available')) {
@@ -49,7 +48,6 @@ export default function PropertyForm ({ property }) {
         }, 4000)
       })
       .catch(error => {
-        console.log(error)
         if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
           showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
         } else if (error.response.status === 413) {
