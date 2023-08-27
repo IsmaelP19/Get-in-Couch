@@ -63,14 +63,15 @@ const showMessage = (message, type, setMessage, time, scroll, isHTML = false) =>
 }
 
 async function getCoordinatesFromAddress (address) {
-  const API_KEY = process.env.POSITIONSTACK_API_KEY
-  const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
+  const API_KEY = process.env.HERE_API_KEY
+  // const url = `http://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${address}&limit=1`
+  const url = `https://geocode.search.hereapi.com/v1/geocode?q=${address}&apiKey=${API_KEY}&limit=1`
   const response = await fetch(url)
   const data = await response.json()
   if (data.error) throw new Error(data.error.message)
   else {
-    const latitude = data.data[0].latitude
-    const longitude = data.data[0].longitude
+    const latitude = data.items[0].position.lat
+    const longitude = data.items[0].position.lng
     return { latitude, longitude }
   }
 }

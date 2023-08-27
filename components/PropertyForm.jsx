@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 
 export default function PropertyForm ({ property }) {
   const [step, setStep] = useState(0)
-  const { user, setMessage } = useAppContext()
+  const { user, setMessage, setUser } = useAppContext()
   const router = useRouter()
 
   const updateProperty = (propertyObject) => {
@@ -42,6 +42,8 @@ export default function PropertyForm ({ property }) {
     propertiesService.create(propertyObject)
       .then(response => {
         showMessage('Se ha creado correctamente el anuncio de la propiedad 😎', 'success', setMessage, 4000)
+        user.properties = [...user.properties, response.id]
+        setUser(user)
         setTimeout(() => {
           router.push(`/properties/${response.id}`)
         }, 4000)
@@ -50,12 +52,8 @@ export default function PropertyForm ({ property }) {
         console.log(error)
         if (error.request.response.includes('E11000 duplicate key error collection: production.properties index: location.street_1_location.city_1_location.country_1_location.zipCode_1 dup key: ')) {
           showMessage('Ya existe un anuncio con esa dirección. Comprueba que has introducido el número del domicilio correctamente.', 'info', setMessage, 4000)
-        } else if (error.request.response.includes('Entered more available rooms than actual space available')) {
-          showMessage('Has introducido más habitaciones disponibles de las posibles. Ten en cuenta los inquilinos que actualmente residen en el inmueble.', 'info', setMessage, 8000)
         } else if (error.response.status === 413) {
           showMessage('Has añadido demasiadas imágenes. Por favor, considere subir menos imágenes o intente reducir el tamaño de ellas.', 'info', setMessage, 6000)
-        } else if (error.request.response.includes('HTTP status code 400 (Bad Request)')) {
-          showMessage('Parece que ha ocurrido un error al tratar de obtener las coordenadas orientativas de la ubicación introducida. Por favor, inténtelo más tarde. <br> Puede consultar el estado de la API que usamos aquí: <a href="https://status.positionstack.com/" target="_blank" style="text-decoration:underline" >https://status.positionstack.com/</a>', 'info', setMessage, 8000, true, true)
         } else {
           showMessage('Ha ocurrido un error al crear el anuncio. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
         }
