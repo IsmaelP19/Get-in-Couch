@@ -45,10 +45,13 @@ export default function CommentForm ({ property, setComments, comments, setTotal
           setComments([...newComments.comments])
           setTotalComments(newComments.total)
         } else { // if I am on page 1 I want to add the new comment to the comments array and delete the last one
+          if (!comments) {
+            comments = []
+          }
           comments.unshift(newComment)
-          setTotalComments(totalComments + 1)
+          setTotalComments((totalComments || 0) + 1)
 
-          if (comments.length === 6) comments.pop()
+          if (comments?.length === 6) comments.pop()
 
           setComments([...comments])
         }
