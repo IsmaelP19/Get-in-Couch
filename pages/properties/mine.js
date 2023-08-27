@@ -6,6 +6,7 @@ import { Pagination, Loading } from '@nextui-org/react'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { BsFillHouseAddFill } from 'react-icons/bs'
 
 export default function MyCatalogue () {
   const { user, done } = useAppContext()
@@ -129,8 +130,9 @@ export default function MyCatalogue () {
       {user?.isOwner && (
         <div className='w-full flex items-center justify-center mb-6'>
           <Link href='/properties/new'>
-            <button className='bg-green-400  hover:bg-green-800 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg'>
+            <button className='flex gap-3 items-center justify-center bg-green-400  hover:bg-green-800 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg'>
               Crear nuevo anuncio
+              <BsFillHouseAddFill className='text-xl' />
             </button>
           </Link>
         </div>

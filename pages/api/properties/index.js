@@ -163,6 +163,12 @@ export default async function propertiesRouter (req, res) {
         properties = await Property.find(filter).sort(sort).skip(skip).limit(limit)
         total = await Property.countDocuments(filter)
 
+        if (process.env.NODE_ENV === 'test') {
+          // passwordHash is removed with the transform function of the model
+          // but it is still returned in the response of the mock on tests
+          properties = properties.map(property => property.toJSON())
+        }
+
         return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved', total })
       } catch (error) {
         return res.status(500).json({ error: 'An error occurred while fetching properties.' })

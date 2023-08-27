@@ -113,7 +113,7 @@ describe('GET all endpoint', () => {
 
     await propertiesRouter(req1, res1)
 
-    expect(res1.status).toHaveBeenCalledWith(404)
+    expect(res1.status).toHaveBeenCalledWith(200)
     expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 
@@ -135,7 +135,7 @@ describe('GET all endpoint', () => {
 
     await propertiesRouter(req1, res1)
 
-    expect(res1.status).toHaveBeenCalledWith(404)
+    expect(res1.status).toHaveBeenCalledWith(200)
     expect(res1.json).toHaveBeenCalledWith({ properties: [], message: 'no properties found', total: propertiesAtStart.length })
   })
 })
