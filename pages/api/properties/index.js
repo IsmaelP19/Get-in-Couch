@@ -119,6 +119,7 @@ export default async function propertiesRouter (req, res) {
       return res.status(status).json({ properties, message, total })
     }
   } catch (error) {
+    console.log(JSON.stringify(error))
     errorHandler(error, req, res)
   }
 }

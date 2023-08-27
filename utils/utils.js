@@ -68,7 +68,11 @@ async function getCoordinatesFromAddress (address) {
   const url = `https://geocode.search.hereapi.com/v1/geocode?q=${address}&apiKey=${API_KEY}&limit=1`
   const response = await fetch(url)
   const data = await response.json()
-  if (data.error) throw new Error(data.error.message)
+  console.log('\n\n\n#######')
+  console.log('data', data)
+  console.log('#######\n\n\n')
+
+  if (data.error?.message) throw new Error(data.error.message)
   else {
     const latitude = data.items[0].position.lat
     const longitude = data.items[0].position.lng
