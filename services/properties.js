@@ -3,11 +3,16 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL + '/properties'
 
 const customHeader = { headers: { 'X-Origin': 'getincouch.vercel.app' } }
 
-const getAll = async (page, search) => {
-  let url = `${baseUrl}?page=${page}`
-  if (search) url += `&${search}`
+const getAll = async (page, search, all) => {
+  let response
+  if (all) {
+    response = await axios.get(`${baseUrl}?all=${all}`, customHeader)
+  } else {
+    let url = `${baseUrl}?page=${page}`
+    if (search) url += `&${search}`
 
-  const response = await axios.get(url, customHeader)
+    response = await axios.get(url, customHeader)
+  }
   return response.data
 }
 

@@ -111,13 +111,12 @@ export default function MyCatalogue () {
 
     setPage(1)
 
-    const fetchedProperties = await propertiesService.getAll(page, searchParams)
+    const fetchedProperties = await propertiesService.getAll(page, searchParams, false)
     fetchedProperties.properties.forEach(property => {
       delete property.location?.coordinates
       property.location.street = property.location.street.split(',')[0]
     })
 
-    console.log(fetchedProperties)
     setProperties(fetchedProperties.properties)
     setTotalPages(Math.ceil(fetchedProperties.total / 8)) // in case the total number of properties has changed
     setLoading(false)
