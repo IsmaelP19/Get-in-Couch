@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api'
-import Link from 'next/link'
 import PropertyCard from './PropertyCard'
 
 // Replace 'YOUR_API_KEY' with your actual Google Maps API key
