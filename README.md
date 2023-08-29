@@ -1,9 +1,5 @@
 [![Get in Couch Build](https://github.com/IsmaelP19/Get-in-Couch/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/IsmaelP19/Get-in-Couch/actions/workflows/main.yml)
 
-
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 # Get in Couch
 _Get in Couch_ es una red social enfocada inicialmente para que estudiantes pudieran encontrar el piso de sus sueños y pudieran conocer a gente con la que poder compartir piso. Sin embargo, poco a poco ha ido creciendo el alcance y ahora está enfocado a todo el mundo, no solo a estudiantes. Algunas de las cosas que podrás hacer en Get in Couch son:
 - 🔍 Buscar anuncios de inmuebles con diferentes filtros.
