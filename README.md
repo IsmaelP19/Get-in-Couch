@@ -16,6 +16,6 @@ _Get in Couch_ es una red social enfocada inicialmente para que estudiantes pudi
 El proyecto se ha llevado a cabo con diversas tecnologías punteras en el sector, como [Next.js](https://nextjs.org/), [MongoDB](https://www.mongodb.com/es), [TailwindCSS](https://tailwindcss.com/), y muchas más, integrándolo exitosamente con diversas APIs como [Google Maps](https://developers.google.com/maps/documentation/javascript?hl=es-419), [HERE Maps](https://developer.here.com/documentation/geocoding-search-api/dev_guide/index.html) y [Pusher](https://pusher.com/).
 
 Este trabajo nace como objetivo para el desarrollo del Trabajo Fin de Grado del grado de Ingeniería Informática de Software.
-La red social se encuentra desplegada actualmente en [Vercel](getincouch.vercel.app)
+La red social se encuentra desplegada actualmente en [Vercel](https://getincouch.vercel.app).
 
 Todos los derechos reservados.
