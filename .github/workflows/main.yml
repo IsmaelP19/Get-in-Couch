@@ -32,7 +32,7 @@ jobs:
       
     - name: Run tests
       run: |
-         MONGODB_URI_TEST=${{ secrets.MONGODB_URI_TEST }} SECRET=${{ secrets.SECRET }} pnpm test --coverage
+         MONGODB_URI_TEST=${{ secrets.MONGODB_URI_TEST }} SECRET=${{ secrets.SECRET }} pnpm test
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
