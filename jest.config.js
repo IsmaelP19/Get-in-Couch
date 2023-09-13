@@ -16,7 +16,8 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-node',
 
   // Add the collectCoverage and collectCoverageFrom options here:
-  collectCoverage: true // Enable code coverage collection
+  collectCoverage: true, // Enable code coverage collection
+  coverageReporters: ['lcov', 'json']
   // collectCoverageFrom: [
   //   'pages/**/*.js',
   //   'components/**/*.js',
