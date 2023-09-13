@@ -16,10 +16,12 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-node',
 
   // Add the collectCoverage and collectCoverageFrom options here:
-  collectCoverage: true, // Enable code coverage collection
-  collectCoverageFrom: [
-    '**/*.js'
-  ],
+  collectCoverage: true // Enable code coverage collection
+  // collectCoverageFrom: [
+  //   'pages/**/*.js',
+  //   'components/**/*.js',
+  //   'models/**/*.js'
+  // ]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
