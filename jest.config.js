@@ -17,12 +17,12 @@ const customJestConfig = {
 
   // Add the collectCoverage and collectCoverageFrom options here:
   collectCoverage: true, // Enable code coverage collection
-  coverageReporters: ['lcov', 'json']
-  // collectCoverageFrom: [
-  //   'pages/**/*.js',
-  //   'components/**/*.js',
-  //   'models/**/*.js'
-  // ]
+  coverageReporters: ['lcov', 'json'],
+  collectCoverageFrom: [
+    'pages/**/*.js',
+    'models/**/*.js',
+    'utils/**/*.js'
+  ]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
