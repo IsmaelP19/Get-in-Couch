@@ -39,13 +39,21 @@ export default function State () {
 
           return { ...tenant, daysLivingTogether }
         })
+
+        delete property.property.location?.coordinates
+        property.property.location.street = property.property.location.street.split(',')[0]
       }
+
       setLivingProperty(property)
       setLoading(false)
     }
 
     async function getPropertyHistory () {
       const { properties } = await usersService.getPropertyHistory(user.username)
+      properties.forEach(property => {
+        delete property.location?.coordinates
+        property.location.street = property.location.street.split(',')[0]
+      })
       setPropertyHistory(properties)
     }
 
