@@ -21,7 +21,14 @@ export default function Saved () {
     } else if (done && user) {
       async function getSavedProperties () {
         const response = await userService.getSavedProperties(user?.username, 1)
+        response.favorites.forEach(property => {
+          property.location.street = property.location.street.split(',')[0]
+          delete property.location?.coordinates
+        })
+
+        console.log(response.favorites)
         setSavedProperties(response.favorites)
+
         setTotalPages(Math.ceil(response.total / 8))
         setLoading(false)
       }
