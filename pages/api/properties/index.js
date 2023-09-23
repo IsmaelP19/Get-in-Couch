@@ -102,7 +102,7 @@ export default async function propertiesRouter (req, res) {
 
       if (all) {
         try {
-          const properties = await Property.find({})
+          const properties = await Property.find({ isActive: true })
           return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved', total: properties.length })
         } catch (error) {
           return res.status(500).json({ error: 'An error occurred while fetching properties.' })
@@ -129,7 +129,7 @@ export default async function propertiesRouter (req, res) {
       let properties
       const sort = { publishDate: -1 }
 
-      const filter = {}
+      const filter = { isActive: true }
 
       if (search) {
         const $regex = search

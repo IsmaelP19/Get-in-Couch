@@ -149,7 +149,7 @@ export async function getServerSideProps (context) {
   const id = context.params.id
 
   const fetchedProperty = await propertiesService.getProperty(id)
-  if (fetchedProperty.error) {
+  if (fetchedProperty.error || !fetchedProperty.isActive) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }

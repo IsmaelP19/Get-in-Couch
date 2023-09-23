@@ -41,7 +41,10 @@ export default async function propertiesIdRouter (req, res) {
         }
         owner.properties = owner.properties.filter(property => property.toString() !== id.toString())
         await owner.save()
-        await Property.findByIdAndRemove(id)
+        // await Property.findByIdAndRemove(id)
+        // only set isActive to false to keep the property history
+        property.isActive = false
+        await property.save()
         res.status(204).json({ message: 'property succesfully deleted' })
       } else {
         res.status(404).json({ error: 'property not found' })

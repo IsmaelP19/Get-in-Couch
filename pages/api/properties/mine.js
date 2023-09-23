@@ -41,6 +41,7 @@ export default async function propertiesRouter (req, res) {
       const sort = { publishDate: -1 }
 
       const filter = {
+        isActive: true,
         owner: userId
       }
 
