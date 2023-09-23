@@ -47,6 +47,21 @@ export default async function propertiesRouter (req, res) {
             }
           }
 
+          // check if coordinates already exist on database
+          let tenantsHistory = []
+          const propertiesWithSameCoordinates = await Property.find({ 'location.coordinates': [coordinates.latitude, coordinates.longitude] })
+          // there may be some properties with same coordinates (for example those in the same building but different floor)
+          // so we need to get the property with the same location object
+          const propertyWithSameCoordinates = propertiesWithSameCoordinates.find(property => {
+            const { street, town, city, country, zipCode } = property.location
+            return street === body.street && town === body.town && city === body.city && country === body.country && zipCode === body.zipCode
+          })
+
+          if (propertyWithSameCoordinates) {
+            tenantsHistory = [...propertyWithSameCoordinates.tenantsHistory, ...propertyWithSameCoordinates.tenants]
+            await Property.findByIdAndDelete(propertyWithSameCoordinates._id)
+          }
+
           const property = new Property({
             title: body.title,
             description: body.description,
@@ -80,7 +95,8 @@ export default async function propertiesRouter (req, res) {
               smokingAllowed: body.smokingAllowed || null
             },
             owner: body.owner,
-            images
+            images,
+            tenantsHistory
           })
 
           await property.save()
