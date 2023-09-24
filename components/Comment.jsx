@@ -1,22 +1,19 @@
 import Link from 'next/link'
 import { AiOutlineStar, AiFillStar, AiFillHeart, AiOutlineEdit, AiFillDelete } from 'react-icons/ai'
 import ProfilePhoto from './ProfilePhoto'
-import Tag from './Tag'
+import { LuVerified } from 'react-icons/lu'
 import commentService from '../services/comments'
 import { useState } from 'react'
 import { useAppContext } from '../context/state'
 import { showMessage } from '../utils/utils'
 import propertiesService from '../services/properties'
 
-export default function Comment ({ comment, isTenant, setPage, page, n, hasLived, isOwner, setComments, setTotalComments }) {
+export default function Comment ({ comment, setPage, page, n, setComments, setTotalComments }) {
   /*
   * comment: comment object
-  * isTenant: boolean that indicates if the author of the comment is a tenant of the property
   * setPage: function to change the current page of the comments Pagination component
   * page: current page of the comments Pagination component
   * n: number of comments in the page
-  * hasLived: boolean that indicates if the user has lived in the property (in the past, not currently)
-  * isOwner: boolean that indicates if the user is the owner of the property
   * setComments: function to change the comments array (the one that is shown in the current page)
   * setTotalComments: function to change the total number of comments (at all)
   */
@@ -81,9 +78,7 @@ export default function Comment ({ comment, isTenant, setPage, page, n, hasLived
           <Link href={`/profile/${comment.user.username}`} passHref>
             <ProfilePhoto isComment src={profilePicture} alt={comment.user.username} username={comment.user.username} width={50} height={50} />
           </Link>
-          {isTenant && <Tag text='Viviendo en este inmueble' verified style='text-base font-bold text-blue-800' />}
-          {hasLived && <Tag text='Ha vivido en este inmueble' verified style='text-base font-bold text-purple-800' />}
-          {isOwner && <Tag text='Propietario' verified style='text-base font-bold text-green-800' />}
+          <LuVerified className='text-2xl text-blue-800' />
         </div>
 
       </div>

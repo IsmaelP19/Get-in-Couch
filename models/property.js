@@ -102,7 +102,7 @@ const propertySchema = new mongoose.Schema({
     },
     furniture: {
       type: String,
-      enum: ['Amueblado', 'Semi-amueblado', 'Sin muebles'],
+      enum: ['Amueblado', 'Semi-amueblado', 'Sin amueblar'],
       required: true
     },
     parking: {
@@ -172,6 +172,10 @@ const propertySchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  avgRating: {
+    type: Number,
+    default: 0
   }
 })
 

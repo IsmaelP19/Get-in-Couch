@@ -28,6 +28,13 @@ export default async function commentsRouter (req, res) {
         return res.status(404).json({ error: 'property not found' })
       }
 
+      if (!property?.tenants.some(tenant => tenant.user.toString() === body.user) && !property?.tenantsHistory.some(tenant => tenant.user.toString() === body.user)) {
+        return res.status(403).json({ error: 'Only actual and old tenants are able to comment a property' })
+      }
+
+      // if there already exists a comment from the same user for the same property, we update it
+      const commentToUpdate = await Comment.findOne({ user: body.user, property: body.property })
+
       const comment = new Comment({
         content: body.content,
         user: body.user,
@@ -36,8 +43,25 @@ export default async function commentsRouter (req, res) {
         likes: []
       })
 
-      const savedComment = await comment.save()
-      await Property.findByIdAndUpdate(body.property, { $push: { comments: savedComment._id } })
+      let savedComment
+      if (commentToUpdate) {
+        commentToUpdate.content = comment.content
+        commentToUpdate.rating = comment.rating
+        commentToUpdate.likes = comment.likes
+        savedComment = await commentToUpdate.save()
+      } else {
+        savedComment = await comment.save()
+        property.comments = property.comments.concat(savedComment._id)
+      }
+
+      const avgRating = await Comment.aggregate([
+        { $match: { property: savedComment.property } },
+        { $group: { _id: '$property', avgRating: { $avg: '$rating' } } }
+      ])
+
+      property.avgRating = avgRating[0].avgRating
+      await property.save()
+
       return res.status(201).json(savedComment)
     } else if (req.method === 'GET') {
       const page = req.query?.page || 1
