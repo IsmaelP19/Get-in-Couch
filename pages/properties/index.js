@@ -20,12 +20,10 @@ export default function Catalogue () {
   * Habrá además diferentes filtros:
   * - Tipo de inmueble (apartamento, casa, villa, estudio) ✅
   * - Precio (mínimo y máximo) ✅
-  * - Superficie (mínima y máxima) (m2) ❌
+  * - Valoración media (mínima) ✅
   * - Número de habitaciones ✅
   * - Número de baños ✅
   * - Estado (amueblado, semi-amueblado, sin amueblar) ✅
-  * - Aire acondicionado (sí, no) ❌
-  * - Calefacción (sí, no) ❌
   */
 
   useEffect(() => {
@@ -56,6 +54,7 @@ export default function Catalogue () {
     e.preventDefault()
     const searchInput = document.querySelector('#search-input')
     const propertyType = document.querySelector('#property-type')
+    const minAvgRating = document.querySelector('#avgRating')
     const minPrice = document.querySelector('#min-price')
     const maxPrice = document.querySelector('#max-price')
     const rooms = document.querySelector('#rooms')
@@ -64,6 +63,7 @@ export default function Catalogue () {
     const available = document.querySelector('#available')
 
     propertyType.value = ''
+    minAvgRating.value = ''
     minPrice.value = ''
     maxPrice.value = ''
     rooms.value = ''
@@ -82,6 +82,7 @@ export default function Catalogue () {
     e.preventDefault()
     setLoading(true)
     const propertyType = document.querySelector('#property-type').value
+    const minAvgRating = document.querySelector('#avgRating').value
     const minPrice = document.querySelector('#min-price').value
     const maxPrice = document.querySelector('#max-price').value
     const rooms = document.querySelector('#rooms').value
@@ -93,6 +94,7 @@ export default function Catalogue () {
     const searchParams = new URLSearchParams()
     if (search) searchParams.append('search', search)
     if (propertyType) searchParams.append('propertyType', propertyType)
+    if (minAvgRating) searchParams.append('minAvgRating', minAvgRating)
     if (minPrice) searchParams.append('minPrice', minPrice)
     if (maxPrice) searchParams.append('maxPrice', maxPrice)
     if (rooms) searchParams.append('rooms', rooms)
@@ -153,6 +155,11 @@ export default function Catalogue () {
             <option value='Estudio'>Estudio</option>
           </select>
 
+          {/* Let's add a filter of avgRating of the property */}
+          <div className='flex flex-row items-center border-2 border-slate-300 rounded-xl px-2 '>
+            <input type='number' min={0} step={0.1} id='avgRating' className='h-10  outline-none' placeholder='Valoración media (mín)' />
+          </div>
+
           {/* Para el precio vamos a poner un campo máximo y mínimo */}
           <div className='flex flex-row items-center border-2 border-slate-300 rounded-xl  px-2 '>
             <input type='number' id='min-price' className='h-10  outline-none' placeholder='Precio mínimo' />
@@ -207,7 +214,7 @@ export default function Catalogue () {
             <div className='flex items-center justify-center row gap-10 m-10 flex-wrap'>
               {properties.map(property => (
                 <Link href={`/properties/${property.id}`} key={property.id}>
-                  <PropertyCard key={property.id} property={property} title={property.title} />
+                  <PropertyCard key={property.id} property={property} title={property.title} avgRating={property.avgRating} />
                 </Link>
               ))}
             </div>

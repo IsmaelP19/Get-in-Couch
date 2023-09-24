@@ -16,6 +16,7 @@ export default function PropertyDetails ({ property }) {
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
   const [totalComments, setTotalComments] = useState(0)
+  const [avgRating, setAvgRating] = useState(property?.avgRating || 0)
   const [page, setPage] = useState(1)
   const [done, setDone] = useState(false)
   const { user, message } = useAppContext()
@@ -96,7 +97,7 @@ export default function PropertyDetails ({ property }) {
             </div>
           )}
 
-          <PropertyCard property={property} />
+          <PropertyCard property={property} avgRating={avgRating} />
           <button className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black rounded-full p-1 duration-200 border-2 border-gray-200 font-bold w-full' onClick={handleShowGallery}>
             {showText}
           </button>
@@ -114,7 +115,7 @@ export default function PropertyDetails ({ property }) {
         {
           // allow only tenants and old tenants to comment
           (property?.tenants.some(tenant => tenant.user.toString() === user?.id) || property?.tenantsHistory.some(history => history.user.toString() === user?.id)) && (
-            <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} />
+            <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} setAvgRating={setAvgRating} />
           )
           }
         {!done && <Loading color='primary' />}

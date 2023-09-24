@@ -24,7 +24,7 @@ const validate = (values) => {
   return errors
 }
 
-export default function CommentForm ({ property, setComments, comments, setTotalComments, totalComments, setPage, page }) {
+export default function CommentForm ({ property, setComments, comments, setTotalComments, totalComments, setPage, page, setAvgRating }) {
   const { user, setMessage } = useAppContext()
 
   const createComment = (commentObject) => {
@@ -36,7 +36,8 @@ export default function CommentForm ({ property, setComments, comments, setTotal
         showMessage('Se ha creado correctamente el comentario 😎', 'success', setMessage, 4000)
 
         const newComment = response
-        newComment.user = user
+        setAvgRating(newComment.avgRating)
+        newComment.savedComment.user = user
 
         // change to the first page of the comments Pagination component if the user is not in the first page
         if (page !== 1) {
@@ -48,8 +49,17 @@ export default function CommentForm ({ property, setComments, comments, setTotal
           if (!comments) {
             comments = []
           }
-          comments.unshift(newComment)
-          setTotalComments((totalComments || 0) + 1)
+
+          // if there is a comment with the same id as the new one, delete it from frontend (on backend is updated)
+          const commentIndex = comments.findIndex(comment => comment.id === newComment.savedComment.id)
+          if (commentIndex !== -1) {
+            comments.splice(commentIndex, 1)
+            setTotalComments((totalComments || 0))
+          } else {
+            setTotalComments((totalComments || 0) + 1)
+          }
+
+          comments.unshift(newComment.savedComment)
 
           if (comments?.length === 6) comments.pop()
 

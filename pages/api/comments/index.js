@@ -62,7 +62,7 @@ export default async function commentsRouter (req, res) {
       property.avgRating = avgRating[0].avgRating
       await property.save()
 
-      return res.status(201).json(savedComment)
+      return res.status(201).json({ savedComment, avgRating: avgRating[0].avgRating })
     } else if (req.method === 'GET') {
       const page = req.query?.page || 1
       if (page !== parseInt(page)) {

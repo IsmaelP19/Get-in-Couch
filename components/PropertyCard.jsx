@@ -2,8 +2,8 @@ import { GrMapLocation } from 'react-icons/gr'
 import Link from 'next/link'
 import { AiFillStar } from 'react-icons/ai'
 
-export default function PropertyCard ({ property, style, handleClose }) {
-  const { id, title, price, location, features, images, avgRating } = property
+export default function PropertyCard ({ property, style, handleClose, avgRating }) {
+  const { id, title, price, location, features, images } = property
 
   // const freeRooms = features.numberOfBedrooms - tenants.length
   const status = features.availableRooms > 0 ? 'Disponible' : 'Ocupado'

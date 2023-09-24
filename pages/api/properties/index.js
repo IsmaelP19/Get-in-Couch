@@ -138,6 +138,7 @@ export default async function propertiesRouter (req, res) {
 
       const search = req.query?.search
       const propertyType = req.query?.propertyType
+      const minAvgRating = req.query?.minAvgRating
       const minPrice = req.query?.minPrice
       const maxPrice = req.query?.maxPrice
       const rooms = req.query?.rooms
@@ -169,6 +170,10 @@ export default async function propertiesRouter (req, res) {
 
       if (propertyType) {
         filter['features.propertyType'] = propertyType
+      }
+
+      if (minAvgRating) {
+        filter.avgRating = { $gte: parseInt(minAvgRating) }
       }
 
       if (minPrice) {
