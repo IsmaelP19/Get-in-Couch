@@ -40,7 +40,6 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
     } else {
       usersService.search(search, 1, 5)
         .then(response => {
-          console.log(response.users)
           setUsers(response.users)
           setTotalPages(Math.ceil(response.total / 5))
           setLoading(false)

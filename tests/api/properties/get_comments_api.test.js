@@ -34,6 +34,8 @@ const newUser = {
   description: 'Test description'
 }
 
+const id = new mongoose.Types.ObjectId()
+
 const newProperty = {
   title: 'Test property',
   description: 'Test description',
@@ -52,12 +54,16 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false
+  heating: false,
+  tenantsHistory: {
+    user: id,
+    date: new Date(),
+    _id: new mongoose.Types.ObjectId()
+  }
 }
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: new mongoose.Types.ObjectId(),
   rating: 3
 }
 
@@ -87,7 +93,7 @@ describe('GET all comments from a property endpoint', () => {
     await propertiesRouter({ ...req, body: newProperty }, res)
     const propertiesAtStart = await propertiesInDb()
 
-    await commentsRouter({ ...req, body: { ...newComment, property: propertiesAtStart[0].id } }, res)
+    await commentsRouter({ ...req, body: { ...newComment, property: propertiesAtStart[0].id, user: propertiesAtStart[0].tenantsHistory[0].user.toString() } }, res)
   })
 
   test('When there are comments in db', async () => {

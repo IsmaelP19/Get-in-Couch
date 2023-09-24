@@ -1,5 +1,6 @@
 import User from '../../../models/user'
 import Property from '../../../models/property'
+import mongoose from 'mongoose'
 import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
 
 export default async function propertiesRouter (req, res) {
@@ -47,7 +48,29 @@ export default async function propertiesRouter (req, res) {
             }
           }
 
+          // check if coordinates already exist on database
+          let tenantsHistory = body?.tenantsHistory || []
+          let comments = []
+          let _id = null
+          let avgRating = 0
+          const propertiesWithSameCoordinates = await Property.find({ 'location.coordinates': [coordinates.latitude, coordinates.longitude] })
+          // there may be some properties with same coordinates (for example those in the same building but different floor)
+          // so we need to get the property with the same location object
+          const propertyWithSameCoordinates = propertiesWithSameCoordinates.find(property => {
+            const { street, town, city, country, zipCode } = property.location
+            return street === body.street && town === body.town && city === body.city && country === body.country && zipCode === body.zipCode
+          })
+
+          if (propertyWithSameCoordinates) {
+            tenantsHistory = [...propertyWithSameCoordinates.tenantsHistory, ...propertyWithSameCoordinates.tenants]
+            _id = propertyWithSameCoordinates._id
+            comments = [...propertyWithSameCoordinates.comments]
+            avgRating = propertyWithSameCoordinates.avgRating
+            await Property.findByIdAndDelete(propertyWithSameCoordinates._id)
+          }
+
           const property = new Property({
+            _id: _id || new mongoose.Types.ObjectId(),
             title: body.title,
             description: body.description,
             price: body.price,
@@ -80,11 +103,13 @@ export default async function propertiesRouter (req, res) {
               smokingAllowed: body.smokingAllowed || null
             },
             owner: body.owner,
-            images
+            images,
+            tenantsHistory,
+            comments,
+            avgRating
           })
 
           await property.save()
-
           owner.properties = owner.properties.concat(property._id)
           await owner.save()
 
@@ -102,7 +127,7 @@ export default async function propertiesRouter (req, res) {
 
       if (all) {
         try {
-          const properties = await Property.find({})
+          const properties = await Property.find({ isActive: true })
           return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved', total: properties.length })
         } catch (error) {
           return res.status(500).json({ error: 'An error occurred while fetching properties.' })
@@ -113,6 +138,7 @@ export default async function propertiesRouter (req, res) {
 
       const search = req.query?.search
       const propertyType = req.query?.propertyType
+      const minAvgRating = req.query?.minAvgRating
       const minPrice = req.query?.minPrice
       const maxPrice = req.query?.maxPrice
       const rooms = req.query?.rooms
@@ -129,7 +155,7 @@ export default async function propertiesRouter (req, res) {
       let properties
       const sort = { publishDate: -1 }
 
-      const filter = {}
+      const filter = { isActive: true }
 
       if (search) {
         const $regex = search
@@ -144,6 +170,10 @@ export default async function propertiesRouter (req, res) {
 
       if (propertyType) {
         filter['features.propertyType'] = propertyType
+      }
+
+      if (minAvgRating) {
+        filter.avgRating = { $gte: parseInt(minAvgRating) }
       }
 
       if (minPrice) {

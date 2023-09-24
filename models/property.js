@@ -102,7 +102,7 @@ const propertySchema = new mongoose.Schema({
     },
     furniture: {
       type: String,
-      enum: ['Amueblado', 'Semi-amueblado', 'Sin muebles'],
+      enum: ['Amueblado', 'Semi-amueblado', 'Sin amueblar'],
       required: true
     },
     parking: {
@@ -168,7 +168,15 @@ const propertySchema = new mongoose.Schema({
     default: 0
   },
   tenants: [tenantSchema],
-  tenantsHistory: [tenantSchema]
+  tenantsHistory: [tenantSchema],
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  avgRating: {
+    type: Number,
+    default: 0
+  }
 })
 
 // propertySchema.index({ 'location.coordinates': '2dsphere' }) // to be able to search by geo location

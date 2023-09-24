@@ -69,7 +69,7 @@ const GoogleMapComponent = ({ properties }) => {
         ))}
       </GoogleMap>
       {selectedProperty && (
-        <PropertyCard property={selectedProperty} style='w-[300px] absolute bg-white' handleClose={handleCloseCard} />
+        <PropertyCard property={selectedProperty} style='w-[300px] absolute bg-white' handleClose={handleCloseCard} avgRating={selectedProperty.avgRating} />
 
       )}
     </LoadScript>

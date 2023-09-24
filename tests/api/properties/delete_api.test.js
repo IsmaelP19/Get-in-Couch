@@ -77,6 +77,8 @@ describe('DELETE endpoint', () => {
   test('When property exists', async () => {
     await propertiesRouter(req, res)
     const propertiesAtStart = await propertiesInDb()
+    expect(propertiesAtStart).toHaveLength(1)
+    expect(propertiesAtStart[0].isActive).toBe(true)
 
     const users = await usersInDb()
 
@@ -101,7 +103,8 @@ describe('DELETE endpoint', () => {
     expect(res1.json).toHaveBeenCalledWith({ message: 'property succesfully deleted' })
 
     const propertiesAtEnd = await propertiesInDb()
-    expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length - 1)
+    // expect(propertiesAtEnd).toHaveLength(propertiesAtStart.length - 1)
+    expect(propertiesAtEnd[0].isActive).toBe(false)
   })
 
   test('When property does not exist', async () => {

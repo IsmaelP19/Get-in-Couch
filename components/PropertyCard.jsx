@@ -1,7 +1,8 @@
 import { GrMapLocation } from 'react-icons/gr'
 import Link from 'next/link'
+import { AiFillStar } from 'react-icons/ai'
 
-export default function PropertyCard ({ property, style, handleClose }) {
+export default function PropertyCard ({ property, style, handleClose, avgRating }) {
   const { id, title, price, location, features, images } = property
 
   // const freeRooms = features.numberOfBedrooms - tenants.length
@@ -23,6 +24,7 @@ export default function PropertyCard ({ property, style, handleClose }) {
         </h3>
         <span> {features.availableRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
+        <span className='flex items-center gap-1'>{avgRating} <AiFillStar className='text-yellow-500' /></span>
         <div className='flex w-full items-center justify-around'>
           <span className='font-bold rounded-2xl bg-[#FFAA22] px-3 py-2'>{price} €/mes </span>
           <span className={`${status === 'Disponible' ? 'bg-green-500 ' : 'bg-red-500'} px-3 py-2 rounded-2xl font-bold`}>{status.toUpperCase()}</span>

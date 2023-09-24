@@ -16,6 +16,7 @@ export default function PropertyDetails ({ property }) {
   const [comments, setComments] = useState([])
   const [totalPages, setTotalPages] = useState(1)
   const [totalComments, setTotalComments] = useState(0)
+  const [avgRating, setAvgRating] = useState(property?.avgRating || 0)
   const [page, setPage] = useState(1)
   const [done, setDone] = useState(false)
   const { user, message } = useAppContext()
@@ -96,7 +97,7 @@ export default function PropertyDetails ({ property }) {
             </div>
           )}
 
-          <PropertyCard property={property} />
+          <PropertyCard property={property} avgRating={avgRating} />
           <button className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black rounded-full p-1 duration-200 border-2 border-gray-200 font-bold w-full' onClick={handleShowGallery}>
             {showText}
           </button>
@@ -111,7 +112,12 @@ export default function PropertyDetails ({ property }) {
       <div className='w-[90%] md:w-3/6 flex flex-col items-center mt-10 gap-5'>
         <h2 className='font-bold text-2xl text-center'>Comentarios</h2>
         <Notification message={message[0]} type={message[1]} />
-        <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} />
+        {
+          // allow only tenants and old tenants to comment
+          (property?.tenants.some(tenant => tenant.user.toString() === user?.id) || property?.tenantsHistory.some(history => history.user.toString() === user?.id)) && (
+            <CommentForm property={property} setComments={setComments} setPage={setPage} page={page} comments={comments} totalComments={totalComments} setTotalComments={setTotalComments} setAvgRating={setAvgRating} />
+          )
+          }
         {!done && <Loading color='primary' />}
         {done && comments?.length > 0
           ? (
@@ -121,12 +127,12 @@ export default function PropertyDetails ({ property }) {
                 <Comment
                   key={comment.id}
                   comment={comment}
-                  isTenant={property.tenants.some(tenant => tenant.user.toString() === comment.user.id)}
+                  // isTenant={property.tenants.some(tenant => tenant.user.toString() === comment.user.id)}
                   setPage={setPage}
                   page={page}
                   n={comments.length}
-                  hasLived={property.tenantsHistory.some(history => history.user.toString() === comment.user.id)}
-                  isOwner={property.owner?.id === comment.user.id} // this could be also done with comment.user.properties.includes(property.id) BUT we don't know the value of comment.user.properties since we are not populating it on the backend response
+                  // hasLived={property.tenantsHistory.some(history => history.user.toString() === comment.user.id)}
+                  // isOwner={property.owner?.id === comment.user.id} // this could be also done with comment.user.properties.includes(property.id) BUT we don't know the value of comment.user.properties since we are not populating it on the backend response
                   setComments={setComments}
                   setTotalComments={setTotalComments}
                 />
@@ -137,7 +143,7 @@ export default function PropertyDetails ({ property }) {
 
             )
           : (
-              done && <span className='text-center mt-4 text-xl'>Aún no hay comentarios disponibles... ¿Por qué no creas uno?</span>
+              done && <span className='text-center mt-4 text-xl'>Aún no hay comentarios disponibles.</span>
             )}
       </div>
 
@@ -149,7 +155,7 @@ export async function getServerSideProps (context) {
   const id = context.params.id
 
   const fetchedProperty = await propertiesService.getProperty(id)
-  if (fetchedProperty.error) {
+  if (fetchedProperty.error || !fetchedProperty.isActive) {
     context.res.writeHead(302, { Location: '/404' })
     context.res.end()
   }
