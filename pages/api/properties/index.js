@@ -1,5 +1,6 @@
 import User from '../../../models/user'
 import Property from '../../../models/property'
+import mongoose from 'mongoose'
 import { errorHandler, createConnection, getCoordinatesFromAddress } from '../../../utils/utils'
 
 export default async function propertiesRouter (req, res) {
@@ -48,7 +49,7 @@ export default async function propertiesRouter (req, res) {
           }
 
           // check if coordinates already exist on database
-          let tenantsHistory = []
+          let tenantsHistory = body?.tenantsHistory || []
           let comments = []
           let _id = null
           let avgRating = 0
@@ -69,7 +70,7 @@ export default async function propertiesRouter (req, res) {
           }
 
           const property = new Property({
-            _id,
+            _id: _id || new mongoose.Types.ObjectId(),
             title: body.title,
             description: body.description,
             price: body.price,
@@ -109,7 +110,6 @@ export default async function propertiesRouter (req, res) {
           })
 
           await property.save()
-
           owner.properties = owner.properties.concat(property._id)
           await owner.save()
 

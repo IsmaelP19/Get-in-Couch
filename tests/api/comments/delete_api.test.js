@@ -40,7 +40,7 @@ const newUser = {
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: new mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId().toString(),
   rating: 4
 }
 
@@ -62,7 +62,14 @@ const newProperty = {
   furniture: 'Amueblado',
   parking: 'Parking',
   airConditioning: true,
-  heating: false
+  heating: false,
+  tenantsHistory: [
+    {
+      user: newComment.user,
+      date: new Date(),
+      _id: new mongoose.Types.ObjectId()
+    }
+  ]
 }
 
 const req = {

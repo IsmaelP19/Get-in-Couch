@@ -34,7 +34,6 @@ export default async function handler (req, res) {
       await pusher.trigger('global-channel', 'new-message', { conversationId, message })
       return res.status(201).json(message)
     } else {
-      console.log('Method not allowed')
       return res.status(405).end('Method not allowed')
     }
   } catch (error) {

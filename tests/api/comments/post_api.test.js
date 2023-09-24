@@ -34,7 +34,7 @@ const newUser = {
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: new mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId().toString(),
   rating: 4
 }
 
@@ -84,6 +84,13 @@ describe('POST: When there are no comments in db and one is added', () => {
     const users = await usersInDb()
 
     newProperty.owner = users[0].id // it is necessary to add a property as a valid owner, otherwise it will fail
+    newProperty.tenantsHistory = [
+      {
+        user: newComment.user,
+        date: new Date(),
+        _id: new mongoose.Types.ObjectId()
+      }
+    ]
     await propertiesRouter({ ...req, body: newProperty }, res)
   })
 
@@ -103,17 +110,16 @@ describe('POST: When there are no comments in db and one is added', () => {
     await commentsRouter({ ...req, body: { ...newComment, property: propertiesAtStart[0].id } }, res1)
 
     expect(res1.json).toHaveBeenCalledTimes(1)
-
     expect(res1.status).toHaveBeenCalledWith(201)
 
     const response = res1.json.mock.calls[0][0]
-    expect(response.content).toBe(newComment.content)
-    expect(response.user).toBe(newComment.user)
-    expect(response.rating).toBe(newComment.rating)
-    expect(response.property.toString()).toBe(propertiesAtStart[0].id)
-    expect(response.id).toBeDefined()
-    expect(response.publishDate).toBeDefined()
-    expect(response.likes).toStrictEqual([])
+    expect(response.savedComment.content).toBe(newComment.content)
+    expect(response.savedComment.user.toString()).toBe(newComment.user)
+    expect(response.savedComment.rating).toBe(newComment.rating)
+    expect(response.savedComment.property.toString()).toBe(propertiesAtStart[0].id)
+    expect(response.savedComment.id).toBeDefined()
+    expect(response.savedComment.publishDate).toBeDefined()
+    expect(response.savedComment.likes).toStrictEqual([])
 
     const commentsAtEnd = await commentsInDb(propertiesAtStart[0].id)
     expect(commentsAtEnd).toHaveLength(1)
@@ -222,13 +228,13 @@ describe('POST: When there are no comments in db and one is added', () => {
     expect(res1.status).toHaveBeenCalledWith(201)
 
     const response = res1.json.mock.calls[0][0]
-    expect(response.content).toBe(newComment.content)
-    expect(response.user).toBe(newComment.user)
-    expect(response.rating).toBe(newComment.rating)
-    expect(response.property.toString()).toBe(propertiesAtStart[0].id)
-    expect(response.id).toBeDefined()
-    expect(response.publishDate).toBeDefined()
-    expect(response.likes).toStrictEqual([])
+    expect(response.savedComment.content).toBe(newComment.content)
+    expect(response.savedComment.user.toString()).toBe(newComment.user)
+    expect(response.savedComment.rating).toBe(newComment.rating)
+    expect(response.savedComment.property.toString()).toBe(propertiesAtStart[0].id)
+    expect(response.savedComment.id).toBeDefined()
+    expect(response.savedComment.publishDate).toBeDefined()
+    expect(response.savedComment.likes).toStrictEqual([])
 
     const commentsAtEnd = await commentsInDb(propertiesAtStart[0].id)
     expect(commentsAtEnd).toHaveLength(1)

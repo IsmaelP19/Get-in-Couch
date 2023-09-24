@@ -40,7 +40,7 @@ const newUser = {
 
 const newComment = {
   content: 'This is a new comment. At least, there should be 50 characters.',
-  user: new mongoose.Types.ObjectId(),
+  user: new mongoose.Types.ObjectId().toString(),
   rating: 4
 }
 
@@ -86,10 +86,22 @@ beforeAll(async () => {
 
   await Comment.deleteMany({})
   await Property.deleteMany({})
+  const tenantsHistory = []
+  let count = 0
+  while (count < 20) {
+    tenantsHistory.push({
+      user: new mongoose.Types.ObjectId().toString(),
+      date: new Date(),
+      _id: new mongoose.Types.ObjectId()
+    })
+    count++
+  }
+  newProperty.tenantsHistory = tenantsHistory
   await propertiesRouter({ method: 'POST', body: newProperty }, res)
 
   const propertiesAtStart = await propertiesInDb()
   for (let i = 0; i < 20; i++) {
+    newComment.user = tenantsHistory[i].user
     await commentsRouter({ method: 'POST', body: { ...newComment, property: propertiesAtStart[0].id } }, res)
   }
 }, 90000)
@@ -248,12 +260,24 @@ describe('GET all comments endpoint', () => {
     const propertiesAtStart = await propertiesInDb()
     const commentsAtStart = await commentsInDb()
     expect(commentsAtStart).toHaveLength(0)
-    await commentsRouter({ method: 'POST', body: { ...newComment, property: propertiesAtStart[0].id } }, res)
-    expect(res.status).toHaveBeenCalledWith(201)
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining(newComment))
+
+    const res1 = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    }
+
+    newComment.property = propertiesAtStart[0].id
+    newComment.user = propertiesAtStart[0].tenantsHistory[0].user.toString()
+
+    await commentsRouter({ method: 'POST', body: { ...newComment } }, res1)
+    expect(res1.status).toHaveBeenCalledWith(201)
 
     const commentsAtEnd = await commentsInDb()
     expect(commentsAtEnd).toHaveLength(1)
+    expect(commentsAtEnd[0].content).toEqual(newComment.content)
+    expect(commentsAtEnd[0].property.toString()).toEqual(newComment.property)
+    expect(commentsAtEnd[0].user.toString()).toEqual(newComment.user)
+    expect(commentsAtEnd[0].rating).toEqual(newComment.rating)
   })
 })
 

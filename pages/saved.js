@@ -26,7 +26,6 @@ export default function Saved () {
           delete property.location?.coordinates
         })
 
-        console.log(response.favorites)
         setSavedProperties(response.favorites)
 
         setTotalPages(Math.ceil(response.total / 8))

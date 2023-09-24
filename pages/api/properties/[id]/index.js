@@ -39,7 +39,7 @@ export default async function propertiesIdRouter (req, res) {
         if (owner.id !== loggedUser.id) {
           return res.status(403).json({ error: 'you don\'t have enough permissions to delete the given property' })
         }
-        owner.properties = owner.properties.filter(property => property.toString() !== id.toString())
+        owner.properties = owner.properties.filter(property => property.toString() !== id) // FIXME ERROR HERE
         await owner.save()
         // await Property.findByIdAndRemove(id)
         // only set isActive to false to keep the property history
