@@ -71,7 +71,17 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Property'
     }
-  ]
+  ],
+  ubication: {
+    type: String,
+    maxLength: 50
+  },
+  avgRating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0
+  }
 
 })
 

@@ -30,6 +30,8 @@ export default async function usersRouter (req, res) {
       const saltRounds = 10
       const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
+      const ubication = body?.ubication?.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
       const user = new User({
         email: body.email,
         passwordHash,
@@ -39,7 +41,8 @@ export default async function usersRouter (req, res) {
         phoneNumber: body.phoneNumber,
         isOwner: body.isOwner,
         description: body.description,
-        profilePicture: body.profilePicture
+        profilePicture: body.profilePicture,
+        ubication
       })
 
       const savedUser = await user.save()
@@ -58,40 +61,47 @@ export default async function usersRouter (req, res) {
       const onlyTenants = req.query?.onlyTenants // a boolean
 
       const search = req.query?.search
+      const avgRating = req.query?.avgRating
+      const ubication = req.query?.ubication
+
+      let filter = {}
+
+      if (onlyTenants) filter = { isOwner: false }
+
       if (search) {
         const $regex = search
         const $options = 'i'
-
-        if (onlyTenants) {
-          // we will get only users that match the given criteria and also that are not owners
-          users = await User.find({ $and: [{ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, { isOwner: false }] }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
-          total = await User.countDocuments({ $and: [{ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, { isOwner: false }] })
-        } else {
-          users = await User.find({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
-
-          total = await User.countDocuments({ $or: [{ username: { $regex, $options } }, { name: { $regex, $options } }, { surname: { $regex, $options } }, { description: { $regex, $options } }] })
-        }
-      } else {
-        if (process.env.NODE_ENV === 'test') {
-          if (onlyTenants) {
-            users = await (await User.find({ isOwner: false }).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
-            total = await User.countDocuments({ isOwner: false })
-          } else {
-            users = await (await User.find({}).sort({ memberSince: -1 }).skip(skip).limit(limit)).map(user => user.toJSON())
-            total = await User.countDocuments({})
-          }
-        } else {
-          if (onlyTenants) {
-            users = await User.find({ isOwner: false }, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
-            total = await User.countDocuments({ isOwner: false })
-          } else {
-            users = await User.find({}, 'username name surname profilePicture description isOwner').sort({ memberSince: -1 }).skip(skip).limit(limit)
-            total = await User.countDocuments({})
-          }
-        }
+        filter.$or = [
+          { username: { $regex, $options } },
+          { name: { $regex, $options } },
+          { surname: { $regex, $options } },
+          { description: { $regex, $options } }
+        ]
       }
 
-      return res.status(200).json({ users, total })
+      if (avgRating) {
+        filter.avgRating = { $gte: parseInt(avgRating) }
+      }
+
+      if (ubication) {
+        const $regex = ubication
+        const $options = 'i'
+        filter.ubication = { $regex, $options }
+      }
+
+      try {
+        users = await User.find(filter, 'username name surname profilePicture description isOwner avgRating ubication').sort({ memberSince: -1 }).skip(skip).limit(limit)
+        total = await User.countDocuments(filter)
+
+        if (process.env.NODE_ENV === 'test') {
+          users = await User.find(filter).sort({ memberSince: -1 }).skip(skip).limit(limit)
+          users = users.map(u => u.toJSON())
+        }
+
+        return res.status(200).json({ users, total })
+      } catch (error) {
+        return res.status(500).json({ error: 'An error occurred while fetching users.' })
+      }
     }
   } catch (error) {
     errorHandler(error, req, res)

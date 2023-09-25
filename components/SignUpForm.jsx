@@ -188,6 +188,10 @@ export default function SignUpForm ({ userObject }) {
       errors.phoneNumber = 'El número introducido no es válido'
     }
 
+    if (values.ubication?.length > 50) {
+      errors.ubication = 'La ubicación no puede tener más de 50 caracteres'
+    }
+
     return errors
   }
 
@@ -202,7 +206,8 @@ export default function SignUpForm ({ userObject }) {
       phoneNumber: userObject?.phoneNumber || '',
       isOwner: userObject?.isOwner || false,
       description: userObject?.description || '',
-      profilePicture: userObject?.profilePicture || ''
+      profilePicture: userObject?.profilePicture || '',
+      ubication: userObject?.ubication || ''
     },
     onSubmit: values => {
       values.phoneNumber = phoneNumber
@@ -220,7 +225,7 @@ export default function SignUpForm ({ userObject }) {
       <form onSubmit={formik.handleSubmit} className='flex flex-col gap-4'>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='email'>Email</label>
-          <input type='email' name='email' id='email' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} className='border border-solid border-slate-600' />
+          <input type='email' name='email' id='email' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email} className='border border-solid border-slate-600' placeholder='email@domain.com' />
           {formik.touched.email && formik.errors.email ? <div className='text-red-600'>{formik.errors.email}</div> : null}
         </div>
         <div className='flex flex-col gap-y-1'>
@@ -241,12 +246,12 @@ export default function SignUpForm ({ userObject }) {
         </div>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='name'>Nombre</label>
-          <input type='text' name='name' id='name' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.name} className='border border-solid border-slate-600' />
+          <input type='text' name='name' id='name' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.name} className='border border-solid border-slate-600' placeholder='John' />
           {formik.touched.name && formik.errors.name ? <div className='text-red-600'>{formik.errors.name}</div> : null}
         </div>
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='surname'>Apellidos</label>
-          <input type='text' name='surname' id='surname' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.surname} className='border border-solid border-slate-600' />
+          <input type='text' name='surname' id='surname' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.surname} className='border border-solid border-slate-600' placeholder='Doe' />
           {formik.touched.surname && formik.errors.surname ? <div className='text-red-600'>{formik.errors.surname}</div> : null}
         </div>
         <div className='flex flex-col gap-y-1'>
@@ -266,10 +271,16 @@ export default function SignUpForm ({ userObject }) {
 
         <div className='flex flex-col gap-y-1'>
           <label htmlFor='description'>Biografía</label>
-          <textarea name='description' id='description' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.description} className='border border-solid border-slate-600' />
+          <textarea name='description' id='description' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.description} className='border border-solid border-slate-600' placeholder='Cuéntanos sobre ti' />
           {formik.touched.description && formik.errors.description ? <div className='text-red-600'>{formik.errors.description}</div> : null}
         </div>
 
+        <div className='flex flex-col gap-y-1'>
+          <label htmlFor='ubication'>Ubicación (ciudad)</label>
+          <span className='text-blue-700'> Sólo los usuarios con esta misma dirección podrán ver tus estadísticas. Si no lo rellena acepta que serán visibles para toda la plataforma.</span>
+          <input type='text' name='ubication' id='ubication' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.ubication} className='border border-solid border-slate-600' placeholder='Sevilla' />
+          {formik.touched.ubication && formik.errors.ubication ? <div className='text-red-600'>{formik.errors.ubication}</div> : null}
+        </div>
         <div className='flex flex-col gap-y-3 mt-2'>
           <label htmlFor='profilePicture' className='bg-slate-200 text-center px-2 py-1 border-gray-600 border-2 font-bold active:bg-blue-400 '>Selecciona una imagen de perfil</label>
           <input type='file' ref={imageInputRef} name='profilePicture' id='profilePicture' onChange={handleChange} className='hidden' accept='image/*' title='' />
