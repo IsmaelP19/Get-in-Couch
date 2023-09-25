@@ -10,6 +10,8 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
 
   const cardSubtitle = location.town ? location.town + ', ' + location.city : location.city
 
+  const avg = avgRating || property.avgRating
+
   return (
     <div key={id} className={`flex flex-col border-2 w-[300px] items-center gap-4 ${handleClose ? 'pb-0' : 'pb-5'} border-black rounded-3xl ${style}`}>
 
@@ -24,7 +26,7 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
         </h3>
         <span> {features.availableRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
-        <span className='flex items-center gap-1'>{avgRating} <AiFillStar className='text-yellow-500' /></span>
+        <span className='flex items-center gap-1'>{avg} <AiFillStar className='text-yellow-500' /></span>
         <div className='flex w-full items-center justify-around'>
           <span className='font-bold rounded-2xl bg-[#FFAA22] px-3 py-2'>{price} €/mes </span>
           <span className={`${status === 'Disponible' ? 'bg-green-500 ' : 'bg-red-500'} px-3 py-2 rounded-2xl font-bold`}>{status.toUpperCase()}</span>
