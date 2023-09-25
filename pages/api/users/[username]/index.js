@@ -70,6 +70,8 @@ export default async function usersUsernameRouter (req, res) {
             return res.status(400).json({ error: 'User validation failed: email: ' + body.email + ' is not a valid email' })
           }
 
+          const ubication = body?.ubication.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
           const userToUpdate = {
             email: body.email,
             passwordHash,
@@ -84,7 +86,8 @@ export default async function usersUsernameRouter (req, res) {
             followers: user.followers, // will be [] if empty
             following: user.following, // will be [] if empty
             favorites: user.favorites, // will be [] if empty
-            properties: user.properties // will be [] if empty
+            properties: user.properties, // will be [] if empty
+            ubication
           }
 
           try {

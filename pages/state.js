@@ -88,7 +88,9 @@ export default function State () {
                     ? (
                       <>
                         <div className='flex flex-col md:flex-row gap-20  items-center justify-center px-2'>
-                          <PropertyCard property={livingProperty.property} />
+                          <Link href={`/properties/${livingProperty.property.id}`}>
+                            <PropertyCard property={livingProperty.property} />
+                          </Link>
                           <PropertyInfo property={livingProperty.property} />
                         </div>
                         <div className='flex flex-col items-center justify-center w-full'>
@@ -102,20 +104,6 @@ export default function State () {
                           <div className='flex gap-4 flex-wrap w-full items-center justify-center'>
                             {livingProperty.property.tenants.map(tenant => (
                               <Roommate key={tenant.user.id} user={tenant.user} days={tenant.daysLivingTogether} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className='flex flex-col items-center justify-center w-full mt-4'>
-                          {propertyHistory?.length > 0 && (
-                            <h2 className='text-2xl font-bold p-5'>Inmuebles en los que he vivido</h2>
-                          )}
-                          <div className='flex gap-8 flex-wrap w-[90%] items-center justify-center'>
-
-                            {propertyHistory?.map(property => (
-
-                              <Link href={`/properties/${property.id}`} key={property.id}>
-                                <PropertyCard property={property} />
-                              </Link>
                             ))}
                           </div>
                         </div>
@@ -133,6 +121,20 @@ export default function State () {
                         </div>
                       </div>
                       )}
+                  <div className='flex flex-col items-center justify-center w-full mt-4'>
+                    {propertyHistory?.length > 0 && (
+                      <h2 className='text-2xl font-bold p-5'>Inmuebles en los que he vivido</h2>
+                    )}
+                    <div className='flex gap-8 flex-wrap w-[90%] items-center justify-center'>
+
+                      {propertyHistory?.map(property => (
+
+                        <Link href={`/properties/${property.id}`} key={property.id}>
+                          <PropertyCard property={property} />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </>
 

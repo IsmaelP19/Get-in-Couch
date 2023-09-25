@@ -46,6 +46,13 @@ export default async function evaluationsRouter (req, res) {
 
       const evaluation = new Evaluation({ author, user, cleaning, communication, tidyness, respect, noisy })
 
+      const avgRating = (cleaning + communication + tidyness + respect + noisy) / 5
+
+      const totalEvaluationsBefore = await Evaluation.countDocuments({ user })
+
+      const oldAvgRating = userObject?.avgRating || 0
+      await User.findByIdAndUpdate(user, { avgRating: (oldAvgRating * totalEvaluationsBefore + avgRating) / (totalEvaluationsBefore + 1) }, { new: true })
+
       const savedEvaluation = await evaluation.save()
       return res.status(201).json(savedEvaluation)
     } else if (req.method === 'GET') {

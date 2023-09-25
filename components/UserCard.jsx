@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { AiFillStar } from 'react-icons/ai'
 
 export default function UserCard ({ user, tenants, setTenants }) {
   const handleUserClick = () => {
@@ -19,7 +20,10 @@ export default function UserCard ({ user, tenants, setTenants }) {
           </div>
           <div className='flex flex-col items-start justify-center gap-2 w-2/3 md:w-3/4 '>
             <span className='text-lg'> {user.name} {user.surname}</span>
-            <span className='italic text-base'> @{user.username}</span>
+            <div className='flex gap-5'>
+              <span className='italic text-base'> @{user.username}</span>
+              <span className='flex gap-1 items-center justify-center bg-blue-100 px-2 rounded-xl font-bold'>{Math.floor(user?.avgRating * 100) / 100} <AiFillStar className='text-yellow-500' /></span>
+            </div>
             <span className='hidden md:flex text-base'>{user.description}</span>
           </div>
         </Link>
@@ -32,7 +36,10 @@ export default function UserCard ({ user, tenants, setTenants }) {
           </div>
           <div className='flex flex-col items-start justify-center gap-2 w-3/5 md:w-3/4 '>
             <span className='text-lg'> {user.name} {user.surname}</span>
-            <span className='italic text-base'> @{user.username}</span>
+            <div className='flex gap-5'>
+              <span className='italic text-base'> @{user.username}</span>
+              <span className='flex gap-1 items-center justify-center bg-blue-100 px-2 rounded-xl font-bold'>{Math.floor(user?.avgRating * 100) / 100} <AiFillStar className='text-yellow-500' /></span>
+            </div>
             <span className='hidden md:flex text-base'>{user.description}</span>
           </div>
         </div>

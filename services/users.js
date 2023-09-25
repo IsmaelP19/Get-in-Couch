@@ -8,12 +8,12 @@ const getAll = async () => {
 }
 
 const search = async (search, page, limit, onlyTenants) => {
-  let response
-  if (onlyTenants) {
-    response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}&onlyTenants=${onlyTenants}`, customHeader)
-  } else {
-    response = await axios.get(`${baseUrl}/?search=${search}&page=${page}&limit=${limit}`, customHeader)
-  }
+  let url = `${baseUrl}/?page=${page}&limit=${limit}`
+  if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
+  if (search) url += `&${search}`
+
+  const response = await axios.get(url, customHeader)
+
   return response.data
 }
 

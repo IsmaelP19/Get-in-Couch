@@ -66,6 +66,7 @@ export default async function evaluationsUsernameRouter (req, res) {
       }
 
       const lastEdit = lastEvaluation.lastEdit
+      const lastEvaluationAvgRating = (lastEvaluation.cleaning + lastEvaluation.communication + lastEvaluation.tidyness + lastEvaluation.respect + lastEvaluation.noisy) / 5
       const now = Date.now()
       const difference = now - lastEdit
       const days = difference / (1000 * 60 * 60 * 24)
@@ -84,6 +85,17 @@ export default async function evaluationsUsernameRouter (req, res) {
         noisy,
         lastEdit: Date.now()
       }
+
+      const avgRating = (cleaning + communication + tidyness + respect + noisy) / 5
+
+      const totalEvaluationsBefore = await Evaluation.countDocuments({ user }) // at least 1
+      // we have to modify the old avgRating since the evaluation has been modified
+
+      const oldRating = user?.avgRating * totalEvaluationsBefore - lastEvaluationAvgRating
+
+      const newAvgRating = (oldRating + avgRating) / totalEvaluationsBefore
+
+      await User.findByIdAndUpdate(user, { avgRating: newAvgRating }, { new: true })
 
       const evaluation = await Evaluation.findOneAndUpdate({ author, user: user._id }, newEvaluation, { new: true })
 
