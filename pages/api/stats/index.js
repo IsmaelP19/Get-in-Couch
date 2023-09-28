@@ -50,7 +50,6 @@ export default async function usersRouter (req, res) {
           if (!userObject.isOwner) {
             action.push('Tenant') // evaluating our tenants
           } else {
-            console.log('entered here')
             return res.status(400).json({ error: 'author and user cannot both be landlords' })
           }
         } else if (userObject.isOwner) {

@@ -23,18 +23,48 @@ export default async function evaluationsUsernameRouter (req, res) {
         }
 
         // now create a single evaluation that will be the average of all evaluations
-        const availableStats = await Stat.find({ $or: [{ action: 'Roommate' }, { action: 'All' }, { action: 'Tenant' }] })
+
+        let availableStats
+
+        const visibleStatsIds = user?.visibleStats // son los ids de las stats
+
+        if (visibleStatsIds.length === 0) {
+          return res.status(200).json({ averageEvaluation: null, total: evaluations.length })
+        }
+
+        if (user.isOwner) {
+          if (visibleStatsIds) {
+            availableStats = await Stat.find({
+              $and: [
+                { _id: { $in: visibleStatsIds } },
+                { $or: [{ action: 'Landlord' }, { action: 'All' }] }
+              ]
+            })
+          } else {
+            availableStats = await Stat.find({ $or: [{ action: 'Landlord' }, { action: 'All' }] })
+          }
+        } else {
+          if (visibleStatsIds) {
+            availableStats = await Stat.find({
+              $and: [
+                { _id: { $in: visibleStatsIds } },
+                { $or: [{ action: 'Roommate' }, { action: 'All' }, { action: 'Tenant' }] }
+              ]
+            })
+          } else {
+            availableStats = await Stat.find({ $or: [{ action: 'Roommate' }, { action: 'All' }, { action: 'Tenant' }] })
+          }
+        }
+
         const stats = []
 
         availableStats.forEach(stat => {
-          stats.push({ stat: stat.name, value: 0 })
+          stats.push({ stat: stat.name, value: 0, action: stat.action })
         })
 
-        // recorremos todas las evaluaciones, por cada evaluación, actualizamos el valor de cada stat:
         evaluations.forEach(evaluation => {
-          evaluation.stats.forEach(stat => {
-            const statIndex = stats.findIndex(s => s.stat.toString() === stat.stat.name.toString())
-            stats[statIndex].value += stat.value
+          evaluation.stats.filter(stat => visibleStatsIds?.includes(stat.stat._id)).forEach(stat => {
+            stats.find(s => s.stat === stat.stat.name).value += stat.value
           })
         })
 
@@ -80,16 +110,12 @@ export default async function evaluationsUsernameRouter (req, res) {
         stats.push({ stat: stat.stat, value: body[stat.stat.name] })
       })
 
-      console.log(stats)
-
       const newEvaluation = {
         author: body.author,
         user: user._id,
         stats,
         lastEdit: Date.now()
       }
-
-      // const avgRating = (cleaning + communication + tidyness + respect + noisy) / 5
 
       const avgRating = stats.reduce((acc, stat) => acc + stat.value, 0) / stats.length
 
