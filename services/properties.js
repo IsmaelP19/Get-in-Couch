@@ -16,12 +16,23 @@ const getAll = async (page, search, all) => {
   return response.data
 }
 
-const getMine = async (page, search, userId) => {
+const getByUser = async (username) => {
+  const url = process.env.NEXT_PUBLIC_API_URL + '/users/'
+  const response = await axios.get(`${url}${username}/properties`, customHeader)
+  return response.data
+}
+
+const getMine = async (page, search, withTenantsOnly, userId) => {
   const customHeader = {
     headers: {
       'X-Origin': 'getincouch.vercel.app',
       Authorization: userId
     }
+  }
+
+  if (withTenantsOnly) {
+    const response = await axios.get(`${baseUrl}/mine?cond=${withTenantsOnly}`, customHeader)
+    return response.data
   }
 
   let url = `${baseUrl}/mine?page=${page}`
@@ -79,4 +90,4 @@ const getCommentsByProperty = async (id, limit, page) => {
   return response.data
 }
 
-export default { getAll, getMine, create, getProperty, getTenants, removeProperty, update, updateTenants, getCommentsByProperty }
+export default { getAll, getMine, getByUser, create, getProperty, getTenants, removeProperty, update, updateTenants, getCommentsByProperty }

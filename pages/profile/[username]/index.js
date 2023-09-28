@@ -85,7 +85,11 @@ export default function Profile ({ userObject }) {
   }
 
   const handleSituation = () => {
-    user?.isOwner ? router.push('/properties/mine') : router.push('/state')
+    router.push('/state')
+  }
+
+  const handleMyProperties = () => {
+    router.push(`/profile/${userObject.username}/properties`)
   }
 
   const handleFollowersPage = () => {
@@ -175,21 +179,19 @@ export default function Profile ({ userObject }) {
                       Guardados
                       <FaBookmark className='text-xl ' />
                     </ProfileButton>
-                    {user.isOwner
-                      ? (
-                        <ProfileButton handleClick={handleSituation} style='bg-green-200 font-bold hover:bg-green-700 hover:text-white'>
-                          Mis anuncios
-                          <BsFillHousesFill className='text-xl' />
-                        </ProfileButton>
-                        )
-                      : (
-                        <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
-                          Situación actual
-                          <BsCalendar2WeekFill className='text-xl' />
-                        </ProfileButton>
-                        )}
+
+                    <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
+                      Situación actual
+                      <BsCalendar2WeekFill className='text-xl' />
+                    </ProfileButton>
                   </>
                 )}
+
+                {userObject.isOwner &&
+                  <ProfileButton handleClick={handleMyProperties} style='bg-green-200 font-bold hover:bg-green-700 hover:text-white'>
+                    {userObject.id === user?.id ? 'Mis anuncios' : 'Anuncios'}
+                    <BsFillHousesFill className='text-xl' />
+                  </ProfileButton>}
 
               </div>
               <div className='flex gap-3  flex-wrap items-center justify-center'>

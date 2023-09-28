@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-export default function Roommate ({ user, days, lastEvaluated }) {
+export default function Roommate ({ user, days, lastEvaluated, myTenant, myLandlord }) {
   const router = useRouter()
 
   const handleEvaluate = () => {
@@ -22,9 +22,10 @@ export default function Roommate ({ user, days, lastEvaluated }) {
             <span>{user.name} {user.surname}</span>
             <span className='italic text-base'> @{user.username}</span>
             {days >= 0 && (
-              <span className={`italic text-base font-bold ${days >= 30 ? 'text-green-700 ' : 'text-red-600'} `}> {days} días viviendo conmigo</span>
 
+              <span className={`italic text-base font-bold ${days >= 30 ? 'text-green-700 ' : 'text-red-600'} `}> {days} días {myTenant ? 'viviendo en mi inmueble' : (myLandlord ? 'siendo mi casero' : 'viviendo conmigo')} </span>
             )}
+
             {lastEvaluated && (
               <span className={`italic text-base font-bold ${lastEdit >= 7 ? 'text-green-700 ' : 'text-red-600'} `}> {lastEdit} días desde la última evaluación</span>
             )}

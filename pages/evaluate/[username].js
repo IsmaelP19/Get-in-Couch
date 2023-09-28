@@ -52,11 +52,11 @@ export default function Evaluate ({ userObject }) {
         }, 4000)
       })
       .catch(error => {
-        if (error.response.data.error === 'author does not live with the user at this moment') {
+        if (error.response.data.error === 'The author does not live with the user at this moment') {
           showMessage('No vives con este compañero de piso. No puedes evaluarlo.', 'error', setMessage, 5000, true)
-        } else if (error.response.data.error === 'author does not live in any property') {
-          showMessage('No vives en ninguna propiedad. No puedes evaluar a ningún compañero de piso.', 'error', setMessage, 5000, true)
-        } else if (error.response.data.error === 'the author and the user have not been living together for 30 days') {
+        // } else if (error.response.data.error === 'author does not live in any property') {
+        //   showMessage('No vives en ninguna propiedad. No puedes evaluar a ningún compañero de piso.', 'error', setMessage, 5000, true)
+        } else if (error.response.data.error === 'The author and the user have not been living together for 30 days') {
           showMessage('No llevas 30 días viviendo con este compañero de piso. No puedes evaluarlo.', 'error', setMessage, 5000, true)
         } else {
           showMessage('Ha ocurrido un error inesperado. Por favor, inténtelo más tarde.', 'error', setMessage, 5000, true)

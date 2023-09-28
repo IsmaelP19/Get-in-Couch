@@ -6,6 +6,7 @@ import { useAppContext } from '../context/state'
 import { useRouter } from 'next/router'
 import { showMessage } from '../utils/utils'
 import userService from '../services/users'
+import evaluationService from '../services/evaluations'
 import { MdOutlineDelete } from 'react-icons/md'
 
 export default function SignUpForm ({ userObject }) {
@@ -14,6 +15,29 @@ export default function SignUpForm ({ userObject }) {
   const [phoneNumber, setPhoneNumber] = useState()
   const [profilePicture, setProfilePicture] = useState('')
   const imageInputRef = useRef(null)
+  const [stats, setStats] = useState([])
+  const [roleStats, setRoleStats] = useState([])
+  const [isOptionsVisible, setOptionsVisible] = useState(false)
+  const optionsContainerRef = useRef(null)
+  const selectionSummaryRef = useRef(null)
+  const labelRef = useRef(null)
+
+  useEffect(() => {
+    console.log('useEffect stats')
+    evaluationService.getStats()
+      .then(returnedStats => {
+        console.log(returnedStats)
+        // const res = returnedStats.map(stat => {
+        //   return stat.name
+        // })
+        // console.log(res)
+        setStats(returnedStats)
+      })
+      .catch(error => {
+        console.log(error)
+        showMessage('Ha ocurrido un error al cargar las estadísticas 😢', 'error', setMessage, 4000)
+      })
+  }, [])
 
   useEffect(() => {
     if (userObject) {
@@ -207,7 +231,8 @@ export default function SignUpForm ({ userObject }) {
       isOwner: userObject?.isOwner || false,
       description: userObject?.description || '',
       profilePicture: userObject?.profilePicture || '',
-      ubication: userObject?.ubication || ''
+      ubication: userObject?.ubication || '',
+      visibleStats: userObject?.visibleStats
     },
     onSubmit: values => {
       values.phoneNumber = phoneNumber
@@ -218,6 +243,85 @@ export default function SignUpForm ({ userObject }) {
     }
 
   })
+
+  // change rendered stats  depending on the isOwner property
+  useEffect(() => {
+    let res
+    formik.values.visibleStats = [] // reset visibleStats to prevent
+    if (formik.values.isOwner) {
+      res = stats.filter(stat => stat.action === 'All' || stat.action === 'Landlord')
+      res.sort((a, b) => a.name.localeCompare(b.name))
+    } else {
+      res = stats.filter(stat => stat.action === 'All' || stat.action === 'Tenant' || stat.action === 'Roommate')
+      res.sort((a, b) => a.name.localeCompare(b.name))
+    }
+    setRoleStats(res)
+    formik.values.visibleStats = res.map(stat => stat.id) // if the user does not select any stat, all the stats will be visible by default
+  }, [formik.values.isOwner, stats])
+
+  const toggleOptionsVisibility = () => {
+    setOptionsVisible(!isOptionsVisible)
+  }
+
+  const handleClickOutside = (event) => {
+    if (
+      optionsContainerRef.current &&
+      !optionsContainerRef.current.contains(event.target) &&
+      !labelRef.current.contains(event.target) &&
+      !selectionSummaryRef.current.contains(event.target)
+    ) {
+      closeOptions()
+    }
+  }
+
+  const selectedOptions = stats
+    .filter((stat) => formik.values.visibleStats.includes(stat.id))
+    .map((option) => option.name)
+    .join(', ')
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const optionsContainerStyle = {
+    maxHeight: isOptionsVisible ? '200px' : '0',
+    overflowY: 'auto'
+  }
+
+  const closeOptions = () => {
+    setOptionsVisible(false)
+  }
+
+  // Función para manejar clics en la etiqueta
+  const handleLabelClick = () => {
+    if (isOptionsVisible) {
+      closeOptions()
+    } else {
+      toggleOptionsVisibility()
+    }
+  }
+
+  const handleOptionSelect = (statId) => {
+    // Clonar el array de visibleStats para realizar cambios
+    const updatedVisibleStats = [...formik.values.visibleStats]
+
+    // Comprobar si la opción ya está seleccionada
+    const optionIndex = updatedVisibleStats.indexOf(statId)
+    if (optionIndex === -1) {
+      // Si no está seleccionada, añadirla
+      updatedVisibleStats.push(statId)
+    } else {
+      // Si está seleccionada, quitarla
+      updatedVisibleStats.splice(optionIndex, 1)
+    }
+
+    // Actualizar el campo visibleStats del formulario
+    formik.setFieldValue('visibleStats', updatedVisibleStats)
+  }
 
   return (
     <div className='justify-center items-center m-auto p-10 bg-slate-300 md:w-96 w-full md:rounded-2xl md:my-5  '>
@@ -297,6 +401,49 @@ export default function SignUpForm ({ userObject }) {
           <label htmlFor='isOwner'>¿Eres propietario?</label>
           <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} checked={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} />
         </div>
+
+        {/* select multiple with visibleStats */}
+
+        <div className='relative'>
+          <label
+            htmlFor='visibleStats'
+            onClick={handleLabelClick}
+            ref={labelRef}
+            className='flex justify-between items-center w-full cursor-pointer border-2 font-bold py-2 px-4 bg-slate-200 border-gray-600 rounded-md transition-all duration-300 hover:bg-indigo-100'
+          >
+            <span>Estadísticas visibles</span>
+            <span className='ml-2'>▼</span> {/* Puedes simular el ícono de flecha hacia abajo con un carácter Unicode */}
+          </label>
+          <div
+            ref={optionsContainerRef}
+            style={optionsContainerStyle}
+            className={`absolute mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg transition-all duration-300 ${
+              isOptionsVisible ? 'block' : 'hidden'
+            }`}
+          >
+            {roleStats.map((stat) => (
+              <div
+                key={stat.id}
+                onClick={() => handleOptionSelect(stat.id)}
+                className={`flex items-center justify-between px-4 py-2 ${
+                  formik.values.visibleStats.includes(stat.id) ? 'bg-indigo-100 text-indigo-600' : ''
+                } cursor-pointer hover:bg-indigo-100`}
+              >
+                <span>{stat.name}</span>
+                {formik.values.visibleStats.includes(stat.id) && (
+                  <span role='img' aria-label='Selected'>
+                    ✅
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div ref={selectionSummaryRef} className=''>
+          <strong>Selección:</strong> {selectedOptions}
+        </div>
+
         <div className='flex items-center justify-center'>
           <button type='submit' className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black py-2 px-6 rounded-full duration-200 border-2 border-gray-200 font-bold w-3/5 '>{userObject ? 'Actualizar' : 'Registrarse'}</button>
         </div>

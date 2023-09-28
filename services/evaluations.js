@@ -23,4 +23,10 @@ const getEvaluation = async (authorId, userId) => {
   return response.data
 }
 
-export default { getUserStats, evaluateUser, updateEvaluation, getEvaluation }
+const getStats = async () => {
+  const url = process.env.NEXT_PUBLIC_API_URL + '/stats'
+  const response = await axios.get(url, customHeader)
+  return response.data
+}
+
+export default { getUserStats, evaluateUser, updateEvaluation, getEvaluation, getStats }

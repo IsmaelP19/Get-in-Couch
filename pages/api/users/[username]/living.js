@@ -17,7 +17,7 @@ export default async function usersUsernameRouter (req, res) {
         const user = await User.findOne({ username })
         if (user) {
           const livingProperty = await Property.findOne({ tenants: { $elemMatch: { user: user._id } } })
-            .populate({ path: 'tenants.user' })
+            .populate({ path: 'tenants.user', select: '_id username name surname profilePicture' })
             .populate({ path: 'owner', select: '_id username name surname profilePicture' }) // profilePicture still needed?
 
           if (livingProperty) {
