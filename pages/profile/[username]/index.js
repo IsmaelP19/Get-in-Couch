@@ -223,14 +223,14 @@ export default function Profile ({ userObject }) {
                         <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
                           <p className='font-bold text-xl'>Atención</p>
                           <span className='text-xl'>
-                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global.'}.
+                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject?.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global.'}.
                           </span>
                         </div>
                         <div className='self-end'>
                           <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
                         </div>
 
-                        {user.isOwner && !userObject.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
+                        {user?.isOwner && !userObject?.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
                           stats.averageEvaluation.filter(stat => stat.action === 'Tenant' || stat.action === 'All').map((stat, index) =>
                             <div key={index} className='flex flex-col'>
                               <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
@@ -247,7 +247,7 @@ export default function Profile ({ userObject }) {
                           )
                         )}
 
-                        {!user.isOwner && !userObject.isOwner && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
+                        {!user?.isOwner && !userObject?.isOwner && user?.id !== userObject?.id && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
                           stats.averageEvaluation.filter(stat => stat.action === 'Roommate' || stat.action === 'All').map((stat, index) =>
                             <div key={index} className='flex flex-col'>
                               <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
@@ -264,7 +264,7 @@ export default function Profile ({ userObject }) {
                           )
                         )}
 
-                        {!user.isOwner && userObject.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
+                        {!user?.isOwner && userObject?.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
                           stats.averageEvaluation.filter(stat => stat.action === 'Landlord' || stat.action === 'All').map((stat, index) =>
                             <div key={index} className='flex flex-col'>
                               <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
@@ -281,7 +281,7 @@ export default function Profile ({ userObject }) {
                           )
                         )}
 
-                        {user.id === userObject.id && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
+                        {user?.id === userObject?.id && ( // the user is watching his profile
                           stats.averageEvaluation.map((stat, index) =>
                             <div key={index} className='flex flex-col'>
                               <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
@@ -311,7 +311,6 @@ export default function Profile ({ userObject }) {
           </div>
 
         )}
-        {/* )} */}
 
       </main>
     </>
