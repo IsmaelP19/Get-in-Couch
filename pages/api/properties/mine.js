@@ -22,6 +22,8 @@ export default async function propertiesRouter (req, res) {
     if (req.method === 'GET') {
       const page = req.query?.page || 1 // default page is 1
 
+      const cond = req.query?.cond
+
       const search = req.query?.search
       const propertyType = req.query?.propertyType
       const minPrice = req.query?.minPrice
@@ -85,6 +87,22 @@ export default async function propertiesRouter (req, res) {
       }
 
       try {
+        if (cond) {
+          properties = await Property.find({ owner: userId }).sort(sort).populate('tenants.user', '_id username name surname profilePicture')
+
+          // if (properties) {
+          //   properties.forEach(property => {
+          //     property.tenants.forEach(tenant => {
+          //       const tenantId = tenant.user._id.toString()
+          //       const tenantDate = property.tenants.find(t => t.user._id.toString() === tenantId).date
+          //       tenant._doc.date = tenantDate
+          //     })
+          //   })
+          // }
+
+          return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved' })
+        }
+
         properties = await Property.find(filter).sort(sort).skip(skip).limit(limit)
         total = await Property.countDocuments(filter)
 

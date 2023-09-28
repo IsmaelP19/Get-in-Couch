@@ -12,31 +12,76 @@ import { Loading } from '@nextui-org/react'
 export default function Evaluate ({ userObject }) {
   const { user, done, message, setMessage } = useAppContext()
   const [evaluation, setEvaluation] = useState(null)
+  const [stats, setStats] = useState(null)
   const [isLoading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
     async function getEvaluation () {
-      const property = await usersService.getLivingProperty(user.username)
-      const tenantIds = property?.property.tenants.map(tenant => tenant.user.id)
-      if (tenantIds.includes(userObject.id)) {
-        const { evaluation } = await evaluationsService.getEvaluation(user.id, userObject.id)
-        setEvaluation(evaluation)
-        setLoading(false)
-      } else {
+      if (userObject.isOwner && user.isOwner) {
         router.push('/403')
+        return
       }
+
+      let evaluation
+
+      if (userObject.isOwner && !user.isOwner) { // evaluating my landlord
+        const { property } = await usersService.getLivingProperty(user.username) // the property I live in
+
+        if (property?.owner.id === userObject.id) { // check if the user to be evaluated is my landlord
+          evaluation = await evaluationsService.getEvaluation(user.id, userObject.id)
+        } else {
+          router.push('/403')
+        }
+      }
+
+      if (!userObject.isOwner && user.isOwner) { // evaluating my tenant
+        const { property } = await usersService.getLivingProperty(userObject.username) // the property the user lives in
+
+        if (property?.owner.id === user.id) {
+          evaluation = await evaluationsService.getEvaluation(user.id, userObject.id)
+        } else {
+          router.push('/403')
+        }
+      }
+
+      if (!userObject.isOwner && !user.isOwner) { // evaluating my roommate
+        const { property } = await usersService.getLivingProperty(user.username) // the property I live in
+        if (!property) {
+          router.push('/403')
+          return
+        }
+
+        const tenantIds = property?.tenants.map(tenant => tenant.user.id)
+        if (tenantIds.includes(userObject.id)) {
+          evaluation = await evaluationsService.getEvaluation(user.id, userObject.id)
+        } else {
+          router.push('/403')
+        }
+      }
+
+      setEvaluation(evaluation?.evaluation)
+    }
+
+    async function getAvailableStats () {
+      const stats = await evaluationsService.getStats(user.id, userObject.id)
+      setStats(stats)
     }
 
     if (done) {
       if (!user) router.push('/')
-      else if (user.isOwner) router.push('/403')
       else {
         if (userObject.username === user.username) {
           router.push('/403')
+          return
+        } else if (user.isOwner && userObject.isOwner) {
+          router.push('/403')
+          return
         }
-        getEvaluation()
       }
+      getEvaluation()
+      getAvailableStats()
+      setLoading(false)
     }
   }, [router, done])
 
@@ -52,11 +97,11 @@ export default function Evaluate ({ userObject }) {
         }, 4000)
       })
       .catch(error => {
-        if (error.response.data.error === 'author does not live with the user at this moment') {
+        if (error.response.data.error === 'The author does not live with the user at this moment') {
           showMessage('No vives con este compañero de piso. No puedes evaluarlo.', 'error', setMessage, 5000, true)
-        } else if (error.response.data.error === 'author does not live in any property') {
-          showMessage('No vives en ninguna propiedad. No puedes evaluar a ningún compañero de piso.', 'error', setMessage, 5000, true)
-        } else if (error.response.data.error === 'the author and the user have not been living together for 30 days') {
+        // } else if (error.response.data.error === 'author does not live in any property') {
+        //   showMessage('No vives en ninguna propiedad. No puedes evaluar a ningún compañero de piso.', 'error', setMessage, 5000, true)
+        } else if (error.response.data.error === 'The author and the user have not been living together for 30 days') {
           showMessage('No llevas 30 días viviendo con este compañero de piso. No puedes evaluarlo.', 'error', setMessage, 5000, true)
         } else {
           showMessage('Ha ocurrido un error inesperado. Por favor, inténtelo más tarde.', 'error', setMessage, 5000, true)
@@ -85,19 +130,19 @@ export default function Evaluate ({ userObject }) {
 
   const formik = useFormik({
     initialValues: {
-      cleaning: evaluation?.cleaning ?? 3,
-      communication: evaluation?.communication ?? 3,
-      tidyness: evaluation?.tidyness ?? 3,
-      respect: evaluation?.respect ?? 3,
-      noisy: evaluation?.noisy ?? 3
+      ...stats?.reduce((acc, stat) => {
+        acc[stat.name] = evaluation?.stats.find(s => s.stat.name === stat.name)?.value || 3
+        return acc
+      }, {})
     },
+
     enableReinitialize: true,
 
     onSubmit: values => { evaluation ? updateEvaluation(values) : evaluateUser(values) }
 
   })
 
-  return (done && !user?.isOwner && user?.username !== userObject.username) && (
+  return (done && user?.username !== userObject.username && !isLoading) && (
     <div className='flex flex-col items-center justify-center w-full h-full'>
       <div className='flex flex-col items-center justify-center gap-5 my-5 w-[90%]'>
         <Notification message={message[0]} type={message[1]} />
@@ -109,116 +154,36 @@ export default function Evaluate ({ userObject }) {
           </p>
         </div>
         <Roommate user={userObject} lastEvaluated={evaluation?.lastEdit} />
-        {!isLoading
+        {stats
           ? (
             <>
               {evaluation && <p className='text-xl'>Última evaluación: {new Date(evaluation.lastEdit).toLocaleDateString('es-ES')}</p>}
               <form onSubmit={formik.handleSubmit} className='flex flex-col p-5 sm:p-10 w-full  sm:w-[90%] bg-gray-100 gap-10 rounded-xl border-2 border-slate-700 shadow-md'>
 
-                <div className='flex flex-col'>
-                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
-                    <p className='font-bold text-xl'>¿Tu compañero de piso limpia los espacios comunes?</p>
-                    <span className='text-xl'>
-                      Valóralo del 0 al 5 donde 0 es que no limpia nada y 5 es que lo limpia todo.
-                    </span>
-                  </div>
-                  <label htmlFor='cleaning' className='text-xl'>Limpieza</label>
-                  <input
-                    type='range'
-                    name='cleaning'
-                    min='0'
-                    max='5'
-                    step={1}
-                    value={formik.values.cleaning}
-                    onChange={formik.handleChange}
-                    className='accent-blue-700 w-full'
-                  />
-                  <div className='w-full flex justify-between mt-1'>
-                    <span className='text-xl'>0</span>
-                    <span className='text-xl'>1</span>
-                    <span className='text-xl'>2</span>
-                    <span className='text-xl'>3</span>
-                    <span className='text-xl'>4</span>
-                    <span className='text-xl'>5</span>
-                  </div>
+                {stats.map(stat => (
+                  <div className='flex flex-col' key={stat.id}>
+                    {stat.name === 'Ruido' &&
+                    (
+                      <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4  mb-5 rounded' role='alert'>
+                        <p className='font-bold text-xl'>Atención</p>
+                        <p className='text-xl'>
+                          Valora ruido como ausencia del mismo. Por ejemplo, si tu compañero de piso no hace ruido, valóralo con un 5. De esta forma, no se verían afectadas las puntuaciones globales.
+                        </p>
+                      </div>
 
-                </div>
-
-                <div className='flex flex-col'>
-                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
-                    <p className='font-bold text-xl'>¿Tu compañero de piso se comunica contigo?</p>
-                    <span className='text-xl'>
-                      Valóralo del 0 al 5 donde 0 es que no se comunica nada y 5 es que se comunica mucho.
-                    </span>
+                    )}
+                    <label htmlFor={stat.name} className='text-xl'>{stat.name}</label>
+                    <input type='range' name={stat.name} min='0' max='5' value={formik.values[stat.name]} onChange={formik.handleChange} className='accent-blue-700 w-full' />
+                    <div className='w-full flex justify-between mt-1'>
+                      <span className='text-xl'>0</span>
+                      <span className='text-xl'>1</span>
+                      <span className='text-xl'>2</span>
+                      <span className='text-xl'>3</span>
+                      <span className='text-xl'>4</span>
+                      <span className='text-xl'>5</span>
+                    </div>
                   </div>
-                  <label htmlFor='communication' className='text-xl'>Comunicación</label>
-                  <input type='range' name='communication' min='0' max='5' value={formik.values.communication} onChange={formik.handleChange} className='accent-blue-700' />
-                  <div className='w-full flex justify-between mt-1'>
-                    <span className='text-xl'>0</span>
-                    <span className='text-xl'>1</span>
-                    <span className='text-xl'>2</span>
-                    <span className='text-xl'>3</span>
-                    <span className='text-xl'>4</span>
-                    <span className='text-xl'>5</span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col'>
-                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
-                    <p className='font-bold text-xl'>¿Tu compañero de piso mantiene ordenado su espacio?</p>
-                    <span className='text-xl'>
-                      Valóralo del 0 al 5 donde 0 es que no mantiene nada ordenado y 5 es que lo mantiene todo ordenado.
-                    </span>
-                  </div>
-                  <label htmlFor='tidyness' className='text-xl'>Ordenado</label>
-                  <input type='range' name='tidyness' min='0' max='5' value={formik.values.tidyness} onChange={formik.handleChange} className='accent-blue-700' />
-                  <div className='w-full flex justify-between mt-1'>
-                    <span className='text-xl'>0</span>
-                    <span className='text-xl'>1</span>
-                    <span className='text-xl'>2</span>
-                    <span className='text-xl'>3</span>
-                    <span className='text-xl'>4</span>
-                    <span className='text-xl'>5</span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col'>
-                  <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
-                    <p className='font-bold text-xl'>¿Tu compañero de piso te respeta?</p>
-                    <span className='text-xl'>
-                      Valóralo del 0 al 5 donde 0 es que no te respeta nada y 5 es que te respeta mucho.
-                    </span>
-                  </div>
-                  <label htmlFor='respect' className='text-xl'>Respeto</label>
-                  <input type='range' name='respect' min='0' max='5' value={formik.values.respect} onChange={formik.handleChange} className='accent-blue-700' />
-                  <div className='w-full flex justify-between mt-1'>
-                    <span className='text-xl'>0</span>
-                    <span className='text-xl'>1</span>
-                    <span className='text-xl'>2</span>
-                    <span className='text-xl'>3</span>
-                    <span className='text-xl'>4</span>
-                    <span className='text-xl'>5</span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col'>
-                  <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-2  rounded' role='alert'>
-                    <p className='font-bold text-xl'>¿Tu compañero de piso hace mucho ruido?</p>
-                    <span className='text-xl'>
-                      Valóralo del 0 al 5 donde 0 es que no hace nada de ruido y 5 es que hace mucho ruido.
-                    </span>
-                  </div>
-                  <label htmlFor='noisy' className='text-xl'>Ruido</label>
-                  <input type='range' name='noisy' min='0' max='5' value={formik.values.noisy} onChange={formik.handleChange} className='accent-red-700' />
-                  <div className='w-full flex justify-between mt-1'>
-                    <span className='text-xl'>0</span>
-                    <span className='text-xl'>1</span>
-                    <span className='text-xl'>2</span>
-                    <span className='text-xl'>3</span>
-                    <span className='text-xl'>4</span>
-                    <span className='text-xl'>5</span>
-                  </div>
-                </div>
+                ))}
 
                 <button type='submit' className='px-5 py-1 w-fit rounded-full self-center bg-slate-700 border-2 border-black text-white hover:bg-green-700 duration-200'>Evaluar</button>
 

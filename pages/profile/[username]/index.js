@@ -34,8 +34,10 @@ export default function Profile ({ userObject }) {
 
   useEffect(() => {
     async function getStats () {
-      const stats = await evaluationService.getUserStats(userObject.username)
-      setStats(stats)
+      if (!(user?.isOwner && userObject?.isOwner)) {
+        const stats = await evaluationService.getUserStats(userObject.username)
+        setStats(stats)
+      }
     }
 
     if (userObject.username === user?.username) {
@@ -43,8 +45,8 @@ export default function Profile ({ userObject }) {
     } else {
       setFollowers(followers.length)
     }
-    if (!userObject?.isOwner) getStats()
-  }, [userObject])
+    if (userObject) getStats() // FIXME: this is being called twice
+  }, [])
 
   useEffect(() => {
     async function checkFollow () {
@@ -85,7 +87,11 @@ export default function Profile ({ userObject }) {
   }
 
   const handleSituation = () => {
-    user?.isOwner ? router.push('/properties/mine') : router.push('/state')
+    router.push('/state')
+  }
+
+  const handleMyProperties = () => {
+    router.push(`/profile/${userObject.username}/properties`)
   }
 
   const handleFollowersPage = () => {
@@ -175,21 +181,19 @@ export default function Profile ({ userObject }) {
                       Guardados
                       <FaBookmark className='text-xl ' />
                     </ProfileButton>
-                    {user.isOwner
-                      ? (
-                        <ProfileButton handleClick={handleSituation} style='bg-green-200 font-bold hover:bg-green-700 hover:text-white'>
-                          Mis anuncios
-                          <BsFillHousesFill className='text-xl' />
-                        </ProfileButton>
-                        )
-                      : (
-                        <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
-                          Situación actual
-                          <BsCalendar2WeekFill className='text-xl' />
-                        </ProfileButton>
-                        )}
+
+                    <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
+                      {userObject?.isOwner ? 'Mis inquilinos' : 'Situación actual'}
+                      <BsCalendar2WeekFill className='text-xl' />
+                    </ProfileButton>
                   </>
                 )}
+
+                {userObject.isOwner &&
+                  <ProfileButton handleClick={handleMyProperties} style='bg-green-200 font-bold hover:bg-green-700 hover:text-white'>
+                    {userObject.id === user?.id ? 'Mis anuncios' : 'Anuncios'}
+                    <BsFillHousesFill className='text-xl' />
+                  </ProfileButton>}
 
               </div>
               <div className='flex gap-3  flex-wrap items-center justify-center'>
@@ -204,7 +208,7 @@ export default function Profile ({ userObject }) {
           </div>
         </div>
 
-        {!userObject?.isOwner && (
+        {!(userObject?.isOwner && user?.isOwner && user?.id !== userObject?.id) && (
           <div className='flex flex-col items-center justify-center py-4 gap-4 w-full'>
             <h2 className='text-2xl font-bold'>Estadísticas</h2>
             {stats
@@ -212,84 +216,89 @@ export default function Profile ({ userObject }) {
                 <>
                   {stats.total === 0
                     ? (
-                      <span className='text-xl text-center px-3'>Este usuario aún no ha recibido ninguna valoración</span>
+                      <span className='text-xl text-center px-3'>Aún no ha recibido ninguna valoración</span>
                       )
                     : (
                       <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-100 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
                         <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
                           <p className='font-bold text-xl'>Atención</p>
                           <span className='text-xl'>
-                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor, excepto para el ruido, que cuanto más alta sea la puntuación más ruidoso es el usuario.
+                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global.'}.
                           </span>
                         </div>
                         <div className='self-end'>
                           <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
                         </div>
 
-                        <div className='flex flex-col'>
-                          <label htmlFor='cleaning' className='text-xl font-bold'>Limpieza: {(stats.averageEvaluation.cleaning)} </label>
-                          <input type='range' name='cleaning' min='0' max='5' step='any' value={stats.averageEvaluation.cleaning} readOnly className='accent-blue-700 ' />
-                          <div className='w-full flex justify-between mt-1'>
-                            <span className='text-xl'>0</span>
-                            <span className='text-xl'>1</span>
-                            <span className='text-xl'>2</span>
-                            <span className='text-xl'>3</span>
-                            <span className='text-xl'>4</span>
-                            <span className='text-xl'>5</span>
-                          </div>
-                        </div>
-                        <div className='flex flex-col'>
-                          <label htmlFor='communication' className='text-xl font-bold'>Comunicación: {stats.averageEvaluation.communication} </label>
-                          <input type='range' name='communication' min='0' max='5' steps='any' value={stats.averageEvaluation.communication} readOnly className='accent-blue-700 ' />
-                          <div className='w-full flex justify-between mt-1'>
-                            <span className='text-xl'>0</span>
-                            <span className='text-xl'>1</span>
-                            <span className='text-xl'>2</span>
-                            <span className='text-xl'>3</span>
-                            <span className='text-xl'>4</span>
-                            <span className='text-xl'>5</span>
-                          </div>
-                        </div>
-                        <div className='flex flex-col'>
-                          <label htmlFor='tidyness' className='text-xl font-bold'>Ordenado: {(stats.averageEvaluation.tidyness)} </label>
-                          <input type='range' name='tidyness' min='0' max='5' step='any' value={stats.averageEvaluation.tidyness} readOnly className='accent-blue-700 ' />
-                          <div className='w-full flex justify-between mt-1'>
-                            <span className='text-xl'>0</span>
-                            <span className='text-xl'>1</span>
-                            <span className='text-xl'>2</span>
-                            <span className='text-xl'>3</span>
-                            <span className='text-xl'>4</span>
-                            <span className='text-xl'>5</span>
-                          </div>
-                        </div>
-                        <div className='flex flex-col'>
-                          <label htmlFor='respect' className='text-xl font-bold'>Respeto: {(stats.averageEvaluation.respect)} </label>
-                          <input type='range' name='respect' min='0' max='5' step='any' value={stats.averageEvaluation.respect} readOnly className='accent-blue-700 ' />
-                          <div className='w-full flex justify-between mt-1'>
-                            <span className='text-xl'>0</span>
-                            <span className='text-xl'>1</span>
-                            <span className='text-xl'>2</span>
-                            <span className='text-xl'>3</span>
-                            <span className='text-xl'>4</span>
-                            <span className='text-xl'>5</span>
-                          </div>
-                        </div>
+                        {user.isOwner && !userObject.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
+                          stats.averageEvaluation.filter(stat => stat.action === 'Tenant' || stat.action === 'All').map((stat, index) =>
+                            <div key={index} className='flex flex-col'>
+                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                              <div className='w-full flex justify-between mt-1'>
+                                <span className='text-xl'>0</span>
+                                <span className='text-xl'>1</span>
+                                <span className='text-xl'>2</span>
+                                <span className='text-xl'>3</span>
+                                <span className='text-xl'>4</span>
+                                <span className='text-xl'>5</span>
+                              </div>
+                            </div>
+                          )
+                        )}
 
-                        <div className='flex flex-col'>
-                          <label htmlFor='noisy' className='text-xl font-bold'>Ruido: {stats.averageEvaluation.noisy}</label>
-                          <input type='range' name='noisy' min='0' max='5' step='any' value={stats.averageEvaluation.noisy} readOnly className='accent-red-700' />
-                          <div className='w-full flex justify-between mt-1'>
-                            <span className='text-xl'>0</span>
-                            <span className='text-xl'>1</span>
-                            <span className='text-xl'>2</span>
-                            <span className='text-xl'>3</span>
-                            <span className='text-xl'>4</span>
-                            <span className='text-xl'>5</span>
-                          </div>
-                        </div>
+                        {!user.isOwner && !userObject.isOwner && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
+                          stats.averageEvaluation.filter(stat => stat.action === 'Roommate' || stat.action === 'All').map((stat, index) =>
+                            <div key={index} className='flex flex-col'>
+                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                              <div className='w-full flex justify-between mt-1'>
+                                <span className='text-xl'>0</span>
+                                <span className='text-xl'>1</span>
+                                <span className='text-xl'>2</span>
+                                <span className='text-xl'>3</span>
+                                <span className='text-xl'>4</span>
+                                <span className='text-xl'>5</span>
+                              </div>
+                            </div>
+                          )
+                        )}
+
+                        {!user.isOwner && userObject.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
+                          stats.averageEvaluation.filter(stat => stat.action === 'Landlord' || stat.action === 'All').map((stat, index) =>
+                            <div key={index} className='flex flex-col'>
+                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                              <div className='w-full flex justify-between mt-1'>
+                                <span className='text-xl'>0</span>
+                                <span className='text-xl'>1</span>
+                                <span className='text-xl'>2</span>
+                                <span className='text-xl'>3</span>
+                                <span className='text-xl'>4</span>
+                                <span className='text-xl'>5</span>
+                              </div>
+                            </div>
+                          )
+                        )}
+
+                        {user.id === userObject.id && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
+                          stats.averageEvaluation.map((stat, index) =>
+                            <div key={index} className='flex flex-col'>
+                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                              <div className='w-full flex justify-between mt-1'>
+                                <span className='text-xl'>0</span>
+                                <span className='text-xl'>1</span>
+                                <span className='text-xl'>2</span>
+                                <span className='text-xl'>3</span>
+                                <span className='text-xl'>4</span>
+                                <span className='text-xl'>5</span>
+                              </div>
+                            </div>
+                          )
+                        )}
                       </div>
                       )}
-
                 </>
                 )
               : (
@@ -300,7 +309,9 @@ export default function Profile ({ userObject }) {
                 )}
 
           </div>
+
         )}
+        {/* )} */}
 
       </main>
     </>

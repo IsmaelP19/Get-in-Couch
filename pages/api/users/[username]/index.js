@@ -81,13 +81,14 @@ export default async function usersUsernameRouter (req, res) {
             phoneNumber: body.phoneNumber,
             isOwner: body.isOwner,
             memberSince: user.memberSince,
-            description: body.description, // TODO: add an input to enter bio
+            description: body.description,
             profilePicture: body.profilePicture,
             followers: user.followers, // will be [] if empty
             following: user.following, // will be [] if empty
             favorites: user.favorites, // will be [] if empty
             properties: user.properties, // will be [] if empty
-            ubication
+            ubication,
+            visibleStats: body.visibleStats
           }
 
           try {

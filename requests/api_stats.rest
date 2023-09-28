@@ -1,0 +1,134 @@
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "cleaning",
+  "action": "Roommate"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "communication",
+  "action": "All"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "tidyness",
+  "action": "Roommate"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "respect",
+  "action": "All"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "noisy",
+  "action": "Roommate"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "flexibility",
+  "action": "Landlord"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "compliance",
+  "action": "Landlord"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "availability",
+  "action": "Landlord"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "responsability",
+  "action": "Tenant"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "caring",
+  "action": "Tenant"
+
+}
+
+###
+
+POST http://localhost:3000/api/stats
+Content-Type: application/json
+X-Origin: getincouch.vercel.app
+
+{
+  "name": "punctuality",
+  "action": "Tenant"
+
+}
+
+
+
+
+

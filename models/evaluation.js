@@ -17,36 +17,49 @@ const evaluationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  cleaning: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 3
-  },
-  communication: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 3
-  },
-  tidyness: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 3
-  },
-  respect: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 3
-  },
-  noisy: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 3
-  },
+  stats: [{
+    stat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Stat',
+      required: true
+    },
+    value: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 3
+    }
+  }],
+  // cleaning: {
+  //   type: Number,
+  //   min: 0,
+  //   max: 5,
+  //   default: 3
+  // },
+  // communication: {
+  //   type: Number,
+  //   min: 0,
+  //   max: 5,
+  //   default: 3
+  // },
+  // tidyness: {
+  //   type: Number,
+  //   min: 0,
+  //   max: 5,
+  //   default: 3
+  // },
+  // respect: {
+  //   type: Number,
+  //   min: 0,
+  //   max: 5,
+  //   default: 3
+  // },
+  // noisy: {
+  //   type: Number,
+  //   min: 0,
+  //   max: 5,
+  //   default: 3
+  // },
   lastEdit: {
     type: Date,
     default: Date.now

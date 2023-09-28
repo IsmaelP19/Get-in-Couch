@@ -42,7 +42,8 @@ export default async function usersRouter (req, res) {
         isOwner: body.isOwner,
         description: body.description,
         profilePicture: body.profilePicture,
-        ubication
+        ubication,
+        visibleStats: body.visibleStats
       })
 
       const savedUser = await user.save()

@@ -1,15 +1,16 @@
-import PropertyCard from '../../components/PropertyCard'
+import PropertyCard from '../../../components/PropertyCard'
 import Link from 'next/link'
-import propertiesService from '../../services/properties'
-import { useAppContext } from '../../context/state'
+import propertiesService from '../../../services/properties'
+import { useAppContext } from '../../../context/state'
 import { Pagination, Loading } from '@nextui-org/react'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import userService from '../../../services/users'
 import { BsFillHouseAddFill } from 'react-icons/bs'
 
-export default function MyCatalogue () {
-  const { user, done } = useAppContext()
+export default function MyCatalogue ({ userObject }) {
+  const { done } = useAppContext()
   const [totalPages, setTotalPages] = useState(1)
   const [properties, setProperties] = useState([])
   const [page, setPage] = useState(1)
@@ -32,7 +33,7 @@ export default function MyCatalogue () {
 
   useEffect(() => {
     const fetchProperties = async () => {
-      const fetchedProperties = await propertiesService.getMine(page, urlSearchParams, user?.id)
+      const fetchedProperties = await propertiesService.getMine(page, urlSearchParams, false, userObject?.id)
       fetchedProperties.properties.forEach(property => {
         delete property.location?.coordinates
         property.location.street = property.location.street.split(',')[0]
@@ -43,10 +44,7 @@ export default function MyCatalogue () {
       setLoading(false)
     }
     if (done) {
-      if (user.isOwner) fetchProperties()
-      else {
-        router.push('/403')
-      }
+      userObject?.isOwner ? fetchProperties() : router.push('/404')
     }
   }, [done, page, urlSearchParams])
 
@@ -122,11 +120,11 @@ export default function MyCatalogue () {
     setLoading(false)
   }
 
-  return (done && user?.isOwner &&
+  return (done && userObject?.isOwner &&
     <div className='w-full flex flex-col'>
       <h1 className='p-10 font-bold text-3xl text-center'>Inmuebles</h1>
 
-      {user?.isOwner && (
+      {userObject?.isOwner && (
         <div className='w-full flex items-center justify-center mb-6'>
           <Link href='/properties/new'>
             <button className='flex gap-3 items-center justify-center bg-green-400  hover:bg-green-800 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg'>
@@ -230,9 +228,18 @@ export default function MyCatalogue () {
 }
 
 export async function getServerSideProps (context) {
-  return {
-    props: {
-      title: 'Catálogo'
+  const { username } = context.query
+  let user = {}
+  try {
+    user = await userService.getUser(username)
+  } catch (error) {
+    if (error.response.data.error === 'user not found') {
+      context.res.writeHead(302, { Location: '/404' })
+      context.res.end()
     }
+  }
+
+  return {
+    props: { title: `Anuncios de ${user.username}`, userObject: user }
   }
 }
