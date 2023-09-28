@@ -181,7 +181,7 @@ export default function Profile ({ userObject }) {
                     </ProfileButton>
 
                     <ProfileButton handleClick={handleSituation} style='bg-purple-200 font-bold hover:bg-purple-700 hover:text-white'>
-                      Situación actual
+                      {userObject?.isOwner ? 'Mis inquilinos' : 'Situación actual'}
                       <BsCalendar2WeekFill className='text-xl' />
                     </ProfileButton>
                   </>

@@ -94,7 +94,7 @@ export default async function evaluationsRouter (req, res) {
 
       const evaluation = new Evaluation({ author: body.author, user: body.user, stats, lastEdit: Date.now() })
 
-      const avgRating = stats.reduce((acc, stat) => acc + stat.value, 0) / stats.length
+      const avgRating = evaluation.stats.reduce((acc, stat) => acc + stat.value, 0) / stats.length
 
       const totalEvaluationsBefore = await Evaluation.countDocuments({ user: body.user })
 

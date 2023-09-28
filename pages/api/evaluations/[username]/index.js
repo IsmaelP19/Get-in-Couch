@@ -67,7 +67,6 @@ export default async function evaluationsUsernameRouter (req, res) {
 
       const lastEvaluationAvgRating = lastEvaluation.stats.reduce((acc, stat) => acc + stat.value, 0) / lastEvaluation.stats.length
 
-      // const lastEvaluationAvgRating = (lastEvaluation.cleaning + lastEvaluation.communication + lastEvaluation.tidyness + lastEvaluation.respect + lastEvaluation.noisy) / 5
       const now = Date.now()
       const difference = now - lastEdit
       const days = difference / (1000 * 60 * 60 * 24)

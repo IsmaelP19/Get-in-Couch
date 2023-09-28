@@ -23,8 +23,13 @@ const getEvaluation = async (authorId, userId) => {
   return response.data
 }
 
-const getStats = async () => {
-  const url = process.env.NEXT_PUBLIC_API_URL + '/stats'
+const getStats = async (author, user) => {
+  let url = process.env.NEXT_PUBLIC_API_URL + '/stats'
+
+  if (author && user) {
+    url += `?author=${author}&user=${user}`
+  }
+
   const response = await axios.get(url, customHeader)
   return response.data
 }

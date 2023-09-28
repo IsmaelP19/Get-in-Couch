@@ -1,4 +1,5 @@
 import Stat from '../../../models/stats'
+import User from '../../../models/user'
 import { errorHandler, createConnection } from '../../../utils/utils'
 
 export default async function usersRouter (req, res) {
@@ -32,7 +33,36 @@ export default async function usersRouter (req, res) {
 
       res.status(201).json(savedStat)
     } else if (req.method === 'GET') {
-      const stats = await Stat.find({})
+      const author = req.query?.author // id of author
+      const user = req.query?.user // id of user
+      let stats
+
+      if (author && user) {
+        const authorObject = await User.findById(author)
+        const userObject = await User.findById(user)
+
+        if (!authorObject || !userObject) {
+          return res.status(404).json({ error: 'author or user not found' })
+        }
+
+        const action = ['All']
+        if (authorObject.isOwner) {
+          if (!userObject.isOwner) {
+            action.push('Tenant') // evaluating our tenants
+          } else {
+            console.log('entered here')
+            return res.status(400).json({ error: 'author and user cannot both be landlords' })
+          }
+        } else if (userObject.isOwner) {
+          action.push('Landlord') // evaluating our landlords
+        } else {
+          action.push('Roommate') // evaluating our roommates
+        }
+
+        stats = await Stat.find({ action: { $in: action } })
+      } else {
+        stats = await Stat.find({})
+      }
       res.json(stats)
     }
   } catch (error) {
