@@ -7,7 +7,7 @@ import { Loading, Pagination } from '@nextui-org/react'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { LuMap } from 'react-icons/lu'
 
-export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
+export default function UsersSearch ({ tenants, setTenants, onlyTenants, followers, following }) {
   const { user, done } = useAppContext()
   const [totalPages, setTotalPages] = useState(1)
   const [users, setUsers] = useState([])
@@ -29,14 +29,24 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      let fetchedProperties
+      let fetchedUsers
+      let username
       if (onlyTenants) {
-        fetchedProperties = await usersService.search(urlSearchParams, currentPage, 5, true)
+        fetchedUsers = await usersService.search(urlSearchParams, currentPage, 5, true)
+      } else if (following) {
+        username = router.query.username
+        fetchedUsers = await usersService.getFollowing(username, urlSearchParams, currentPage, 5)
+      } else if (followers) {
+        username = router.query.username
+        fetchedUsers = await usersService.getFollowers(username, urlSearchParams, currentPage, 5)
       } else {
-        fetchedProperties = await usersService.search(urlSearchParams, currentPage, 5)
+        fetchedUsers = await usersService.search(urlSearchParams, currentPage, 5)
       }
-      setUsers(fetchedProperties.users)
-      setTotalPages(Math.ceil(fetchedProperties.total / 5))
+
+      console.log(fetchedUsers)
+
+      setUsers(fetchedUsers.users)
+      setTotalPages(Math.ceil(fetchedUsers.total / 5))
       setLoading(false)
     }
 
@@ -47,17 +57,6 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
     setLoading(true)
     window.scrollTo(0, 0)
     setCurrentPage(page)
-
-    // let fetchedUsers
-    // if (onlyTenants) {
-    //   fetchedUsers = await usersService.search(search, page, 5, true)
-    // } else {
-    //   fetchedUsers = await usersService.search(search, page, 5)
-    // }
-
-    // setUsers(fetchedUsers.users)
-    // setTotalPages(Math.ceil(fetchedUsers.total / 5))
-    // setLoading(false)
   }
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
@@ -68,6 +67,7 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
     document.querySelector('#search-input').value = ''
     document.querySelector('#ubication-input').value = ''
     document.querySelector('#avgRating').value = ''
+    document.querySelector('#type').value = ''
     setLoading(true)
     setCurrentPage(1)
     setSearch('')
@@ -80,21 +80,33 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
 
     const ubication = document.querySelector('#ubication-input').value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     const avgRating = document.querySelector('#avgRating').value
+    const type = document.querySelector('#type').value
+
+    console.log(type)
 
     const searchParams = new URLSearchParams()
     if (search) searchParams.append('search', search)
     if (ubication) searchParams.append('ubication', ubication)
     if (avgRating) searchParams.append('avgRating', avgRating)
+    if (type) searchParams.append('type', type)
 
     setParams(searchParams)
     setCurrentPage(1)
 
     let fetchedUsers
+    let username
     if (onlyTenants) {
       fetchedUsers = await usersService.search(searchParams, 1, 5, true)
+    } else if (following) {
+      username = router.query.username
+      fetchedUsers = await usersService.getFollowing(username, urlSearchParams, 1, 5)
+    } else if (followers) {
+      username = router.query.username
+      fetchedUsers = await usersService.getFollowers(username, urlSearchParams, 1, 5)
     } else {
       fetchedUsers = await usersService.search(searchParams, 1, 5)
     }
+
     setUsers(fetchedUsers.users)
     setTotalPages(Math.ceil(fetchedUsers.total / 5))
     setLoading(false)
@@ -120,7 +132,6 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
             </div>
           </div>
 
-          {/* Let's add a filter of avgRating of the property */}
           <div className='flex flex-row items-center border-2 border-slate-300 rounded-xl px-2 '>
             <input type='number' min={0} step={0.1} id='avgRating' className='h-10  outline-none' placeholder='Valoración media (mín)' />
           </div>
@@ -132,6 +143,17 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants }) {
             </div>
           </div>
 
+          {/* The following filter should not be rendered on the /tenants page.  */}
+          {!onlyTenants && (
+            <div className='flex flex-row items-center border-2 border-slate-300 rounded-xl px-2 '>
+              <select id='type' className='h-10 w-full outline-none'>
+                <option value=''>Tipo de usuario</option>
+                <option value='tenantRelated'>Inquilino</option>
+                <option value='owner'>Propietario</option>ç
+                <option value='tenant'>Inquilino en busca de inmueble</option>
+              </select>
+            </div>
+          )}
         </div>
         <div className='flex items-center justify-center gap-4 flex-wrap'>
           <button className='bg-green-200 hover:bg-green-700 hover:text-white transition-all text-black font-bold py-2 px-4 rounded-lg' onClick={handleSearch}>

@@ -218,87 +218,92 @@ export default function Profile ({ userObject }) {
                     ? (
                       <span className='text-xl text-center px-3'>Aún no ha recibido ninguna valoración</span>
                       )
-                    : (
-                      <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-100 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
-                        <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
-                          <p className='font-bold text-xl'>Atención</p>
-                          <span className='text-xl'>
-                            Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject?.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global.'}.
-                          </span>
+                    : user?.ubication === userObject?.ubication || userObject?.ubication === ''
+                      ? (
+                        <div className='flex flex-col p-5 sm:p-10 w-[90%] bg-gray-100 gap-5 rounded-xl border-2 border-slate-700 shadow-md'>
+                          <div className='bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-2  rounded' role='alert'>
+                            <p className='font-bold text-xl'>Atención</p>
+                            <span className='text-xl'>
+                              Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject?.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global'}.
+                            </span>
+                          </div>
+                          <div className='self-end'>
+                            <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
+                          </div>
+
+                          {user?.isOwner && !userObject?.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
+                            stats.averageEvaluation.filter(stat => stat.action === 'Tenant' || stat.action === 'All').map((stat, index) =>
+                              <div key={index} className='flex flex-col'>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                <div className='w-full flex justify-between mt-1'>
+                                  <span className='text-xl'>0</span>
+                                  <span className='text-xl'>1</span>
+                                  <span className='text-xl'>2</span>
+                                  <span className='text-xl'>3</span>
+                                  <span className='text-xl'>4</span>
+                                  <span className='text-xl'>5</span>
+                                </div>
+                              </div>
+                            )
+                          )}
+
+                          {!user?.isOwner && !userObject?.isOwner && user?.id !== userObject?.id && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
+                            stats.averageEvaluation.filter(stat => stat.action === 'Roommate' || stat.action === 'All').map((stat, index) =>
+                              <div key={index} className='flex flex-col'>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                <div className='w-full flex justify-between mt-1'>
+                                  <span className='text-xl'>0</span>
+                                  <span className='text-xl'>1</span>
+                                  <span className='text-xl'>2</span>
+                                  <span className='text-xl'>3</span>
+                                  <span className='text-xl'>4</span>
+                                  <span className='text-xl'>5</span>
+                                </div>
+                              </div>
+                            )
+                          )}
+
+                          {!user?.isOwner && userObject?.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
+                            stats.averageEvaluation.filter(stat => stat.action === 'Landlord' || stat.action === 'All').map((stat, index) =>
+                              <div key={index} className='flex flex-col'>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                <div className='w-full flex justify-between mt-1'>
+                                  <span className='text-xl'>0</span>
+                                  <span className='text-xl'>1</span>
+                                  <span className='text-xl'>2</span>
+                                  <span className='text-xl'>3</span>
+                                  <span className='text-xl'>4</span>
+                                  <span className='text-xl'>5</span>
+                                </div>
+                              </div>
+                            )
+                          )}
+
+                          {user?.id === userObject?.id && ( // the user is watching his profile
+                            stats.averageEvaluation.map((stat, index) =>
+                              <div key={index} className='flex flex-col'>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
+                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                <div className='w-full flex justify-between mt-1'>
+                                  <span className='text-xl'>0</span>
+                                  <span className='text-xl'>1</span>
+                                  <span className='text-xl'>2</span>
+                                  <span className='text-xl'>3</span>
+                                  <span className='text-xl'>4</span>
+                                  <span className='text-xl'>5</span>
+                                </div>
+                              </div>
+                            )
+                          )}
                         </div>
-                        <div className='self-end'>
-                          <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
-                        </div>
+                        )
+                      : (
+                        <span className='text-xl text-center px-3'>Para ver sus estadísticas debes estar interesado en la misma zona que {userObject?.name} {userObject?.surname}.</span>
 
-                        {user?.isOwner && !userObject?.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
-                          stats.averageEvaluation.filter(stat => stat.action === 'Tenant' || stat.action === 'All').map((stat, index) =>
-                            <div key={index} className='flex flex-col'>
-                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                              <div className='w-full flex justify-between mt-1'>
-                                <span className='text-xl'>0</span>
-                                <span className='text-xl'>1</span>
-                                <span className='text-xl'>2</span>
-                                <span className='text-xl'>3</span>
-                                <span className='text-xl'>4</span>
-                                <span className='text-xl'>5</span>
-                              </div>
-                            </div>
-                          )
                         )}
-
-                        {!user?.isOwner && !userObject?.isOwner && user?.id !== userObject?.id && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
-                          stats.averageEvaluation.filter(stat => stat.action === 'Roommate' || stat.action === 'All').map((stat, index) =>
-                            <div key={index} className='flex flex-col'>
-                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                              <div className='w-full flex justify-between mt-1'>
-                                <span className='text-xl'>0</span>
-                                <span className='text-xl'>1</span>
-                                <span className='text-xl'>2</span>
-                                <span className='text-xl'>3</span>
-                                <span className='text-xl'>4</span>
-                                <span className='text-xl'>5</span>
-                              </div>
-                            </div>
-                          )
-                        )}
-
-                        {!user?.isOwner && userObject?.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
-                          stats.averageEvaluation.filter(stat => stat.action === 'Landlord' || stat.action === 'All').map((stat, index) =>
-                            <div key={index} className='flex flex-col'>
-                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                              <div className='w-full flex justify-between mt-1'>
-                                <span className='text-xl'>0</span>
-                                <span className='text-xl'>1</span>
-                                <span className='text-xl'>2</span>
-                                <span className='text-xl'>3</span>
-                                <span className='text-xl'>4</span>
-                                <span className='text-xl'>5</span>
-                              </div>
-                            </div>
-                          )
-                        )}
-
-                        {user?.id === userObject?.id && ( // the user is watching his profile
-                          stats.averageEvaluation.map((stat, index) =>
-                            <div key={index} className='flex flex-col'>
-                              <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                              <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                              <div className='w-full flex justify-between mt-1'>
-                                <span className='text-xl'>0</span>
-                                <span className='text-xl'>1</span>
-                                <span className='text-xl'>2</span>
-                                <span className='text-xl'>3</span>
-                                <span className='text-xl'>4</span>
-                                <span className='text-xl'>5</span>
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
-                      )}
                 </>
                 )
               : (
@@ -323,7 +328,7 @@ export async function getServerSideProps (context) {
   try {
     user = await userService.getUser(username)
   } catch (error) {
-    if (error.response.data.error === 'user not found') {
+    if (error?.response?.data?.error === 'user not found') {
       context.res.writeHead(302, { Location: '/404' })
       context.res.end()
     }

@@ -7,16 +7,6 @@ const getAll = async () => {
   return response.data
 }
 
-const search = async (search, page, limit, onlyTenants) => {
-  let url = `${baseUrl}/?page=${page}&limit=${limit}`
-  if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
-  if (search) url += `&${search}`
-
-  const response = await axios.get(url, customHeader)
-
-  return response.data
-}
-
 const create = async (newObject) => {
   const response = await axios.post(baseUrl, newObject, customHeader)
   return response.data
@@ -67,15 +57,48 @@ const getPropertyHistory = async (username) => {
   const response = await axios.get(`${baseUrl}/${username}/tenant-history`, customHeader)
   return response.data
 }
+const search = async (search, page, limit, onlyTenants) => {
+  let url = `${baseUrl}/?page=${page}&limit=${limit}`
+  if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
+
+  if (search) url += `&${search}`
+
+  const response = await axios.get(url, customHeader)
+
+  return response.data
+}
 
 const getFollowers = async (username, search, page, limit) => {
-  const response = await axios.get(`${baseUrl}/${username}/followers?search=${search}&page=${page}&limit=${limit}`, customHeader)
+  let url = `${baseUrl}/${username}/followers/?page=${page}&limit=${limit}`
+  console.log(search)
+  if (search) url += `&${search}`
+
+  const response = await axios.get(url, customHeader)
   return response.data
 }
 
+// const search = async (search, page, limit, onlyTenants) => {
+//   let url = `${baseUrl}/?page=${page}&limit=${limit}`
+//   if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
+
+//   if (search) url += `&${search}`
+
+//   const response = await axios.get(url, customHeader)
+
+//   return response.data
+// }
+
 const getFollowing = async (username, search, page, limit) => {
-  const response = await axios.get(`${baseUrl}/${username}/following?search=${search}&page=${page}&limit=${limit}`, customHeader)
+  let url = `${baseUrl}/${username}/following?page=${page}&limit=${limit}`
+  if (search) url += `&search=${search}`
+
+  const response = await axios.get(url, customHeader)
   return response.data
 }
+
+// const getFollowing = async (username, search, page, limit) => {
+//   const response = await axios.get(`${baseUrl}/${username}/following?search=${search}&page=${page}&limit=${limit}`, customHeader)
+//   return response.data
+// }
 
 export default { getAll, search, create, update, getUser, removeUser, login, follow, getSavedProperties, updateSavedProperties, getLivingProperty, getPropertyHistory, getFollowers, getFollowing }

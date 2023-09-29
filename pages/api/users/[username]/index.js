@@ -79,7 +79,6 @@ export default async function usersUsernameRouter (req, res) {
             name: body.name,
             surname: body.surname,
             phoneNumber: body.phoneNumber,
-            isOwner: body.isOwner,
             memberSince: user.memberSince,
             description: body.description,
             profilePicture: body.profilePicture,

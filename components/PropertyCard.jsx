@@ -15,9 +15,9 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
   return (
     <div key={id} className={`flex flex-col border-2 w-[300px] items-center gap-4 ${handleClose ? 'pb-0' : 'pb-5'} border-black rounded-3xl ${style}`}>
 
-      <img src={images[0] || '/static/images/room.jpg'} alt={title} className='object-cover  w-[300px]  h-[200px] rounded-t-3xl' />
+      <img src={images[0] || '/static/images/room.jpg'} alt={title} className='object-cover  w-full  h-[200px] rounded-t-3xl' />
 
-      <div className='flex flex-col w-[300px] items-center gap-4 pb-5'>
+      <div className='flex flex-col w-full items-center gap-4 pb-5 '>
         <h2 className='font-bold text-center '>{location.street}</h2>
         <h3 className='italic'>
           <GrMapLocation className='inline-block mr-1' />
@@ -26,7 +26,10 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
         </h3>
         <span> {features.availableRooms}/{features.numberOfBedrooms} habitaciones disponibles</span>
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
-        <span className='flex items-center gap-1'>{avg} <AiFillStar className='text-yellow-500' /></span>
+        <div className='flex flex-wrap items-center justify-center gap-10'>
+          <span className='flex items-center gap-1 bg-blue-100 rounded-xl px-2'>{avg} <AiFillStar className='text-yellow-500' /></span>
+          <span className=' bg-blue-100 px-2 rounded-xl font-bold'>{property.comments.length} {property.comments.length === 1 ? 'valoración' : 'valoraciones'} </span>
+        </div>
         <div className='flex w-full items-center justify-around'>
           <span className='font-bold rounded-2xl bg-[#FFAA22] px-3 py-2'>{price} €/mes </span>
           <span className={`${status === 'Disponible' ? 'bg-green-500 ' : 'bg-red-500'} px-3 py-2 rounded-2xl font-bold`}>{status.toUpperCase()}</span>
