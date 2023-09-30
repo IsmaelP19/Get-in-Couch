@@ -32,15 +32,10 @@ export default async function propertiesIdTenantsRouter (req, res) {
       return res.status(200).json(tenants)
     } else if (req.method === 'PUT') {
       const { body } = req
-      // body.tenants es un array de ids = ['id1', 'id2', 'id3' ...]
 
       const oldTenants = property.tenants.map(tenant => tenant.user.toString())
-      // TODO: los que había antes (sólo sus IDs)
-      // oldTenants is an array of strings
-      // oldTenants = ['id1', 'id2', 'id3' ...]
 
       const newTenants = [...new Set(body.tenants)] // Remove duplicates from newTenants array
-      // TODO: check that newTenants are not owners (should return a fail)
 
       const areNewTenantsOwners = await User.find({ _id: { $in: newTenants }, isOwner: true })
       if (areNewTenantsOwners.length > 0) {
@@ -56,13 +51,12 @@ export default async function propertiesIdTenantsRouter (req, res) {
         return res.status(400).json({ error: 'there are some tenants that are already living in another property', alreadyTenants: tenants })
       }
 
-      // básicamente se convierte en set pa quitar duplicados (por si los hubiese) y se convierte en array de nuevo
-      // TODO: los que hay ahora (sólo sus IDs)
+      // básicamente se convierte en set para quitar duplicados (por si los hubiese) y se convierte en array de nuevo
 
       // Find the existing tenants in the property's tenants array
       const existingTenants = property.tenants.filter(tenant => oldTenants.includes(tenant.user.toString()))
       // no estoy haciendo nada realmente, cojo los inquilinos que había y no hago absolutamente nada
-      // FIXME: aquí cojo literalmente todos los property.tenants (oldTenants es literalmente los property.tenants pero quedandome solo con los ids) sólo que tmb coge la fecha de inclusión
+      // aquí cojo literalmente todos los property.tenants (oldTenants es literalmente los property.tenants pero quedandome solo con los ids) sólo que tmb coge la fecha de inclusión
 
       // Create a map to store the original inclusion dates of existing tenants
       const existingTenantDates = new Map()
@@ -74,24 +68,18 @@ export default async function propertiesIdTenantsRouter (req, res) {
       // existingTenants tiene los objects Ids del tipo [{user, date, _id...}, {user, date, _id...}, ...}]
       // existingTenantDates es del tipo { 'id1': 'date1', 'id2': 'date2', ... }
 
-      // Update tenants array and calculate available rooms
       property.tenants = newTenants.map(userId => ({
         user: userId,
-        date: existingTenantDates.get(userId) || new Date() // Use existing date if available, otherwise use current date
+        date: existingTenantDates.get(userId) || new Date()
       }))
       property.features.availableRooms = property.features.availableRooms - (newTenants.length - oldTenants.length)
 
-      // Update tenantsHistory array
-      const tenantsToAddToHistory = oldTenants.filter(userId => !newTenants.includes(userId))// FIXME: está cogiendo de los antiguos del property.tenants los que se han ido (no están en el newTenants) --> son los inquilinos que se han ido a su puta casa (vaya, la intersección entre oldTenants y newTenants)
-
-      // const tenantsToAddToHistory = tenantsToRemoveFromHistory.filter(userId => !property.tenants.some(tenant => tenant.user.toString() === userId))
+      const tenantsToAddToHistory = oldTenants.filter(userId => !newTenants.includes(userId))
+      // FIXME: está cogiendo de los antiguos del property.tenants los que se han ido (no están en el newTenants) --> son los inquilinos que se han ido a su casa (la intersección entre oldTenants y newTenants)
 
       const tenantsBackFromHistory = property.tenantsHistory.filter(history => newTenants.includes(history.user.toString()))
 
-      // ahora añadimos al history los que se han ido (tenantsToAddToHistory) y quitamos los que han vuelto (tenantsBackFromHistory)
-
       property.tenantsHistory = property.tenantsHistory.filter(history => !tenantsBackFromHistory.some(tenant => tenant.user.toString() === history.user.toString()))
-      // básicamente quita los que han vuelto a ser inquilinos y lo fueron en el pasado
 
       property.tenantsHistory = [
         ...property.tenantsHistory,

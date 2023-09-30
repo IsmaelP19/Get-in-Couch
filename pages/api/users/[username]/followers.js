@@ -1,4 +1,5 @@
 import User from '../../../../models/user'
+import Evaluation from '../../../../models/evaluation'
 import { errorHandler, createConnection } from '../../../../utils/utils'
 
 export default async function usersUsernameRouter (req, res) {
@@ -34,7 +35,7 @@ export default async function usersUsernameRouter (req, res) {
           user = await User.findOne({ username }).populate({
             path: 'followers',
             match: { $or: [{ username: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }, { surname: { $regex: search, $options: 'i' } }] },
-            select: 'username name surname profilePicture',
+            select: 'username name surname profilePicture avgRating',
             options: {
               skip,
               limit
@@ -53,21 +54,25 @@ export default async function usersUsernameRouter (req, res) {
           total = user.followers.length
           user = await User.findOne({ username }).populate({
             path: 'followers',
-            select: 'username name surname profilePicture',
+            select: 'username name surname profilePicture avgRating',
             options: {
               skip,
               limit
             }
           })
         }
-        const followers = user.followers.map(follower => {
+        const followers = await Promise.all(user.followers.map(async follower => {
+          const numberOfEvaluations = await Evaluation.countDocuments({ user: follower._id })
           return {
             username: follower.username,
             name: follower.name,
             surname: follower.surname,
-            profilePicture: follower.profilePicture
+            profilePicture: follower.profilePicture,
+            avgRating: follower.avgRating,
+            numberOfEvaluations
           }
-        })
+        }))
+
         return res.status(200).json({ followers, total })
       } else {
         return res.status(400).json({ error: 'username is required' })

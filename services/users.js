@@ -7,16 +7,6 @@ const getAll = async () => {
   return response.data
 }
 
-const search = async (search, page, limit, onlyTenants) => {
-  let url = `${baseUrl}/?page=${page}&limit=${limit}`
-  if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
-  if (search) url += `&${search}`
-
-  const response = await axios.get(url, customHeader)
-
-  return response.data
-}
-
 const create = async (newObject) => {
   const response = await axios.post(baseUrl, newObject, customHeader)
   return response.data
@@ -65,6 +55,16 @@ const getLivingProperty = async (username) => {
 
 const getPropertyHistory = async (username) => {
   const response = await axios.get(`${baseUrl}/${username}/tenant-history`, customHeader)
+  return response.data
+}
+const search = async (search, page, limit, onlyTenants) => {
+  let url = `${baseUrl}/?page=${page}&limit=${limit}`
+  if (onlyTenants) { url += `&onlyTenants=${onlyTenants}` }
+
+  if (search) url += `&${search}`
+
+  const response = await axios.get(url, customHeader)
+
   return response.data
 }
 

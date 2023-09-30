@@ -116,7 +116,7 @@ export default async function evaluationsRouter (req, res) {
         return res.status(400).json({ error: 'user not found' })
       }
 
-      const evaluation = await Evaluation.findOne({ author, user }).populate('stats.stat', 'name') // TODO: example for populating the name of the stats
+      const evaluation = await Evaluation.findOne({ author, user }).populate('stats.stat', 'name')
 
       return res.status(200).json(evaluation ? { evaluation } : { error: 'the author did not evaluate the user yet' })
     }

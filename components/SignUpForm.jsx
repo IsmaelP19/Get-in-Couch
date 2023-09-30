@@ -23,14 +23,8 @@ export default function SignUpForm ({ userObject }) {
   const labelRef = useRef(null)
 
   useEffect(() => {
-    console.log('useEffect stats')
     evaluationService.getStats()
       .then(returnedStats => {
-        console.log(returnedStats)
-        // const res = returnedStats.map(stat => {
-        //   return stat.name
-        // })
-        // console.log(res)
         setStats(returnedStats)
       })
       .catch(error => {
@@ -129,7 +123,7 @@ export default function SignUpForm ({ userObject }) {
         setUser(updatedUserObject)
 
         setTimeout(() => {
-          router.push(`/profile/${updatedUserObject.username.toLowerCase()}`)
+          location.href = `/profile/${updatedUserObject.username.toLowerCase()}` // to force a reload of the page
         }, 3000)
       })
       .catch(error => {
@@ -380,10 +374,10 @@ export default function SignUpForm ({ userObject }) {
         </div>
 
         <div className='flex flex-col gap-y-1'>
-          <label htmlFor='ubication'>Ubicación (ciudad)</label>
-          <span className='text-blue-700'> Sólo los usuarios con esta misma dirección podrán ver tus estadísticas. Si no lo rellena acepta que serán visibles para toda la plataforma.</span>
+          <label htmlFor='ubication'>Zona de interés (ciudad)</label>
           <input type='text' name='ubication' id='ubication' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.ubication} className='border border-solid border-slate-600' placeholder='Sevilla' />
           {formik.touched.ubication && formik.errors.ubication ? <div className='text-red-600'>{formik.errors.ubication}</div> : null}
+          <span className='text-blue-700'> Sólo los usuarios con esta misma zona podrán ver tus estadísticas. Si no lo rellena acepta que serán visibles para toda la plataforma. Los usuarios de Get in Couch podrán buscarte por tu zona de interés.</span>
         </div>
         <div className='flex flex-col gap-y-3 mt-2'>
           <label htmlFor='profilePicture' className='bg-slate-200 text-center px-2 py-1 border-gray-600 border-2 font-bold active:bg-blue-400 '>Selecciona una imagen de perfil</label>
@@ -399,7 +393,7 @@ export default function SignUpForm ({ userObject }) {
 
         <div className='flex flex-row items-center gap-x-4'>
           <label htmlFor='isOwner'>¿Eres propietario?</label>
-          <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} checked={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} />
+          <input type='checkbox' name='isOwner' id='isOwner' value={formik.values.isOwner} checked={formik.values.isOwner} onBlur={formik.handleBlur} onChange={formik.handleChange} disabled={userObject} />
         </div>
 
         {/* select multiple with visibleStats */}

@@ -9,7 +9,6 @@ export default function SignUp () {
   const [done, setDone] = useState(false)
   const router = useRouter()
 
-  // FIXME: the notification message is not shown on the upper side of the page because of the justify center property (only in higher resolutions i.e. 4k)
   useEffect(() => {
     if (user) {
       router.push('/')

@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
-import usersService from '../../../services/users'
-import UserCard from '../../../components/UserCard'
-import { Loading, Pagination } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
 import { AiOutlineSearch } from 'react-icons/ai'
+import { Pagination, Loading } from '@nextui-org/react'
+import UserCard from '../../../components/UserCard'
+import usersService from '../../../services/users'
 
 export default function Followers () {
   const router = useRouter()
@@ -42,6 +42,7 @@ export default function Followers () {
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
+    console.log(e.target.value)
     setLoading(true)
   }
 

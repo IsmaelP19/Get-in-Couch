@@ -1,4 +1,6 @@
 import User from '../../../models/user'
+import Evaluation from '../../../models/evaluation'
+import Property from '../../../models/property'
 import { errorHandler, createConnection } from '../../../utils/utils'
 import bcrypt from 'bcrypt'
 
@@ -64,10 +66,30 @@ export default async function usersRouter (req, res) {
       const search = req.query?.search
       const avgRating = req.query?.avgRating
       const ubication = req.query?.ubication
+      const type = req.query?.type // tenantRelated, owner or tenant
 
       let filter = {}
 
-      if (onlyTenants) filter = { isOwner: false }
+      const tenantsIds = await Property.distinct('tenants.user')
+
+      if (onlyTenants || type === 'tenant') {
+        filter = {
+          isOwner: false,
+          _id: { $nin: tenantsIds.filter(id => id !== null).map(id => id.toString()) }
+        }
+      }
+
+      if (type === 'owner') {
+        filter = {
+          isOwner: true
+        }
+      }
+
+      if (type === 'tenantRelated') {
+        filter = {
+          _id: { $in: tenantsIds.filter(id => id !== null).map(id => id.toString()) }
+        }
+      }
 
       if (search) {
         const $regex = search
@@ -93,6 +115,12 @@ export default async function usersRouter (req, res) {
       try {
         users = await User.find(filter, 'username name surname profilePicture description isOwner avgRating ubication').sort({ memberSince: -1 }).skip(skip).limit(limit)
         total = await User.countDocuments(filter)
+
+        for (const user of users) {
+          const userId = user._id.toString()
+          const numberOfEvaluations = await Evaluation.countDocuments({ user: userId })
+          user._doc.numberOfEvaluations = numberOfEvaluations
+        }
 
         if (process.env.NODE_ENV === 'test') {
           users = await User.find(filter).sort({ memberSince: -1 }).skip(skip).limit(limit)

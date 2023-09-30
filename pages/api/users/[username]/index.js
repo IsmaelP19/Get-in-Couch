@@ -25,8 +25,6 @@ export default async function usersUsernameRouter (req, res) {
       let user = await User.findOne({ username })
 
       if (user && process.env.NODE_ENV === 'test') {
-        // passwordHash is removed with the transform function of the model
-        // but it is still returned in the response of the mock on tests
         user = user.toJSON()
       }
 
@@ -37,8 +35,6 @@ export default async function usersUsernameRouter (req, res) {
       // newFollower wants to follow user
       let user = await User.findOne({ username })
       if (process.env.NODE_ENV === 'test' && user) {
-        // passwordHash is removed with the transform function of the model
-        // but it is still returned in the response of the mock on tests
         user = user.toJSON()
       }
       // TODO: add account info update with auth (only the owner of the account can update it)
@@ -79,7 +75,6 @@ export default async function usersUsernameRouter (req, res) {
             name: body.name,
             surname: body.surname,
             phoneNumber: body.phoneNumber,
-            isOwner: body.isOwner,
             memberSince: user.memberSince,
             description: body.description,
             profilePicture: body.profilePicture,
