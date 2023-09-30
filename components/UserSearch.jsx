@@ -43,21 +43,21 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
         fetchedUsers = await usersService.search(urlSearchParams, currentPage, 5)
       }
 
-      console.log(fetchedUsers)
-
       setUsers(fetchedUsers.users)
       setTotalPages(Math.ceil(fetchedUsers.total / 5))
       setLoading(false)
     }
-
-    fetchUsers()
-  }, [currentPage, urlSearchParams])
+    if (done) {
+      fetchUsers()
+    }
+  }, [done, currentPage])
 
   const handlePageChange = async (page) => {
     setLoading(true)
     window.scrollTo(0, 0)
     setCurrentPage(page)
   }
+
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
   }
@@ -81,8 +81,6 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
     const ubication = document.querySelector('#ubication-input').value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     const avgRating = document.querySelector('#avgRating').value
     const type = document.querySelector('#type').value
-
-    console.log(type)
 
     const searchParams = new URLSearchParams()
     if (search) searchParams.append('search', search)
@@ -123,7 +121,7 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
         </p>
       </div>
 
-      <div className='flex flex-col flex-wrap items-center justify-center px-4 w-full gap-4 md:px-0  md:w-2/3 xl:w-2/4 2xl:w-1/3'>
+      <div className='flex flex-col flex-wrap items-center justify-center px-4 w-full gap-4 md:px-0  '>
         <div className='flex flex-wrap items-center justify-center gap-4'>
           <div className='flex flex-row items-center border-2 border-slate-300 rounded-xl w-72 px-2 '>
             <input type='text' id='search-input' className='h-10 w-[98%] outline-none' onChange={handleSearchChange} placeholder='Introduzca la búsqueda...' />

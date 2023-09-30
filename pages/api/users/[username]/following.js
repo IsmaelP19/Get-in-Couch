@@ -1,4 +1,5 @@
 import User from '../../../../models/user'
+import Evaluation from '../../../../models/evaluation'
 import { errorHandler, createConnection } from '../../../../utils/utils'
 
 export default async function usersUsernameRouter (req, res) {
@@ -30,11 +31,10 @@ export default async function usersUsernameRouter (req, res) {
         const search = req.query?.search
         if (search) {
           // users will be the array of following populated with the username, name, surname and profilePicture of the user on the query
-
           user = await User.findOne({ username }).populate({
             path: 'following',
             match: { $or: [{ username: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }, { surname: { $regex: search, $options: 'i' } }] },
-            select: 'username name surname profilePicture',
+            select: 'username name surname profilePicture avgRating',
             options: {
               skip,
               limit
@@ -53,21 +53,25 @@ export default async function usersUsernameRouter (req, res) {
           total = user.following.length
           user = await User.findOne({ username }).populate({
             path: 'following',
-            select: 'username name surname profilePicture',
+            select: 'username name surname profilePicture avgRating',
             options: {
               skip,
               limit
             }
           })
         }
-        const following = user.following.map(userObject => {
+        const following = await Promise.all(user.following.map(async userObject => {
+          const numberOfEvaluations = await Evaluation.countDocuments({ user: userObject._id })
           return {
             username: userObject.username,
             name: userObject.name,
             surname: userObject.surname,
-            profilePicture: userObject.profilePicture
+            profilePicture: userObject.profilePicture,
+            avgRating: userObject.avgRating,
+            numberOfEvaluations
           }
-        })
+        }))
+
         return res.status(200).json({ following, total })
       } else {
         return res.status(400).json({ error: 'username is required' })

@@ -13,9 +13,6 @@ export default function MessageForm ({ messages, setMessages, conversation }) {
 
     messagesService.create(messageObject)
       .then(response => {
-        // messagesService.sendPusherMessage(conversation.id, response)
-
-        // response.receiver = conversation.participants[0] // FIXME: check if this is necessary
         response.date = new Date(response.date).toLocaleString()
         messagesService.sendPusherMessage(conversation.id, response)
 

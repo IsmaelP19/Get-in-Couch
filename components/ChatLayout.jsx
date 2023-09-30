@@ -99,27 +99,13 @@ const ChatLayout = ({ conversations, setConversations, fetchedConversations }) =
         })
 
         setConversations([...newConversations])
-
-        // setConversation(conversations[existingConversationIndex])
-        // handleConversationClick(conversations[existingConversationIndex])
-
-      // setMessages((prevMessages) => [...prevMessages, message])
-      // if (message.author !== user?.id) {
-      //   messagesService.getMessageInfo(message.id)
-      //     .then((populatedMessage) => {
-      //       setMessages((prevMessages) => [...prevMessages, populatedMessage])
-      //     })
-      //     .catch((err) => {
-      //       console.log(err)
-      //     })
-      // }
       }
     }
   }
 
   const handleConversationClick = async (selectedConversation) => {
     setConversation(selectedConversation)
-    setDone(false) // Reset the done state to false
+    setDone(false)
 
     // Fetch the messages for the selected conversation
     const messages = await conversationsService.getMessagesFromConversation(selectedConversation.id)

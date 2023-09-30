@@ -34,7 +34,7 @@ export default function Profile ({ userObject }) {
 
   useEffect(() => {
     async function getStats () {
-      if (!(user?.isOwner && userObject?.isOwner)) {
+      if (!(user?.isOwner && userObject?.isOwner && user?.id !== userObject?.id)) {
         const stats = await evaluationService.getUserStats(userObject.username)
         setStats(stats)
       }
@@ -45,8 +45,8 @@ export default function Profile ({ userObject }) {
     } else {
       setFollowers(followers.length)
     }
-    if (userObject) getStats() // FIXME: this is being called twice
-  }, [])
+    getStats()
+  }, [done, userObject])
 
   useEffect(() => {
     async function checkFollow () {
@@ -150,7 +150,7 @@ export default function Profile ({ userObject }) {
 
   profilePicture || (profilePicture = '/static/images/default_avatar.png')
 
-  return (
+  return (done &&
     <>
       <main className='w-full'>
         <div className='flex flex-col md:flex-row gap-10 md:gap-5 mx-5 my-5 md:mx-15 md:my-14 '>
