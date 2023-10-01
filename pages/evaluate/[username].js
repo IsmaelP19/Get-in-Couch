@@ -97,6 +97,7 @@ export default function Evaluate ({ userObject }) {
         }, 4000)
       })
       .catch(error => {
+        console.log(error)
         if (error.response.data.error === 'The author does not live with the user at this moment') {
           showMessage('No vives con este compañero de piso. No puedes evaluarlo.', 'error', setMessage, 5000, true)
         // } else if (error.response.data.error === 'author does not live in any property') {
@@ -120,8 +121,9 @@ export default function Evaluate ({ userObject }) {
         }, 4000)
       })
       .catch(error => {
-        if (error.response.data.error === 'you have to wait 7 days to evaluate the same roommate again') {
-          showMessage('Ya has evaluado a este compañero de piso. Tienes que esperar 7 días para volver a evaluarlo.', 'error', setMessage, 5000, true)
+        console.log(error)
+        if (error.response.data.error === 'you have to wait 7 days to evaluate the same person again') {
+          showMessage('Ya has evaluado a este usuario. Tienes que esperar 7 días para volver a evaluarlo.', 'error', setMessage, 5000, true)
         } else {
           showMessage('Ha ocurrido un error inesperado. Por favor, inténtelo más tarde.', 'error', setMessage, 5000, true)
         }

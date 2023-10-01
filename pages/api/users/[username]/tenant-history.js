@@ -16,7 +16,16 @@ export default async function usersUsernameRouter (req, res) {
       if (username) {
         const user = await User.findOne({ username })
         if (user) {
-          const propertyHistory = await Property.find({ tenantsHistory: { $elemMatch: { user: user._id } } })
+          // the filter should be { tenantsHistory: { $elemMatch: { user: user._id } } } and those property with isActive = true
+          const filter = {
+            tenantsHistory: {
+              $elemMatch: {
+                user: user._id
+              }
+            },
+            isActive: true
+          }
+          const propertyHistory = await Property.find(filter)
 
           return res.status(200).json(propertyHistory ? { properties: propertyHistory } : { error: 'The user has not lived in any property yet' })
         }
