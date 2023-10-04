@@ -123,17 +123,24 @@ export default async function propertiesRouter (req, res) {
       }
     } else if (req.method === 'GET') {
       const all = req.query?.all
+      console.log('all', all)
 
       if (all) {
         try {
+          console.log('before properties fetch')
           const properties = await Property.find({ isActive: true })
+          console.log('after properties fetch')
+          console.log('properties: ', properties)
+          console.log('total: ', properties.length)
           return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved', total: properties.length })
         } catch (error) {
+          console.log(error)
           return res.status(500).json({ error: 'An error occurred while fetching properties.' })
         }
       }
 
       const page = req.query?.page || 1 // default page is 1
+      console.log('page: ', page)
 
       const search = req.query?.search
       const propertyType = req.query?.propertyType
@@ -200,8 +207,12 @@ export default async function propertiesRouter (req, res) {
       }
 
       try {
+        console.log('before properties fetch')
         properties = await Property.find(filter).sort(sort).skip(skip).limit(limit)
+        console.log('after properties fetch')
+        console.log('properties: ', properties)
         total = await Property.countDocuments(filter)
+        console.log('after total: ', total)
 
         if (process.env.NODE_ENV === 'test') {
           // passwordHash is removed with the transform function of the model
@@ -211,10 +222,12 @@ export default async function propertiesRouter (req, res) {
 
         return res.status(200).json({ properties, message: properties.length === 0 ? 'no properties found' : 'properties succesfully retrieved', total })
       } catch (error) {
+        console.log(error)
         return res.status(500).json({ error: 'An error occurred while fetching properties.' })
       }
     }
   } catch (error) {
+    console.log(error)
     errorHandler(error, req, res)
   }
 }
