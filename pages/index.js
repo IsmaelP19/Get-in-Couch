@@ -1,27 +1,8 @@
-import { useEffect, useState } from 'react'
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
 import propertiesService from '../services/properties'
 import userService from '../services/users'
-export default function Home () {
-  const [registeredUsers, setRegisteredUsers] = useState(0)
-  const [properties, setProperties] = useState(0)
-
-  useEffect(() => {
-    async function getRegisteredUsers () {
-      const registeredUsers = await userService.getAll()
-      setRegisteredUsers(registeredUsers.total || 0)
-    }
-
-    async function getProperties () {
-      const properties = await propertiesService.getAll()
-      setProperties(properties?.total || 0)
-    }
-
-    getRegisteredUsers()
-    getProperties()
-  }, [])
-
+export default function Home ({ registeredUsers, properties }) {
   return (
     <>
       <div className='flex flex-col w-full'>
@@ -42,25 +23,17 @@ export default function Home () {
   )
 }
 
-// export async function getServerSideProps (context) {
-//   context.res.setHeader(
-//     'Cache-Control',
-//     'public, s-maxage=10, stale-while-revalidate=59'
-//   )
+export async function getServerSideProps (context) {
+  context.res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  )
 
-//   const registeredUsers = await userService.getAll()
+  const registeredUsers = await userService.getAll()
 
-//   const properties = await propertiesService.getAll()
+  const properties = await propertiesService.getAll()
 
-//   return {
-//     props: { registeredUsers: registeredUsers.total || 0, properties: properties?.total || 0, title: 'Inicio' }
-//   }
-// }
-
-export async function getServerSideProps () {
   return {
-    props: {
-      title: 'Inicio'
-    }
+    props: { registeredUsers: registeredUsers.total || 0, properties: properties?.total || 0, title: 'Inicio' }
   }
 }
