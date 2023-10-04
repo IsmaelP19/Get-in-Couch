@@ -69,8 +69,11 @@ export default async function usersRouter (req, res) {
       const type = req.query?.type // tenantRelated, owner or tenant
 
       let filter = {}
+      console.log('before tenantsIds')
 
       const tenantsIds = await Property.distinct('tenants.user')
+
+      console.log('after tenantsIds: ', tenantsIds)
 
       if (onlyTenants || type === 'tenant') {
         filter = {
@@ -113,12 +116,17 @@ export default async function usersRouter (req, res) {
       }
 
       try {
+        console.log('before users')
         users = await User.find(filter, 'username name surname profilePicture description isOwner avgRating ubication').sort({ memberSince: -1 }).skip(skip).limit(limit)
+        console.log('after users, users: ', users)
         total = await User.countDocuments(filter)
+        console.log('after total: ', total)
 
         for (const user of users) {
           const userId = user._id.toString()
+          console.log('userId: ', userId)
           const numberOfEvaluations = await Evaluation.countDocuments({ user: userId })
+          console.log('numberOfEvaluations: ', numberOfEvaluations)
           user._doc.numberOfEvaluations = numberOfEvaluations
         }
 
@@ -129,10 +137,12 @@ export default async function usersRouter (req, res) {
 
         return res.status(200).json({ users, total })
       } catch (error) {
+        console.log(error)
         return res.status(500).json({ error: 'An error occurred while fetching users.' })
       }
     }
   } catch (error) {
+    console.log(error)
     errorHandler(error, req, res)
   }
 }
