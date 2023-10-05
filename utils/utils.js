@@ -70,8 +70,8 @@ async function getCoordinatesFromAddress (address) {
   const data = await response.json()
   if (data.error?.message) throw new Error(data.error.message)
   else {
-    const latitude = data.items[0].position.lat
-    const longitude = data.items[0].position.lng
+    const latitude = data.items[0]?.position.lat
+    const longitude = data.items[0]?.position.lng
     return { latitude, longitude }
   }
 }
