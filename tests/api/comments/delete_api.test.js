@@ -102,7 +102,7 @@ describe('DELETE comments by id endpoint', () => {
     await commentsRouter({ method: 'POST', body: { ...newComment, property: properties[0].id } }, res)
   })
 
-  test('should return 204 if comment is deleted', async () => {
+  test('should return 200 with new avgRating of the property if comment is deleted', async () => {
     const comments = await commentsInDb()
     expect(comments).toHaveLength(1)
     const commentToDelete = comments[0]
@@ -114,7 +114,8 @@ describe('DELETE comments by id endpoint', () => {
 
     await commentsIdRouter({ ...req, query: { id: commentToDelete.id } }, res1)
 
-    expect(res1.status).toHaveBeenCalledWith(204)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith({ avgRating: 0 }) // there was only one comment before
   })
 
   test('should return 404 if comment is not found', async () => {
@@ -167,7 +168,8 @@ describe('DELETE comments by id endpoint', () => {
 
     const propertiesAtEnd = await propertiesInDb()
     const commentsAtEnd = await commentsInDb(propertiesAtEnd[0].id)
-    expect(res1.status).toHaveBeenCalledWith(204)
+    expect(res1.status).toHaveBeenCalledWith(200)
+    expect(res1.json).toHaveBeenCalledWith({ avgRating: 0 }) // there was only one comment before
     expect(commentsAtEnd).toHaveLength(0)
     expect(propertiesAtEnd[0].comments).toHaveLength(0)
   })
