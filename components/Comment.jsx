@@ -8,7 +8,7 @@ import { useAppContext } from '../context/state'
 import { showMessage } from '../utils/utils'
 import propertiesService from '../services/properties'
 
-export default function Comment ({ comment, setPage, page, n, setComments, setTotalComments }) {
+export default function Comment ({ comment, setPage, page, n, setComments, setTotalComments, setAvgRating }) {
   /*
   * comment: comment object
   * setPage: function to change the current page of the comments Pagination component
@@ -50,7 +50,8 @@ export default function Comment ({ comment, setPage, page, n, setComments, setTo
   const handleDelete = async () => {
     if (window.confirm('¿Estás seguro de que quieres borrar este comentario? \nNo podrás deshacer esta acción')) {
       try {
-        await commentService.remove(comment.id)
+        const { avgRating } = await commentService.remove(comment.id)
+        // FIXME: change the actual avgRating of the property
         showMessage('Se ha borrado correctamente el comentario 😎', 'success', setMessage, 4000)
         if (n === 1 && page > 1) { // if it's the last comment in the page we go back
           setPage(page - 1)
@@ -65,6 +66,7 @@ export default function Comment ({ comment, setPage, page, n, setComments, setTo
           setComments([...newComments.comments])
           setTotalComments(newComments.total)
         }
+        setAvgRating(avgRating)
       } catch (error) {
         showMessage('Ha ocurrido un error al borrar el comentario. Por favor, inténtalo de nuevo.', 'error', setMessage, 4000)
       }

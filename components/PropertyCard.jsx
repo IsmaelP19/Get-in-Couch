@@ -2,7 +2,7 @@ import { GrMapLocation } from 'react-icons/gr'
 import Link from 'next/link'
 import { AiFillStar } from 'react-icons/ai'
 
-export default function PropertyCard ({ property, style, handleClose, avgRating }) {
+export default function PropertyCard ({ property, style, handleClose, avgRating, totalComments }) {
   const { id, title, price, location, features, images } = property
 
   // const freeRooms = features.numberOfBedrooms - tenants.length
@@ -11,6 +11,8 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
   const cardSubtitle = location.town ? location.town + ', ' + location.city : location.city
 
   const avg = avgRating || property.avgRating
+
+  const commentsNumber = totalComments || property.comments.length
 
   return (
     <div key={id} className={`flex flex-col border-2 w-[300px] items-center gap-4 ${handleClose ? 'pb-0' : 'pb-5'} border-black rounded-3xl ${style}`}>
@@ -28,7 +30,7 @@ export default function PropertyCard ({ property, style, handleClose, avgRating 
         <span>{features.numberOfBathrooms} {features.numberOfBathrooms === 1 ? 'baño' : 'baños'}</span>
         <div className='flex flex-wrap items-center justify-center gap-10'>
           <span className='flex items-center gap-1 bg-blue-100 rounded-xl px-2'>{avg} <AiFillStar className='text-yellow-500' /></span>
-          <span className=' bg-blue-100 px-2 rounded-xl font-bold'>{property.comments.length} {property.comments.length === 1 ? 'valoración' : 'valoraciones'} </span>
+          <span className=' bg-blue-100 px-2 rounded-xl font-bold'>{commentsNumber} {commentsNumber === 1 ? 'valoración' : 'valoraciones'} </span>
         </div>
         <div className='flex w-full items-center justify-around'>
           <span className='font-bold rounded-2xl bg-[#FFAA22] px-3 py-2'>{price} €/mes </span>
