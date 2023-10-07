@@ -1,4 +1,5 @@
 import { NextSeo } from 'next-seo'
+import Link from 'next/link'
 
 export default function PrivacyPolicy () {
   return (
@@ -36,7 +37,7 @@ export default function PrivacyPolicy () {
 
         <br />
         <h1 className='w-2/3 max-w-[800px] text-2xl font-bold'>5. Privacidad</h1>
-        <p className='w-2/3 max-w-[800px]  text-xl'>Respetamos la privacidad de los usuarios. Consulta nuestra <a className='text-blue-700 hover:underline' href='/privacy'>Política de Privacidad</a> para obtener más información.</p>
+        <p className='w-2/3 max-w-[800px]  text-xl'>Respetamos la privacidad de los usuarios. Consulta nuestra <Link className='text-blue-700 hover:underline' href='/privacy'>Política de Privacidad</Link> para obtener más información.</p>
 
         <br />
         <h1 className='w-2/3 max-w-[800px] text-2xl font-bold'>6. Comunicación</h1>
