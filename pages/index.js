@@ -1,15 +1,25 @@
 import Feature from '../components/Feature'
 import InfoCard from '../components/InfoCard'
+import { useAppContext } from '../context/state'
 import propertiesService from '../services/properties'
 import userService from '../services/users'
 export default function Home ({ registeredUsers, properties }) {
+  const { user } = useAppContext()
+  // console.log(user == undefined)
   return (
     <>
+
       <div className='flex flex-col w-full'>
+
         <div className='md:h-[25.3rem] bg-index-img bg-center bg-cover flex flex-col md:flex-row justify-around items-center py-10 gap-4 shadow-lg shadow-gray-400'>
-          <InfoCard title='Publica tu inmueble' description='Ideal si tienes una vivienda que deseas alquilar a terceros.' buttonName='Accede ya' buttonLink='/login' buttonStyle='bg-gray-200 hover:bg-slate-600 text-black hover:text-white' />
-          <InfoCard title='¿Buscas habitación?' description='Ideal si quieres compartir vivienda y reducir gastos.' buttonName='Accede ya' buttonLink='/login' buttonStyle='bg-gray-200 hover:bg-slate-600 text-black hover:text-white' />
+          {(!user || user?.isOwner) && (
+            <InfoCard title='Publica tu inmueble' description='Ideal si tienes una vivienda que deseas alquilar a terceros.' buttonName='Accede ya' buttonLink='/login' buttonStyle='bg-gray-200 hover:bg-slate-600 text-black hover:text-white' />
+          )}
+          {(!user || !user?.isOwner) && (
+            <InfoCard title='¿Buscas habitación?' description='Ideal si quieres compartir vivienda y reducir gastos.' buttonName='Accede ya' buttonLink='/login' buttonStyle='bg-gray-200 hover:bg-slate-600 text-black hover:text-white' />
+          )}
         </div>
+
         <div className='my-10'>
           <h1 className='text-2xl md:text-3xl font-bold text-center'>Lo que nos hace diferentes</h1>
           <Feature title={`Actualmente contamos con ${properties} ofertas de inmuebles y ${registeredUsers} usuarios registrados`} description='¡Tienes más que suficiente para encontrar el sitio ideal para compartir!' color='#047857' />

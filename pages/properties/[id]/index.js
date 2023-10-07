@@ -97,7 +97,7 @@ export default function PropertyDetails ({ property }) {
             </div>
           )}
 
-          <PropertyCard property={property} avgRating={avgRating} />
+          <PropertyCard property={property} avgRating={avgRating} totalComments={totalComments} />
           <button className='bg-slate-700 hover:bg-gray-200 text-white hover:text-black rounded-full p-1 duration-200 border-2 border-gray-200 font-bold w-full' onClick={handleShowGallery}>
             {showText}
           </button>
@@ -127,14 +127,12 @@ export default function PropertyDetails ({ property }) {
                 <Comment
                   key={comment.id}
                   comment={comment}
-                  // isTenant={property.tenants.some(tenant => tenant.user.toString() === comment.user.id)}
                   setPage={setPage}
                   page={page}
                   n={comments.length}
-                  // hasLived={property.tenantsHistory.some(history => history.user.toString() === comment.user.id)}
-                  // isOwner={property.owner?.id === comment.user.id} // this could be also done with comment.user.properties.includes(property.id) BUT we don't know the value of comment.user.properties since we are not populating it on the backend response
                   setComments={setComments}
                   setTotalComments={setTotalComments}
+                  setAvgRating={setAvgRating}
                 />
               ))}
               <Pagination total={totalPages} bordered shadow initialPage={1} page={page} onChange={handlePageChange} className='z-0' />

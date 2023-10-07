@@ -204,8 +204,6 @@ export default function State () {
                               ))}
                             </div>
                           </div>
-
-                          {/* divisor */}
                           <div className='h-1 bg-gray-200 my-10 rounded-full ' />
                         </div>
                       ))}

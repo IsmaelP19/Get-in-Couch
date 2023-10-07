@@ -27,8 +27,6 @@ export default async function propertiesIdRouter (req, res) {
 
       property ? res.status(200).json(property) : res.status(404).json({ error: 'property not found' })
     } else if (req.method === 'DELETE') {
-      // FIXME: add loggedUser on req.body on the frontend
-
       const property = await Property.findById(id)
       const loggedUser = await User.findById(req.body.loggedUser)
       if (!loggedUser) {

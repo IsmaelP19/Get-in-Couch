@@ -28,12 +28,19 @@ export default async function commentsIdRouter (req, res) {
         return res.status(404).json({ error: 'comment not found' })
       } else {
         const property = await Property.findById(comment.property)
+
+        // update the actual avgRating of the property once the comment is erased. This is done by getting the avgRating of the property and subtracting the rating of the comment that is being erased. Then, we divide it by the total number of comments that the property has
+        const oldAvgRating = property.avgRating
+        const oldTotalComments = property.comments.length
+        const rating = comment.rating
+        const newAvgRating = (oldAvgRating * oldTotalComments - rating) / (oldTotalComments - 1)
+
         property.comments = property.comments.filter(c => c.toString() !== commentId)
+        property.avgRating = newAvgRating || 0
         await property.save()
 
         await Comment.findByIdAndDelete(commentId)
-
-        return res.status(204).end()
+        return res.status(200).json({ avgRating: newAvgRating || 0 })
       }
     } else if (req.method === 'PUT') {
       const comment = await Comment.findById(commentId)
