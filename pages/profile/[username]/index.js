@@ -6,7 +6,7 @@ import userService from '../../../services/users'
 import evaluationService from '../../../services/evaluations'
 import { useAppContext } from '../../../context/state'
 import conversationsService from '../../../services/conversations'
-import { AiOutlineEdit } from 'react-icons/ai'
+import { AiOutlineEdit, AiFillStar } from 'react-icons/ai'
 import { PiSignOutBold } from 'react-icons/pi'
 import { useRouter } from 'next/router'
 import { FaBookmark } from 'react-icons/fa'
@@ -14,7 +14,7 @@ import { BsCalendar2WeekFill, BsFillHousesFill } from 'react-icons/bs'
 import { Loading } from '@nextui-org/react'
 
 export default function Profile ({ userObject }) {
-  const { name, surname, description, memberSince, followers, following } = userObject
+  const { name, surname, description, memberSince, followers, following, avgRating } = userObject
   let { profilePicture } = userObject
   const [done, setDone] = useState(false) // this done is different from the one in context, this one will be used to know whether I follow the user or not
   const [follow, setFollow] = useState(false)
@@ -36,6 +36,7 @@ export default function Profile ({ userObject }) {
     async function getStats () {
       if (!(user?.isOwner && userObject?.isOwner && user?.id !== userObject?.id)) {
         const stats = await evaluationService.getUserStats(userObject.username)
+        // console.log(stats)
         setStats(stats)
       }
     }
@@ -227,23 +228,31 @@ export default function Profile ({ userObject }) {
                               Las estadísticas que está viendo son una media de las valoraciones recibidas por este usuario. En todos los aspectos, el 0 es la peor puntuación y el 5 la mejor{!userObject?.isOwner && '. En el caso del ruido, cuanto más alta significará que menos ruido hace, para no alterar la puntuación global'}.
                             </span>
                           </div>
-                          <div className='self-end'>
+                          <div className='flex items-center gap-10 justify-between'>
+                            <div className='flex items-center gap-10 justify-center'>
+                              <span className='font-bold text-xl'>Valoración media: </span>
+                              <span className='flex gap-1 items-center justify-center bg-blue-100 px-2 rounded-xl font-bold text-xl'>{Math.floor(avgRating * 100) / 100} <AiFillStar className='text-yellow-500' /></span>
+                            </div>
                             <span className='italic font-bold'> {stats.total} {stats.total === 1 ? 'valoración recibida ' : 'valoraciones recibidas'}  </span>
                           </div>
 
                           {user?.isOwner && !userObject?.isOwner && ( // the user is owner and the profile is a tenant --> Action= Tenant and All
                             stats.averageEvaluation.filter(stat => stat.action === 'Tenant' || stat.action === 'All').map((stat, index) =>
                               <div key={index} className='flex flex-col'>
-                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                                <div className='w-full flex justify-between mt-1'>
-                                  <span className='text-xl'>0</span>
-                                  <span className='text-xl'>1</span>
-                                  <span className='text-xl'>2</span>
-                                  <span className='text-xl'>3</span>
-                                  <span className='text-xl'>4</span>
-                                  <span className='text-xl'>5</span>
-                                </div>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.count === 0 ? 'No evaluado aún' : stat.value.toFixed(2)} </label>
+                                {stat.count !== 0 && (
+                                  <>
+                                    <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                    <div className='w-full flex justify-between mt-1'>
+                                      <span className='text-xl'>0</span>
+                                      <span className='text-xl'>1</span>
+                                      <span className='text-xl'>2</span>
+                                      <span className='text-xl'>3</span>
+                                      <span className='text-xl'>4</span>
+                                      <span className='text-xl'>5</span>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             )
                           )}
@@ -251,16 +260,20 @@ export default function Profile ({ userObject }) {
                           {!user?.isOwner && !userObject?.isOwner && user?.id !== userObject?.id && ( // the user is a tenant and the profile is a tenant --> Action= Roommate and All
                             stats.averageEvaluation.filter(stat => stat.action === 'Roommate' || stat.action === 'All').map((stat, index) =>
                               <div key={index} className='flex flex-col'>
-                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                                <div className='w-full flex justify-between mt-1'>
-                                  <span className='text-xl'>0</span>
-                                  <span className='text-xl'>1</span>
-                                  <span className='text-xl'>2</span>
-                                  <span className='text-xl'>3</span>
-                                  <span className='text-xl'>4</span>
-                                  <span className='text-xl'>5</span>
-                                </div>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.count === 0 ? 'No evaluado aún' : stat.value.toFixed(2)} </label>
+                                {stat.count !== 0 && (
+                                  <>
+                                    <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                    <div className='w-full flex justify-between mt-1'>
+                                      <span className='text-xl'>0</span>
+                                      <span className='text-xl'>1</span>
+                                      <span className='text-xl'>2</span>
+                                      <span className='text-xl'>3</span>
+                                      <span className='text-xl'>4</span>
+                                      <span className='text-xl'>5</span>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             )
                           )}
@@ -268,16 +281,20 @@ export default function Profile ({ userObject }) {
                           {!user?.isOwner && userObject?.isOwner && ( // the user is a tenant and the profile is an owner --> Action= Landlord and All
                             stats.averageEvaluation.filter(stat => stat.action === 'Landlord' || stat.action === 'All').map((stat, index) =>
                               <div key={index} className='flex flex-col'>
-                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                                <div className='w-full flex justify-between mt-1'>
-                                  <span className='text-xl'>0</span>
-                                  <span className='text-xl'>1</span>
-                                  <span className='text-xl'>2</span>
-                                  <span className='text-xl'>3</span>
-                                  <span className='text-xl'>4</span>
-                                  <span className='text-xl'>5</span>
-                                </div>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.count === 0 ? 'No evaluado aún' : stat.value.toFixed(2)} </label>
+                                {stat.count !== 0 && (
+                                  <>
+                                    <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                    <div className='w-full flex justify-between mt-1'>
+                                      <span className='text-xl'>0</span>
+                                      <span className='text-xl'>1</span>
+                                      <span className='text-xl'>2</span>
+                                      <span className='text-xl'>3</span>
+                                      <span className='text-xl'>4</span>
+                                      <span className='text-xl'>5</span>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             )
                           )}
@@ -285,16 +302,20 @@ export default function Profile ({ userObject }) {
                           {user?.id === userObject?.id && ( // the user is watching his profile
                             stats.averageEvaluation.map((stat, index) =>
                               <div key={index} className='flex flex-col'>
-                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.value.toFixed(2)} </label>
-                                <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
-                                <div className='w-full flex justify-between mt-1'>
-                                  <span className='text-xl'>0</span>
-                                  <span className='text-xl'>1</span>
-                                  <span className='text-xl'>2</span>
-                                  <span className='text-xl'>3</span>
-                                  <span className='text-xl'>4</span>
-                                  <span className='text-xl'>5</span>
-                                </div>
+                                <label htmlFor={stat.stat} className='text-xl font-bold'>{stat.stat}: {stat.count === 0 ? 'No evaluado aún' : stat.value.toFixed(2)} </label>
+                                {stat.count !== 0 && (
+                                  <>
+                                    <input type='range' name={stat.stat} min='0' max='5' step='any' value={stat.value} readOnly className='accent-blue-700 ' />
+                                    <div className='w-full flex justify-between mt-1'>
+                                      <span className='text-xl'>0</span>
+                                      <span className='text-xl'>1</span>
+                                      <span className='text-xl'>2</span>
+                                      <span className='text-xl'>3</span>
+                                      <span className='text-xl'>4</span>
+                                      <span className='text-xl'>5</span>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             )
                           )}

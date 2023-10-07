@@ -58,13 +58,25 @@ export default async function evaluationsUsernameRouter (req, res) {
 
         const stats = []
 
+        // evaluations.forEach(evaluation => {
+        //   evaluation.stats.filter(stat => visibleStatsIds?.includes(stat.stat._id)).forEach(stat => {
+        //     const statName = stat.stat.name;
+        //     if (!statCounts[statName]) {
+        //       statCounts[statName] = 0;
+        //     }
+        //     stats.find(s => s.stat === statName).value += stat.value;
+        //     statCounts[statName]++; // Incrementa el contador de evaluaciones para esta estadística
+        //   })
+        // });
+
         availableStats.forEach(stat => {
-          stats.push({ stat: stat.name, value: 0, action: stat.action })
+          stats.push({ stat: stat.name, value: 0, action: stat.action, count: 0 })
         })
 
         evaluations.forEach(evaluation => {
           evaluation.stats.filter(stat => visibleStatsIds?.includes(stat.stat._id)).forEach(stat => {
             stats.find(s => s.stat === stat.stat.name).value += stat.value
+            stats.find(s => s.stat === stat.stat.name).count++
           })
         })
 
