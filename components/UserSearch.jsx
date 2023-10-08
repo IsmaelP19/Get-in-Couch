@@ -50,7 +50,7 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
     if (done) {
       fetchUsers()
     }
-  }, [done, currentPage])
+  }, [done, currentPage, urlSearchParams])
 
   const handlePageChange = async (page) => {
     setLoading(true)
@@ -67,7 +67,7 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
     document.querySelector('#search-input').value = ''
     document.querySelector('#ubication-input').value = ''
     document.querySelector('#avgRating').value = ''
-    document.querySelector('#type').value = ''
+    if (document.querySelector('#type')) document.querySelector('#type').value = ''
     setLoading(true)
     setCurrentPage(1)
     setSearch('')
@@ -80,7 +80,7 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
 
     const ubication = document.querySelector('#ubication-input').value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     const avgRating = document.querySelector('#avgRating').value
-    const type = document.querySelector('#type').value
+    const type = document.querySelector('#type')?.value
 
     const searchParams = new URLSearchParams()
     if (search) searchParams.append('search', search)
@@ -90,24 +90,6 @@ export default function UsersSearch ({ tenants, setTenants, onlyTenants, followe
 
     setParams(searchParams)
     setCurrentPage(1)
-
-    let fetchedUsers
-    let username
-    if (onlyTenants) {
-      fetchedUsers = await usersService.search(searchParams, 1, 5, true)
-    } else if (following) {
-      username = router.query.username
-      fetchedUsers = await usersService.getFollowing(username, urlSearchParams, 1, 5)
-    } else if (followers) {
-      username = router.query.username
-      fetchedUsers = await usersService.getFollowers(username, urlSearchParams, 1, 5)
-    } else {
-      fetchedUsers = await usersService.search(searchParams, 1, 5)
-    }
-
-    setUsers(fetchedUsers.users)
-    setTotalPages(Math.ceil(fetchedUsers.total / 5))
-    setLoading(false)
   }
 
   return (
